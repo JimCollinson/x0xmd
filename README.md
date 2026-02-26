@@ -26,3 +26,5 @@ npx wrangler deploy
 - `SKILL_URL`
 - `SKILL_SIGNATURE_URL`
 - `GPG_KEY_URL`
+
+Defaults are currently pointed at `JimCollinson/x0x` so end-to-end behavior can be validated in fork before upstream PR.

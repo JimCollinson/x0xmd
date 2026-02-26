@@ -1,11 +1,11 @@
 const DEFAULT_INSTALL_SCRIPT_URL =
-  "https://raw.githubusercontent.com/saorsa-labs/x0x/main/scripts/install.sh"
+  "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh"
 const DEFAULT_SKILL_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md"
+  "https://github.com/JimCollinson/x0x/releases/latest/download/SKILL.md"
 const DEFAULT_SKILL_SIGNATURE_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
+  "https://github.com/JimCollinson/x0x/releases/latest/download/SKILL.md.sig"
 const DEFAULT_GPG_KEY_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+  "https://github.com/JimCollinson/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
 
 export default {
   async fetch(request, env) {
@@ -175,7 +175,7 @@ function htmlResponse(request) {
       </ul>
       <p class="muted">Security note: installer verifies SKILL.md signature when GPG is available. In non-interactive environments without GPG, it warns and continues.</p>
       <p class="muted">For machine-readable trust metadata, see <a href="/trust.json">/trust.json</a>.</p>
-      <p class="muted">Source: <a href="https://github.com/saorsa-labs/x0x">saorsa-labs/x0x</a></p>
+      <p class="muted">Source: <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a></p>
     </div>
   </div>
 </body>

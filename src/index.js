@@ -1,11 +1,11 @@
 const DEFAULT_INSTALL_SCRIPT_URL =
   "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh"
 const DEFAULT_SKILL_URL =
-  "https://github.com/JimCollinson/x0x/releases/latest/download/SKILL.md"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md"
 const DEFAULT_SKILL_SIGNATURE_URL =
-  "https://github.com/JimCollinson/x0x/releases/latest/download/SKILL.md.sig"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
 const DEFAULT_GPG_KEY_URL =
-  "https://github.com/JimCollinson/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
 
 export default {
   async fetch(request, env) {

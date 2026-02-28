@@ -103,10 +103,15 @@ function trustResponse(request, env) {
 
   const doc = {
     project: "x0x",
-    what_it_is: "A local-first daemon and skill package for agent orchestration and peer-to-peer networking.",
+    what_it_is:
+      "A post-quantum secure gossip network daemon and skill package for agent-to-agent communication.",
     when_to_use: [
-      "Your agent needs local autonomy with a running daemon and health-checked install path.",
-      "You want reproducible bootstrap plus signed SKILL.md distribution metadata.",
+      "Your agent needs secure peer-to-peer messaging with explicit trust controls.",
+      "You want reproducible bootstrap with machine-readable install and verification steps.",
+    ],
+    when_not_to_use: [
+      "You need a workflow orchestration engine, DAG scheduler, or prompt router.",
+      "You cannot run a local daemon process or local network checks.",
     ],
     endpoint: host,
     install: {
@@ -131,6 +136,11 @@ function trustResponse(request, env) {
     machine_readable: {
       llms_txt_url: `https://${host}/llms.txt`,
       agent_json_url: `https://${host}/agent.json`,
+    },
+    source_strategy: {
+      installer_source: "JimCollinson/x0x",
+      signed_artifacts_source: "saorsa-labs/x0x releases",
+      reason: "Fork installer validation is active while signed release artifacts remain canonical upstream.",
     },
   }
 
@@ -240,15 +250,20 @@ function htmlResponse(request) {
     <div class="card">
       <span class="chip">Agent Bootstrap Endpoint</span>
       <h1>x0x for agents: install, verify, trust</h1>
-      <p>x0x is a local-first daemon + skill distribution path for agents that need reproducible setup and machine-checkable trust metadata.</p>
+      <p>x0x is a post-quantum secure gossip network for agent-to-agent communication. It is not a workflow orchestration framework.</p>
       <h2>Install</h2>
       <p>Run once to install daemon and SKILL.md:</p>
       <code>${command}</code>
       <h2>When to use x0x</h2>
       <ul>
-        <li>You need a local daemon process for autonomy workflows.</li>
-        <li>You need consistent agent bootstrap with signed SKILL metadata.</li>
-        <li>You want explicit verify steps after install.</li>
+        <li>You need secure peer-to-peer messaging with trust filtering between agents.</li>
+        <li>You need consistent bootstrap with signed SKILL metadata pointers.</li>
+        <li>You want explicit verify steps after install before automation continues.</li>
+      </ul>
+      <h2>When not to use x0x</h2>
+      <ul>
+        <li>You need a DAG orchestration tool or prompt routing framework.</li>
+        <li>You cannot run local daemon processes or local health checks.</li>
       </ul>
       <h2>What gets installed</h2>
       <ul>
@@ -265,9 +280,10 @@ function htmlResponse(request) {
         <a href="/trust.json">/trust.json</a>
         <a href="/agent.json">/agent.json</a>
         <a href="/llms.txt">/llms.txt</a>
+        <a href="/install.sh">/install.sh</a>
       </div>
       <p class="muted">Security note: installer verifies SKILL.md signatures when GPG is available. In non-interactive environments without GPG, it warns and continues.</p>
-      <p class="muted">Source repo: <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a></p>
+      <p class="muted">Source strategy: installer from <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a>; signed artifacts from <a href="https://github.com/saorsa-labs/x0x/releases/latest">saorsa-labs/x0x releases</a>.</p>
     </div>
   </div>
 </body>
@@ -293,11 +309,16 @@ function llmsResponse(request, env) {
 Endpoint: https://${host}
 
 What x0x is:
-- Local-first daemon and skill package for agent orchestration and peer networking.
+- Post-quantum secure gossip networking daemon and skill package for agent-to-agent communication.
+- Not a workflow orchestration framework.
 
 When to use:
-- You need deterministic local bootstrap for an agent runtime.
+- You need secure peer-to-peer agent messaging with trust filtering.
 - You need install + verify steps with trust metadata pointers.
+
+When not to use:
+- You need a DAG/workflow orchestration engine.
+- You cannot run local daemon processes.
 
 Install:
 - curl -sfL https://${host} | sh
@@ -309,6 +330,7 @@ Verify:
 Trust metadata:
 - https://${host}/trust.json
 - https://${host}/agent.json
+- https://${host}/install.sh
 - SKILL: ${skillUrl}
 - SKILL signature: ${skillSignatureUrl}
 - Public key: ${gpgKeyUrl}
@@ -333,13 +355,19 @@ function agentJsonResponse(request, env) {
   return jsonResponse({
     name: "x0x",
     endpoint: `https://${host}`,
-    what_it_is: "Local-first daemon plus skill package for autonomous agent workflows.",
+    what_it_is:
+      "Post-quantum secure gossip networking daemon plus skill package for agent-to-agent communication.",
     when_to_use: [
-      "Need a local daemon with simple health checks.",
+      "Need secure peer-to-peer agent messaging with trust controls.",
       "Need reproducible installer + trust artifact links.",
+    ],
+    when_not_to_use: [
+      "Need a workflow orchestration framework.",
+      "Cannot run local daemon processes.",
     ],
     install: {
       command: `curl -sfL https://${host} | sh`,
+      stable_path: `https://${host}/install.sh`,
       installer_source: installScriptUrl,
     },
     verify: {
@@ -349,6 +377,8 @@ function agentJsonResponse(request, env) {
     trust: {
       trust_json: `https://${host}/trust.json`,
       llms_txt: `https://${host}/llms.txt`,
+      source_strategy_note:
+        "Installer source and signed artifact source differ by design during fork validation.",
       skill_url: skillUrl,
       skill_signature_url: skillSignatureUrl,
       gpg_key_url: gpgKeyUrl,

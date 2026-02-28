@@ -95,14 +95,11 @@ async function installerResponse(env) {
 }
 
 function trustResponse(request, env) {
-  const host = new URL(request.url).host;
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL;
-  const skillSignatureUrl =
-    env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL;
-  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL;
+  const contract = buildContract(request, env);
 
   const doc = {
+    contract_version: "c003",
+    generated_from: "track-e-champion-evolution",
     project: "x0x",
     what_it_is:
       "A post-quantum secure gossip network daemon and skill package for agent-to-agent communication.",
@@ -114,21 +111,21 @@ function trustResponse(request, env) {
       "You need a workflow orchestration engine, DAG scheduler, or prompt router.",
       "You cannot run a local daemon process or local network checks.",
     ],
-    endpoint: host,
+    endpoint: contract.endpoint,
     install: {
-      command: `curl -sfL https://${host} | sh`,
-      installer_url: installScriptUrl,
+      command: contract.install_contract.one_liner,
+      installer_url: contract.install_contract.installer_source,
       note: "Installer verifies SKILL.md signature when GPG is available.",
     },
     verify: {
-      daemon_health: "curl -sf http://127.0.0.1:12700/health",
-      binary_check: "command -v x0xd",
+      daemon_health: contract.verify_contract.daemon_health,
+      binary_check: contract.verify_contract.daemon_binary,
       expected_health: { status: "ok" },
     },
     artifacts: {
-      skill_url: skillUrl,
-      skill_signature_url: skillSignatureUrl,
-      gpg_key_url: gpgKeyUrl,
+      skill_url: contract.trust_contract.skill_url,
+      skill_signature_url: contract.trust_contract.skill_signature_url,
+      gpg_key_url: contract.trust_contract.gpg_key_url,
     },
     policy: {
       signature_verification: {
@@ -140,14 +137,18 @@ function trustResponse(request, env) {
       operator_action_if_warned:
         "Install gpg, then rerun installer and verify signature artifacts before production use.",
       verification_artifacts: {
-        skill: skillUrl,
-        signature: skillSignatureUrl,
-        public_key: gpgKeyUrl,
+        skill: contract.trust_contract.skill_url,
+        signature: contract.trust_contract.skill_signature_url,
+        public_key: contract.trust_contract.gpg_key_url,
       },
     },
+    decision_contract: contract.decision,
+    install_contract: contract.install_contract,
+    verify_contract: contract.verify_contract,
+    trust_contract: contract.trust_contract,
     machine_readable: {
-      llms_txt_url: `https://${host}/llms.txt`,
-      agent_json_url: `https://${host}/agent.json`,
+      llms_txt_url: `https://${contract.host}/llms.txt`,
+      agent_json_url: `https://${contract.host}/agent.json`,
     },
     source_strategy: {
       installer_source: "JimCollinson/x0x",
@@ -158,6 +159,56 @@ function trustResponse(request, env) {
   };
 
   return jsonResponse(doc);
+}
+
+function buildContract(request, env) {
+  const host = new URL(request.url).host;
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL;
+  const skillSignatureUrl =
+    env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL;
+  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL;
+
+  return {
+    host,
+    endpoint: host,
+    decision: {
+      use_when: [
+        "Need secure peer-to-peer agent messaging with trust filtering.",
+        "Need reproducible install plus explicit post-install verification.",
+      ],
+      avoid_when: [
+        "Need a DAG/workflow orchestration framework.",
+        "Cannot run local daemon processes or localhost checks.",
+      ],
+    },
+    install_contract: {
+      one_liner: `curl -sfL https://${host} | sh`,
+      stable_script: `https://${host}/install.sh`,
+      installer_source: installScriptUrl,
+    },
+    verify_contract: {
+      verify_bundle:
+        "command -v x0xd && curl -sf http://127.0.0.1:12700/health",
+      daemon_health: "curl -sf http://127.0.0.1:12700/health",
+      daemon_binary: "command -v x0xd",
+      troubleshoot: [
+        "x0xd --healthcheck || x0xd --help",
+        "ls -la ~/.local/share/x0x",
+      ],
+      expected_health_status: "ok",
+    },
+    trust_contract: {
+      skill_url: skillUrl,
+      skill_signature_url: skillSignatureUrl,
+      gpg_key_url: gpgKeyUrl,
+      policy: {
+        signature_verification: "verify_when_gpg_available",
+        non_interactive_behavior: "warn_and_continue_if_gpg_missing",
+        strict_verification: "planned",
+      },
+    },
+  };
 }
 
 function htmlResponse(request) {
@@ -270,6 +321,7 @@ function htmlResponse(request) {
       <h2>Install</h2>
       <p>Run once to install daemon and SKILL.md:</p>
       <code>${command}</code>
+      <p class="muted">Contract flow: decide fit -> install -> verify -> trust.</p>
       <h2>When to use x0x</h2>
       <ul>
         <li>You need secure peer-to-peer messaging with trust filtering between agents.</li>
@@ -321,51 +373,50 @@ function htmlResponse(request) {
 }
 
 function llmsResponse(request, env) {
-  const host = new URL(request.url).host;
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL;
-  const skillSignatureUrl =
-    env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL;
-  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL;
-  const verifyBundle =
-    "command -v x0xd && curl -sf http://127.0.0.1:12700/health";
+  const contract = buildContract(request, env);
 
   const body = `# x0x Agent Bootstrap
 
-Endpoint: https://${host}
+Endpoint: https://${contract.host}
+
+Contract model:
+- decision -> install -> verify -> trust
 
 What x0x is:
 - Post-quantum secure gossip networking daemon and skill package for agent-to-agent communication.
 - Not a workflow orchestration framework.
 
-When to use:
-- You need secure peer-to-peer agent messaging with trust filtering.
-- You need install + verify steps with trust metadata pointers.
+Decision:
+- Use when: ${contract.decision.use_when[0]}
+- Use when: ${contract.decision.use_when[1]}
+- Avoid when: ${contract.decision.avoid_when[0]}
+- Avoid when: ${contract.decision.avoid_when[1]}
 
-When not to use:
-- You need a DAG/workflow orchestration engine.
-- You cannot run local daemon processes.
+Install contract:
+- ${contract.install_contract.one_liner}
+- Stable script: ${contract.install_contract.stable_script}
+- Installer source: ${contract.install_contract.installer_source}
 
-Install:
-- curl -sfL https://${host} | sh
-
-Verify:
-- ${verifyBundle}
-- curl -sf http://127.0.0.1:12700/health
-- command -v x0xd
+Verify contract:
+- ${contract.verify_contract.verify_bundle}
+- ${contract.verify_contract.daemon_health}
+- ${contract.verify_contract.daemon_binary}
+- Expected health status: ${contract.verify_contract.expected_health_status}
 
 Troubleshoot:
-- x0xd --healthcheck || x0xd --help
-- ls -la ~/.local/share/x0x
+- ${contract.verify_contract.troubleshoot[0]}
+- ${contract.verify_contract.troubleshoot[1]}
 
-Trust metadata:
-- https://${host}/trust.json
-- https://${host}/agent.json
-- https://${host}/install.sh
-- SKILL: ${skillUrl}
-- SKILL signature: ${skillSignatureUrl}
-- Public key: ${gpgKeyUrl}
-- Installer source: ${installScriptUrl}
+Trust contract:
+- https://${contract.host}/trust.json
+- https://${contract.host}/agent.json
+- https://${contract.host}/install.sh
+- SKILL: ${contract.trust_contract.skill_url}
+- SKILL signature: ${contract.trust_contract.skill_signature_url}
+- Public key: ${contract.trust_contract.gpg_key_url}
+- Signature verification: ${contract.trust_contract.policy.signature_verification}
+- Non-interactive behavior: ${contract.trust_contract.policy.non_interactive_behavior}
+- Strict verification: ${contract.trust_contract.policy.strict_verification}
 `;
 
   return new Response(body, {
@@ -377,50 +428,52 @@ Trust metadata:
 }
 
 function agentJsonResponse(request, env) {
-  const host = new URL(request.url).host;
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL;
-  const skillSignatureUrl =
-    env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL;
-  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL;
+  const contract = buildContract(request, env);
 
   return jsonResponse({
+    id: "x0x-agent-bootstrap-contract",
+    contract_version: "c003",
     name: "x0x",
-    endpoint: `https://${host}`,
+    endpoint: `https://${contract.host}`,
     what_it_is:
       "Post-quantum secure gossip networking daemon plus skill package for agent-to-agent communication.",
-    when_to_use: [
-      "Need secure peer-to-peer agent messaging with trust controls.",
-      "Need reproducible installer + trust artifact links.",
-    ],
-    when_not_to_use: [
-      "Need a workflow orchestration framework.",
-      "Cannot run local daemon processes.",
-    ],
+    when_to_use: contract.decision.use_when,
+    when_not_to_use: contract.decision.avoid_when,
     install: {
-      command: `curl -sfL https://${host} | sh`,
-      stable_path: `https://${host}/install.sh`,
-      installer_source: installScriptUrl,
+      command: contract.install_contract.one_liner,
+      stable_path: contract.install_contract.stable_script,
+      installer_source: contract.install_contract.installer_source,
     },
     verify: {
-      daemon_health: "curl -sf http://127.0.0.1:12700/health",
-      binary_present: "command -v x0xd",
+      verify_bundle: contract.verify_contract.verify_bundle,
+      daemon_health: contract.verify_contract.daemon_health,
+      binary_present: contract.verify_contract.daemon_binary,
+      troubleshoot: contract.verify_contract.troubleshoot,
     },
     trust: {
-      trust_json: `https://${host}/trust.json`,
-      llms_txt: `https://${host}/llms.txt`,
+      trust_json: `https://${contract.host}/trust.json`,
+      llms_txt: `https://${contract.host}/llms.txt`,
       source_strategy_note:
         "Installer source and signed artifact source differ by design during fork validation.",
       policy: {
-        signature_verification: {
-          interactive: "required",
-          non_interactive: "warn_and_continue_if_gpg_missing",
-        },
-        strict_verification: "planned",
+        signature_verification:
+          contract.trust_contract.policy.signature_verification,
+        non_interactive_behavior:
+          contract.trust_contract.policy.non_interactive_behavior,
+        strict_verification: contract.trust_contract.policy.strict_verification,
       },
-      skill_url: skillUrl,
-      skill_signature_url: skillSignatureUrl,
-      gpg_key_url: gpgKeyUrl,
+      skill_url: contract.trust_contract.skill_url,
+      skill_signature_url: contract.trust_contract.skill_signature_url,
+      gpg_key_url: contract.trust_contract.gpg_key_url,
+    },
+    decision_contract: contract.decision,
+    install_contract: contract.install_contract,
+    verify_contract: contract.verify_contract,
+    trust_contract: contract.trust_contract,
+    non_impact_statement: {
+      roadmap: "none",
+      upstream_saorsa_labs_x0x: "none",
+      scope: "fork_only_docs_site_only",
     },
   });
 }

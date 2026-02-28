@@ -31,9 +31,21 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy
 
+      - name: Validate worker name input
+        id: validate_worker_name
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.worker_name != '' }}
+        env:
+          WORKER_NAME: ${{ github.event.inputs.worker_name }}
+        run: |
+          if [[ ! "$WORKER_NAME" =~ ^[a-z0-9-]{1,63}$ ]]; then
+            echo "Invalid worker_name. Use lowercase letters, numbers, and hyphens only (max 63 chars)." >&2
+            exit 1
+          fi
+          echo "worker_name=$WORKER_NAME" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Worker (named preview)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.worker_name != '' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: deploy --name ${{ github.event.inputs.worker_name }}
+          command: deploy --name ${{ steps.validate_worker_name.outputs.worker_name }}

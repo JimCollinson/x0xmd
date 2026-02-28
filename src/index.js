@@ -34,10 +34,10 @@ export default {
 
     if (path === "/" || path === "") {
       if (isBrowserRequest(request)) {
-        return htmlResponse(request);
+        return applyNegotiatedRootHeaders(htmlResponse(request));
       }
 
-      return installerResponse(env);
+      return applyNegotiatedRootHeaders(await installerResponse(env));
     }
 
     return new Response("Not Found", { status: 404 });
@@ -65,6 +65,18 @@ function isBrowserRequest(request) {
   }
 
   return accept.includes("text/html");
+}
+
+function applyNegotiatedRootHeaders(response) {
+  const headers = new Headers(response.headers);
+  headers.set("vary", "Accept, User-Agent, Sec-Fetch-Mode");
+  headers.set("cache-control", "no-store");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 async function installerResponse(env) {

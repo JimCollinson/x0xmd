@@ -16,6 +16,16 @@ Cloudflare Worker endpoint for x0x install and trust metadata.
 npx wrangler dev
 ```
 
+### Quality checks
+
+```bash
+npm ci
+npm run check-format
+npm test
+npm run check-worker
+npm run audit
+```
+
 ### Deploy
 
 ```bash

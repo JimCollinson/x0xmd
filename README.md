@@ -7,6 +7,8 @@ Cloudflare Worker endpoint for x0x install and trust metadata.
 - Browser (`https://x0x.md`) -> human-readable install page
 - CLI/agents (`curl -sfL https://x0x.md | sh`) -> installer script
 - Trust metadata (`https://x0x.md/trust.json`) -> machine-readable policy and artifact links
+- Agent metadata (`https://x0x.md/agent.json`) -> compact install/verify/trust contract
+- LLM crawl hints (`https://x0x.md/llms.txt`) -> plain-text agent discovery summary
 
 ### Local development
 
@@ -18,6 +20,9 @@ npx wrangler dev
 
 ```bash
 npx wrangler deploy
+
+# preview worker
+npx wrangler deploy --name x0x-md-lab-c001
 ```
 
 ### Config vars

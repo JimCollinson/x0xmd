@@ -16,6 +16,14 @@ export default {
       return trustResponse(request, env)
     }
 
+    if (path === "/llms.txt") {
+      return llmsResponse(request, env)
+    }
+
+    if (path === "/agent.json") {
+      return agentJsonResponse(request, env)
+    }
+
     if (path === "/install.sh") {
       return installerResponse(env)
     }
@@ -95,11 +103,21 @@ function trustResponse(request, env) {
 
   const doc = {
     project: "x0x",
+    what_it_is: "A local-first daemon and skill package for agent orchestration and peer-to-peer networking.",
+    when_to_use: [
+      "Your agent needs local autonomy with a running daemon and health-checked install path.",
+      "You want reproducible bootstrap plus signed SKILL.md distribution metadata.",
+    ],
     endpoint: host,
     install: {
       command: `curl -sfL https://${host} | sh`,
       installer_url: installScriptUrl,
       note: "Installer verifies SKILL.md signature when GPG is available.",
+    },
+    verify: {
+      daemon_health: "curl -sf http://127.0.0.1:12700/health",
+      binary_check: "command -v x0xd",
+      expected_health: { status: "ok" },
     },
     artifacts: {
       skill_url: skillUrl,
@@ -110,6 +128,10 @@ function trustResponse(request, env) {
       non_interactive_mode: "warn_and_continue_if_gpg_missing",
       strict_verification: "planned",
     },
+    machine_readable: {
+      llms_txt_url: `https://${host}/llms.txt`,
+      agent_json_url: `https://${host}/agent.json`,
+    },
   }
 
   return jsonResponse(doc)
@@ -118,6 +140,8 @@ function trustResponse(request, env) {
 function htmlResponse(request) {
   const host = new URL(request.url).host
   const command = `curl -sfL https://${host} | sh`
+  const verifyHealth = "curl -sf http://127.0.0.1:12700/health"
+  const verifyBinary = "command -v x0xd"
 
   const body = `<!doctype html>
 <html lang="en">
@@ -126,56 +150,124 @@ function htmlResponse(request) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>x0x Install</title>
   <style>
-    :root { color-scheme: light; }
+    :root {
+      color-scheme: light;
+      --bg-0: #f7fbff;
+      --bg-1: #e4f0f9;
+      --ink: #122132;
+      --muted: #3f586d;
+      --line: #cfe0ed;
+      --panel: #ffffff;
+      --accent: #005d8f;
+      --accent-soft: #d9eefb;
+      --code-bg: #0d1d2b;
+      --code-ink: #d3ecff;
+    }
     body {
       margin: 0;
-      font-family: ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
-      background: linear-gradient(180deg, #eef5f8 0%, #f6f9fb 100%);
-      color: #17232f;
+      font-family: "Avenir Next", "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(0, 93, 143, 0.12), transparent 46%),
+        radial-gradient(circle at 82% 4%, rgba(11, 88, 124, 0.12), transparent 40%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+      color: var(--ink);
     }
     .wrap {
-      max-width: 840px;
+      max-width: 920px;
       margin: 0 auto;
-      padding: 48px 24px;
+      padding: 42px 24px 56px;
     }
     .card {
-      background: #ffffff;
-      border: 1px solid #d8e3ea;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 8px 28px rgba(23, 35, 47, 0.08);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 12px 34px rgba(16, 41, 60, 0.09);
     }
-    h1 { margin-top: 0; font-size: 34px; }
-    p { line-height: 1.55; }
+    h1 {
+      margin: 0 0 14px;
+      font-size: 36px;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      margin: 24px 0 8px;
+      font-size: 20px;
+      color: #1b3145;
+    }
+    p { line-height: 1.6; margin: 10px 0; }
     code {
       display: block;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #0f1f2d;
-      color: #d9f3ff;
+      padding: 13px 14px;
+      border-radius: 10px;
+      background: var(--code-bg);
+      color: var(--code-ink);
       overflow-wrap: anywhere;
       margin: 14px 0;
+      font-size: 14px;
     }
     ul { line-height: 1.6; }
-    .muted { color: #4f6270; font-size: 14px; }
-    a { color: #0b5e90; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .chip {
+      display: inline-block;
+      margin-bottom: 12px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    a { color: var(--accent); }
+    .links {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .links a {
+      width: fit-content;
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 24px 14px 34px; }
+      .card { padding: 20px; }
+      h1 { font-size: 30px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>x0x Agent Install</h1>
-      <p>Install x0x daemon and SKILL.md with a single command:</p>
+      <span class="chip">Agent Bootstrap Endpoint</span>
+      <h1>x0x for agents: install, verify, trust</h1>
+      <p>x0x is a local-first daemon + skill distribution path for agents that need reproducible setup and machine-checkable trust metadata.</p>
+      <h2>Install</h2>
+      <p>Run once to install daemon and SKILL.md:</p>
       <code>${command}</code>
-      <p>What this installs:</p>
+      <h2>When to use x0x</h2>
+      <ul>
+        <li>You need a local daemon process for autonomy workflows.</li>
+        <li>You need consistent agent bootstrap with signed SKILL metadata.</li>
+        <li>You want explicit verify steps after install.</li>
+      </ul>
+      <h2>What gets installed</h2>
       <ul>
         <li><code>x0xd</code> daemon in <code>~/.local/bin</code></li>
         <li><code>SKILL.md</code> in <code>~/.local/share/x0x</code></li>
         <li>Automatic daemon startup and health check on <code>127.0.0.1:12700</code></li>
       </ul>
-      <p class="muted">Security note: installer verifies SKILL.md signature when GPG is available. In non-interactive environments without GPG, it warns and continues.</p>
-      <p class="muted">For machine-readable trust metadata, see <a href="/trust.json">/trust.json</a>.</p>
-      <p class="muted">Source: <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a></p>
+      <h2>Verify after install</h2>
+      <code>${verifyHealth}</code>
+      <code>${verifyBinary}</code>
+      <p class="muted">Expected health response includes <code>{"status":"ok"}</code>.</p>
+      <h2>Trust and machine-readable metadata</h2>
+      <div class="links">
+        <a href="/trust.json">/trust.json</a>
+        <a href="/agent.json">/agent.json</a>
+        <a href="/llms.txt">/llms.txt</a>
+      </div>
+      <p class="muted">Security note: installer verifies SKILL.md signatures when GPG is available. In non-interactive environments without GPG, it warns and continues.</p>
+      <p class="muted">Source repo: <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a></p>
     </div>
   </div>
 </body>
@@ -185,6 +277,81 @@ function htmlResponse(request) {
     headers: {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "public, max-age=300",
+    },
+  })
+}
+
+function llmsResponse(request, env) {
+  const host = new URL(request.url).host
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const skillSignatureUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
+  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+
+  const body = `# x0x Agent Bootstrap
+
+Endpoint: https://${host}
+
+What x0x is:
+- Local-first daemon and skill package for agent orchestration and peer networking.
+
+When to use:
+- You need deterministic local bootstrap for an agent runtime.
+- You need install + verify steps with trust metadata pointers.
+
+Install:
+- curl -sfL https://${host} | sh
+
+Verify:
+- curl -sf http://127.0.0.1:12700/health
+- command -v x0xd
+
+Trust metadata:
+- https://${host}/trust.json
+- https://${host}/agent.json
+- SKILL: ${skillUrl}
+- SKILL signature: ${skillSignatureUrl}
+- Public key: ${gpgKeyUrl}
+- Installer source: ${installScriptUrl}
+`
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "public, max-age=300",
+    },
+  })
+}
+
+function agentJsonResponse(request, env) {
+  const host = new URL(request.url).host
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const skillSignatureUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
+  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+
+  return jsonResponse({
+    name: "x0x",
+    endpoint: `https://${host}`,
+    what_it_is: "Local-first daemon plus skill package for autonomous agent workflows.",
+    when_to_use: [
+      "Need a local daemon with simple health checks.",
+      "Need reproducible installer + trust artifact links.",
+    ],
+    install: {
+      command: `curl -sfL https://${host} | sh`,
+      installer_source: installScriptUrl,
+    },
+    verify: {
+      daemon_health: "curl -sf http://127.0.0.1:12700/health",
+      binary_present: "command -v x0xd",
+    },
+    trust: {
+      trust_json: `https://${host}/trust.json`,
+      llms_txt: `https://${host}/llms.txt`,
+      skill_url: skillUrl,
+      skill_signature_url: skillSignatureUrl,
+      gpg_key_url: gpgKeyUrl,
     },
   })
 }

@@ -130,8 +130,19 @@ function trustResponse(request, env) {
       gpg_key_url: gpgKeyUrl,
     },
     policy: {
+      signature_verification: {
+        interactive: "required",
+        non_interactive: "warn_and_continue_if_gpg_missing",
+      },
       non_interactive_mode: "warn_and_continue_if_gpg_missing",
       strict_verification: "planned",
+      operator_action_if_warned:
+        "Install gpg, then rerun installer and verify signature artifacts before production use.",
+      verification_artifacts: {
+        skill: skillUrl,
+        signature: skillSignatureUrl,
+        public_key: gpgKeyUrl,
+      },
     },
     machine_readable: {
       llms_txt_url: `https://${host}/llms.txt`,
@@ -152,6 +163,9 @@ function htmlResponse(request) {
   const command = `curl -sfL https://${host} | sh`
   const verifyHealth = "curl -sf http://127.0.0.1:12700/health"
   const verifyBinary = "command -v x0xd"
+  const verifyBundle = `${verifyBinary} && ${verifyHealth}`
+  const troubleshootDaemon = "x0xd --healthcheck || x0xd --help"
+  const troubleshootSkill = "ls -la ~/.local/share/x0x"
 
   const body = `<!doctype html>
 <html lang="en">
@@ -272,9 +286,16 @@ function htmlResponse(request) {
         <li>Automatic daemon startup and health check on <code>127.0.0.1:12700</code></li>
       </ul>
       <h2>Verify after install</h2>
+      <p>Copy/paste this full check block:</p>
+      <code>${verifyBundle}</code>
+      <p class="muted">Or run the checks individually:</p>
       <code>${verifyHealth}</code>
       <code>${verifyBinary}</code>
       <p class="muted">Expected health response includes <code>{"status":"ok"}</code>.</p>
+      <h2>Troubleshooting quick checks</h2>
+      <code>${troubleshootDaemon}</code>
+      <code>${troubleshootSkill}</code>
+      <p class="muted">If GPG was unavailable in non-interactive mode, install GPG and rerun installer for strict signature verification.</p>
       <h2>Trust and machine-readable metadata</h2>
       <div class="links">
         <a href="/trust.json">/trust.json</a>
@@ -303,6 +324,7 @@ function llmsResponse(request, env) {
   const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
   const skillSignatureUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
   const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+  const verifyBundle = "command -v x0xd && curl -sf http://127.0.0.1:12700/health"
 
   const body = `# x0x Agent Bootstrap
 
@@ -324,8 +346,13 @@ Install:
 - curl -sfL https://${host} | sh
 
 Verify:
+- ${verifyBundle}
 - curl -sf http://127.0.0.1:12700/health
 - command -v x0xd
+
+Troubleshoot:
+- x0xd --healthcheck || x0xd --help
+- ls -la ~/.local/share/x0x
 
 Trust metadata:
 - https://${host}/trust.json
@@ -379,6 +406,13 @@ function agentJsonResponse(request, env) {
       llms_txt: `https://${host}/llms.txt`,
       source_strategy_note:
         "Installer source and signed artifact source differ by design during fork validation.",
+      policy: {
+        signature_verification: {
+          interactive: "required",
+          non_interactive: "warn_and_continue_if_gpg_missing",
+        },
+        strict_verification: "planned",
+      },
       skill_url: skillUrl,
       skill_signature_url: skillSignatureUrl,
       gpg_key_url: gpgKeyUrl,

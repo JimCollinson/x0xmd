@@ -33,5 +33,6 @@ npx wrangler deploy --name x0x-md-lab-c001
 - `GPG_KEY_URL`
 
 Defaults are currently set to:
+
 - installer source: `JimCollinson/x0x` (fork)
 - release artifacts (SKILL/signature/key): `saorsa-labs/x0x` (latest published release)

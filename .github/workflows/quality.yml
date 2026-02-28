@@ -1,0 +1,31 @@
+name: Quality Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - lab/*
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check worker syntax
+        run: node --check src/index.js
+
+      - name: Check formatting
+        run: npx prettier --check "src/index.js" "README.md" ".github/workflows/deploy.yml"
+
+      - name: Bundle worker dry-run
+        run: npx wrangler deploy --dry-run

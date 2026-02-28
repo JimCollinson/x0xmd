@@ -37,8 +37,8 @@ jobs:
         env:
           WORKER_NAME: ${{ github.event.inputs.worker_name }}
         run: |
-          if [[ ! "$WORKER_NAME" =~ ^[a-z0-9-]{1,63}$ ]]; then
-            echo "Invalid worker_name. Use lowercase letters, numbers, and hyphens only (max 63 chars)." >&2
+          if [[ ! "$WORKER_NAME" =~ ^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$ ]]; then
+            echo "Invalid worker_name. Use lowercase letters/numbers, optional interior hyphens, 1-63 chars, no leading/trailing hyphen." >&2
             exit 1
           fi
           echo "worker_name=$WORKER_NAME" >> "$GITHUB_OUTPUT"

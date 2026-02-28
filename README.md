@@ -32,5 +32,6 @@ For preview workers via GitHub Actions, run `Deploy x0x.md Worker` with `worker_
 - `GPG_KEY_URL`
 
 Defaults are currently set to:
+
 - installer source: `JimCollinson/x0x` (fork)
 - release artifacts (SKILL/signature/key): `saorsa-labs/x0x` (latest published release)

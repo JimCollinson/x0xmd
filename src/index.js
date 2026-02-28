@@ -1,83 +1,95 @@
 const DEFAULT_INSTALL_SCRIPT_URL =
-  "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh"
+  "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh";
 const DEFAULT_SKILL_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md";
 const DEFAULT_SKILL_SIGNATURE_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig";
 const DEFAULT_GPG_KEY_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc";
 
 const REQUIRED_MACHINE_ENDPOINTS = {
   installer: "/install.sh",
   trust: "/trust.json",
   health: "/health",
-}
+};
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url)
-    const path = url.pathname
+    const url = new URL(request.url);
+    const path = url.pathname;
 
     if (path === "/trust.json") {
-      return trustResponse(request, env)
+      return trustResponse(request, env);
     }
 
     if (path === "/agent.json") {
-      return agentResponse(request, env)
+      return agentResponse(request, env);
     }
 
     if (path === "/llms.txt") {
-      return llmsResponse(request, env)
+      return llmsResponse(request, env);
     }
 
     if (path === "/install.sh") {
-      return installerResponse(env)
+      return installerResponse(env);
     }
 
     if (path === "/health") {
-      return jsonResponse({ status: "ok", service: "x0x-md-worker" })
+      return jsonResponse({ status: "ok", service: "x0x-md-worker" });
     }
 
     if (path === "/" || path === "") {
       if (isBrowserRequest(request)) {
-        return htmlResponse(request)
+        return applyNegotiatedRootHeaders(htmlResponse(request));
       }
 
-      return installerResponse(env)
+      return applyNegotiatedRootHeaders(await installerResponse(env));
     }
 
-    return new Response("Not Found", { status: 404 })
+    return new Response("Not Found", { status: 404 });
   },
+};
+
+function applyNegotiatedRootHeaders(response) {
+  const headers = new Headers(response.headers);
+  headers.set("vary", "Accept, User-Agent, Sec-Fetch-Mode");
+  headers.set("cache-control", "no-store");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 function isBrowserRequest(request) {
-  const accept = request.headers.get("accept") || ""
-  const userAgent = (request.headers.get("user-agent") || "").toLowerCase()
-  const secFetchMode = request.headers.get("sec-fetch-mode") || ""
+  const accept = request.headers.get("accept") || "";
+  const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
+  const secFetchMode = request.headers.get("sec-fetch-mode") || "";
 
   const likelyCli =
     userAgent.includes("curl") ||
     userAgent.includes("wget") ||
     userAgent.includes("httpie") ||
     userAgent.includes("python-requests") ||
-    userAgent.includes("go-http-client")
+    userAgent.includes("go-http-client");
 
   if (likelyCli) {
-    return false
+    return false;
   }
 
   if (secFetchMode.toLowerCase() === "navigate") {
-    return true
+    return true;
   }
 
-  return accept.includes("text/html")
+  return accept.includes("text/html");
 }
 
 async function installerResponse(env) {
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
   const upstream = await fetch(installScriptUrl, {
     headers: { accept: "text/plain" },
-  })
+  });
 
   if (!upstream.ok) {
     return new Response("Installer source unavailable\n", {
@@ -86,10 +98,10 @@ async function installerResponse(env) {
         "content-type": "text/plain; charset=utf-8",
         "cache-control": "no-store",
       },
-    })
+    });
   }
 
-  const body = await upstream.text()
+  const body = await upstream.text();
 
   return new Response(body, {
     headers: {
@@ -97,17 +109,18 @@ async function installerResponse(env) {
       "cache-control": "public, max-age=300",
       "x-x0x-source": installScriptUrl,
     },
-  })
+  });
 }
 
 function trustResponse(request, env) {
-  const url = new URL(request.url)
-  const host = url.host
-  const origin = `${url.protocol}//${host}`
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
-  const skillSignatureUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
-  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+  const url = new URL(request.url);
+  const host = url.host;
+  const origin = `${url.protocol}//${host}`;
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL;
+  const skillSignatureUrl =
+    env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL;
+  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL;
 
   const doc = {
     project: "x0x",
@@ -138,14 +151,14 @@ function trustResponse(request, env) {
       strict_verification: "planned",
     },
     contract_version: "b003",
-  }
+  };
 
-  return jsonResponse(doc)
+  return jsonResponse(doc);
 }
 
 function agentResponse(request, env) {
-  const host = new URL(request.url).host
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+  const host = new URL(request.url).host;
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
 
   const doc = {
     project: "x0x",
@@ -166,14 +179,14 @@ function agentResponse(request, env) {
       llms: `https://${host}/llms.txt`,
       health: `https://${host}${REQUIRED_MACHINE_ENDPOINTS.health}`,
     },
-  }
+  };
 
-  return jsonResponse(doc)
+  return jsonResponse(doc);
 }
 
 function llmsResponse(request, env) {
-  const host = new URL(request.url).host
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+  const host = new URL(request.url).host;
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
 
   const body = [
     "# x0x Agent Install Brief",
@@ -201,22 +214,22 @@ function llmsResponse(request, env) {
     "## Installer source",
     installScriptUrl,
     "",
-  ].join("\n")
+  ].join("\n");
 
   return new Response(body, {
     headers: {
       "content-type": "text/plain; charset=utf-8",
       "cache-control": "public, max-age=300",
     },
-  })
+  });
 }
 
 function htmlResponse(request) {
-  const host = new URL(request.url).host
-  const command = `curl -sfL https://${host} | sh`
-  const trustUrl = REQUIRED_MACHINE_ENDPOINTS.trust
-  const installUrl = REQUIRED_MACHINE_ENDPOINTS.installer
-  const healthUrl = REQUIRED_MACHINE_ENDPOINTS.health
+  const host = new URL(request.url).host;
+  const command = `curl -sfL https://${host} | sh`;
+  const trustUrl = REQUIRED_MACHINE_ENDPOINTS.trust;
+  const installUrl = REQUIRED_MACHINE_ENDPOINTS.installer;
+  const healthUrl = REQUIRED_MACHINE_ENDPOINTS.health;
 
   const body = `<!doctype html>
 <html lang="en">
@@ -373,14 +386,14 @@ function htmlResponse(request) {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return new Response(body, {
     headers: {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "public, max-age=300",
     },
-  })
+  });
 }
 
 function jsonResponse(data) {
@@ -389,5 +402,5 @@ function jsonResponse(data) {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "public, max-age=300",
     },
-  })
+  });
 }

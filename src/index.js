@@ -110,7 +110,7 @@ function trustResponse(request, env) {
   const contract = buildContract(request, env);
 
   const doc = {
-    contract_version: "c003",
+    contract_version: "c004",
     generated_from: "track-e-champion-evolution",
     project: "x0x",
     what_it_is:
@@ -226,11 +226,10 @@ function buildContract(request, env) {
 function htmlResponse(request) {
   const host = new URL(request.url).host;
   const command = `curl -sfL https://${host} | sh`;
-  const verifyHealth = "curl -sf http://127.0.0.1:12700/health";
-  const verifyBinary = "command -v x0xd";
-  const verifyBundle = `${verifyBinary} && ${verifyHealth}`;
-  const troubleshootDaemon = "x0xd --healthcheck || x0xd --help";
-  const troubleshootSkill = "ls -la ~/.local/share/x0x";
+  const verifyBundle =
+    "command -v x0xd && curl -sf http://127.0.0.1:12700/health";
+  const troubleshootBundle =
+    "x0xd --healthcheck || x0xd --help; ls -la ~/.local/share/x0x";
 
   const body = `<!doctype html>
 <html lang="en">
@@ -354,13 +353,9 @@ function htmlResponse(request) {
       <h2>Verify after install</h2>
       <p>Copy/paste this full check block:</p>
       <code>${verifyBundle}</code>
-      <p class="muted">Or run the checks individually:</p>
-      <code>${verifyHealth}</code>
-      <code>${verifyBinary}</code>
       <p class="muted">Expected health response includes <code>{"status":"ok"}</code>.</p>
       <h2>Troubleshooting quick checks</h2>
-      <code>${troubleshootDaemon}</code>
-      <code>${troubleshootSkill}</code>
+      <code>${troubleshootBundle}</code>
       <p class="muted">If GPG was unavailable in non-interactive mode, install GPG and rerun installer for strict signature verification.</p>
       <h2>Trust and machine-readable metadata</h2>
       <div class="links">
@@ -393,6 +388,11 @@ Endpoint: https://${contract.host}
 
 Contract model:
 - decision -> install -> verify -> trust
+
+Fast path:
+- install: ${contract.install_contract.one_liner}
+- verify: ${contract.verify_contract.verify_bundle}
+- trust: https://${contract.host}/trust.json
 
 What x0x is:
 - Post-quantum secure gossip networking daemon and skill package for agent-to-agent communication.
@@ -444,7 +444,7 @@ function agentJsonResponse(request, env) {
 
   return jsonResponse({
     id: "x0x-agent-bootstrap-contract",
-    contract_version: "c003",
+    contract_version: "c004",
     name: "x0x",
     endpoint: `https://${contract.host}`,
     what_it_is:
@@ -462,6 +462,20 @@ function agentJsonResponse(request, env) {
       binary_present: contract.verify_contract.daemon_binary,
       troubleshoot: contract.verify_contract.troubleshoot,
     },
+    quickstart: [
+      {
+        step: "install",
+        command: contract.install_contract.one_liner,
+      },
+      {
+        step: "verify",
+        command: contract.verify_contract.verify_bundle,
+      },
+      {
+        step: "trust",
+        endpoint: `https://${contract.host}/trust.json`,
+      },
+    ],
     trust: {
       trust_json: `https://${contract.host}/trust.json`,
       llms_txt: `https://${contract.host}/llms.txt`,

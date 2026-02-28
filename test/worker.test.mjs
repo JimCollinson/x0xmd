@@ -110,6 +110,7 @@ test("trust.json route returns machine-readable JSON", async () => {
     /^application\/json/,
   );
   assert.equal(body.project, "x0x");
+  assert.equal(body.contract_version, "c004");
 });
 
 test("agent.json route returns machine profile JSON", async () => {
@@ -122,8 +123,11 @@ test("agent.json route returns machine profile JSON", async () => {
     response.headers.get("content-type") ?? "",
     /^application\/json/,
   );
-  assert.ok(typeof body === "object" && body !== null);
-  assert.ok("name" in body || "id" in body);
+  assert.equal(body.contract_version, "c004");
+  assert.deepEqual(
+    body.quickstart.map((step) => step.step),
+    ["install", "verify", "trust"],
+  );
 });
 
 test("llms.txt route returns text payload", async () => {

@@ -89,6 +89,10 @@ function rootMachineHintResponse() {
   );
 }
 
+function isDiscoveryAliasPath(pathname) {
+  return pathname === "/.well-known/agent-card.json" || pathname === "/.well-known/agent.json";
+}
+
 export default {
   async fetch(request) {
     const { pathname } = new URL(request.url);
@@ -102,6 +106,10 @@ export default {
     }
 
     if (pathname === MACHINE_ENDPOINTS.discovery) {
+      return jsonResponse(buildDiscoveryArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (isDiscoveryAliasPath(pathname)) {
       return jsonResponse(buildDiscoveryArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 

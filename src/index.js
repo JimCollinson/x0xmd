@@ -32,6 +32,10 @@ import {
   buildIntegrationConfidenceArtifact,
   INTEGRATION_CONFIDENCE_PATH
 } from "./artifacts/integration-confidence.js";
+import {
+  buildReleaseOperationsArtifact,
+  RELEASE_OPERATIONS_PATH
+} from "./artifacts/release-operations.js";
 import { buildTrustArtifact } from "./artifacts/trust.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
@@ -207,6 +211,7 @@ function rootMachineHintResponse() {
       policy_metadata_endpoint: MACHINE_ENDPOINTS.policy,
       provenance_metadata_endpoint: MACHINE_ENDPOINTS.provenance,
       integration_confidence_endpoint: MACHINE_ENDPOINTS.integrationConfidence,
+      release_operations_endpoint: MACHINE_ENDPOINTS.releaseOperations,
       content_type: JSON_CONTENT_TYPE
     }),
     {
@@ -293,6 +298,10 @@ export default {
 
     if (pathname === INTEGRATION_CONFIDENCE_PATH) {
       return jsonResponse(buildIntegrationConfidenceArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === RELEASE_OPERATIONS_PATH) {
+      return jsonResponse(buildReleaseOperationsArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     if (pathname === PROPAGATION_PACKET_PATH) {

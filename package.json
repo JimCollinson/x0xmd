@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --test test/*.test.js",
+    "check:drift": "node --test test/drift-contract.test.js",
+    "ci": "npm run test && npm run check:drift && npm run deploy -- --dry-run",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   }

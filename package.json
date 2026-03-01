@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test test/*.test.js",
     "check:drift": "node --test test/drift-contract.test.js",
-    "ci": "npm run test && npm run check:drift && npm run deploy -- --dry-run",
+    "check:interop": "node --test test/interop-conformance.test.js",
+    "ci": "npm run test && npm run check:drift && npm run check:interop && npm run deploy -- --dry-run",
     "security:audit": "npm audit --audit-level=low",
     "dev": "npm exec wrangler -- dev",
     "deploy": "npm exec wrangler -- deploy"

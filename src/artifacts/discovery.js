@@ -17,7 +17,8 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   failureModes: "/machine/failure-modes",
   propagation: "/machine/propagation",
   trust: "/machine/trust",
-  policy: "/machine/policy"
+  policy: "/machine/policy",
+  provenance: "/machine/provenance"
 });
 
 export function buildDiscoveryArtifact() {
@@ -76,6 +77,10 @@ export function buildDiscoveryArtifact() {
       },
       policy: {
         path: MACHINE_ENDPOINTS.policy,
+        content_type: JSON_CONTENT_TYPE
+      },
+      provenance: {
+        path: MACHINE_ENDPOINTS.provenance,
         content_type: JSON_CONTENT_TYPE
       }
     }

@@ -31,6 +31,7 @@ test("discovery route returns deterministic endpoint map", async () => {
   assert.equal(payload.endpoints.capabilities_current.path, MACHINE_ENDPOINTS.capabilitiesCurrent);
   assert.equal(payload.endpoints.capabilities_planned.path, MACHINE_ENDPOINTS.capabilitiesPlanned);
   assert.equal(payload.endpoints.fit_criteria.path, MACHINE_ENDPOINTS.fitCriteria);
+  assert.equal(payload.endpoints.propagation.path, MACHINE_ENDPOINTS.propagation);
 });
 
 test("health route responds with explicit health content type", async () => {

@@ -13,6 +13,7 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   install: "/machine/install",
   firstUse: "/machine/first-use",
   integration: "/machine/integration",
+  propagation: "/machine/propagation",
   trust: "/machine/trust"
 });
 
@@ -52,6 +53,10 @@ export function buildDiscoveryArtifact() {
       },
       integration: {
         path: MACHINE_ENDPOINTS.integration,
+        content_type: JSON_CONTENT_TYPE
+      },
+      propagation: {
+        path: MACHINE_ENDPOINTS.propagation,
         content_type: JSON_CONTENT_TYPE
       },
       trust: {

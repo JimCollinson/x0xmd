@@ -1,0 +1,17 @@
+{
+  "name": "x0xmd-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check-format": "prettier --check \"src/index.js\" \"test/worker.test.mjs\" \"README.md\" \"package.json\" \".github/workflows/deploy.yml\" \".github/workflows/quality.yml\"",
+    "format": "prettier --write \"src/index.js\" \"test/worker.test.mjs\" \"README.md\" \"package.json\" \".github/workflows/deploy.yml\" \".github/workflows/quality.yml\"",
+    "test": "node --test",
+    "check-worker": "node --check src/index.js && wrangler deploy --dry-run",
+    "audit": "npm audit --omit=dev --audit-level=high"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "wrangler": "4.69.0"
+  }
+}

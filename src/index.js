@@ -1,17 +1,17 @@
 const DEFAULT_INSTALL_SCRIPT_URL =
-  "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh"
+  "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh";
 const DEFAULT_SKILL_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md";
 const DEFAULT_SKILL_SIGNATURE_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig";
 const DEFAULT_GPG_KEY_URL =
-  "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+  "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc";
 
 const SOURCES = {
   upstream_readme: "https://github.com/saorsa-labs/x0x/blob/main/README.md",
   upstream_skill: "https://github.com/saorsa-labs/x0x/blob/main/SKILL.md",
   website_repo: "https://github.com/JimCollinson/x0xmd",
-}
+};
 
 const TRUST_LEVELS = [
   {
@@ -26,14 +26,15 @@ const TRUST_LEVELS = [
   },
   {
     level: "known",
-    behavior: "Messages are delivered as known contacts without explicit trust.",
+    behavior:
+      "Messages are delivered as known contacts without explicit trust.",
   },
   {
     level: "trusted",
     behavior:
       "Messages are delivered as trusted and can drive automated workflows.",
   },
-]
+];
 
 const API_REFERENCE = [
   {
@@ -121,88 +122,101 @@ const API_REFERENCE = [
     request: { action: "claim" },
     response: { status: "updated", action: "claim" },
   },
-]
+];
 
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url)
-    const path = url.pathname
+    const url = new URL(request.url);
+    const path = url.pathname;
 
     if (path === "/agent.json") {
-      return jsonResponse(agentCard(request, env), machineCacheHeaders())
+      return jsonResponse(agentCard(request, env), machineCacheHeaders());
     }
 
     if (path === "/llms.txt") {
-      return textResponse(llmsText(request, env), machineCacheHeaders())
+      return textResponse(llmsText(request, env), machineCacheHeaders());
     }
 
     if (path === "/trust.json") {
-      return jsonResponse(trustResponse(request, env), machineCacheHeaders())
+      return jsonResponse(trustResponse(request, env), machineCacheHeaders());
     }
 
     if (path === "/api-reference.json") {
-      return jsonResponse(apiReferenceResponse(), machineCacheHeaders())
+      return jsonResponse(apiReferenceResponse(), machineCacheHeaders());
     }
 
     if (path === "/install.sh") {
-      return installerResponse(env)
+      return installerResponse(env);
     }
 
     if (path === "/health") {
       return jsonResponse(
         { status: "ok", service: "x0x-md-worker", version: "h001" },
         machineCacheHeaders(),
-      )
+      );
     }
 
     if (path === "/" || path === "") {
       if (isBrowserRequest(request)) {
-        return htmlResponse(request, env)
+        return applyNegotiatedRootHeaders(htmlResponse(request, env));
       }
 
-      return installerResponse(env)
+      return applyNegotiatedRootHeaders(await installerResponse(env));
     }
 
-    return new Response("Not Found", { status: 404 })
+    return new Response("Not Found", { status: 404 });
   },
+};
+
+function applyNegotiatedRootHeaders(response) {
+  const headers = new Headers(response.headers);
+  headers.set("vary", "Accept, User-Agent, Sec-Fetch-Mode");
+  headers.set("cache-control", "no-store");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 function isBrowserRequest(request) {
-  const accept = request.headers.get("accept") || ""
-  const userAgent = (request.headers.get("user-agent") || "").toLowerCase()
-  const secFetchMode = request.headers.get("sec-fetch-mode") || ""
+  const accept = request.headers.get("accept") || "";
+  const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
+  const secFetchMode = request.headers.get("sec-fetch-mode") || "";
 
   const likelyCli =
     userAgent.includes("curl") ||
     userAgent.includes("wget") ||
     userAgent.includes("httpie") ||
     userAgent.includes("python-requests") ||
-    userAgent.includes("go-http-client")
+    userAgent.includes("go-http-client");
 
   if (likelyCli) {
-    return false
+    return false;
   }
 
   if (secFetchMode.toLowerCase() === "navigate") {
-    return true
+    return true;
   }
 
-  return accept.includes("text/html")
+  return accept.includes("text/html");
 }
 
 function machineCacheHeaders() {
   return {
     "cache-control": "public, max-age=300",
     vary: "Accept, User-Agent, Sec-Fetch-Mode",
-  }
+  };
 }
 
 function getRuntimeConfig(request, env) {
-  const host = new URL(request.url).host
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
-  const skillSignatureUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
-  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+  const host = new URL(request.url).host;
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL;
+  const skillSignatureUrl =
+    env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL;
+  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL;
 
   return {
     host,
@@ -211,14 +225,14 @@ function getRuntimeConfig(request, env) {
     skill_url: skillUrl,
     skill_signature_url: skillSignatureUrl,
     gpg_key_url: gpgKeyUrl,
-  }
+  };
 }
 
 async function installerResponse(env) {
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL;
   const upstream = await fetch(installScriptUrl, {
     headers: { accept: "text/plain" },
-  })
+  });
 
   if (!upstream.ok) {
     return new Response("Installer source unavailable\n", {
@@ -228,10 +242,10 @@ async function installerResponse(env) {
         "cache-control": "no-store",
         vary: "Accept, User-Agent, Sec-Fetch-Mode",
       },
-    })
+    });
   }
 
-  const body = await upstream.text()
+  const body = await upstream.text();
 
   return new Response(body, {
     headers: {
@@ -240,11 +254,11 @@ async function installerResponse(env) {
       vary: "Accept, User-Agent, Sec-Fetch-Mode",
       "x-x0x-source": installScriptUrl,
     },
-  })
+  });
 }
 
 function agentCard(request, env) {
-  const cfg = getRuntimeConfig(request, env)
+  const cfg = getRuntimeConfig(request, env);
 
   return {
     name: "x0x",
@@ -259,7 +273,8 @@ function agentCard(request, env) {
       command: cfg.command,
       installer_url: cfg.installer_url,
       alternatives: {
-        python: "python3 <(curl -sfL https://raw.githubusercontent.com/saorsa-labs/x0x/main/scripts/install.py)",
+        python:
+          "python3 <(curl -sfL https://raw.githubusercontent.com/saorsa-labs/x0x/main/scripts/install.py)",
         powershell:
           "irm https://raw.githubusercontent.com/saorsa-labs/x0x/main/scripts/install.ps1 | iex",
       },
@@ -274,7 +289,8 @@ function agentCard(request, env) {
       transport: "QUIC via ant-quic with ML-KEM-768 session setup",
       gossip: "saorsa-gossip overlay for pub/sub and CRDT sync",
       local_control_plane: "x0xd REST API at 127.0.0.1:12700 plus SSE /events",
-      identity: "Post-quantum identities and signed sender attribution (ML-DSA-65)",
+      identity:
+        "Post-quantum identities and signed sender attribution (ML-DSA-65)",
       bootstrap_nodes: [
         "New York, US",
         "San Francisco, US",
@@ -337,11 +353,11 @@ function agentCard(request, env) {
       `https://${cfg.host}/install.sh`,
     ],
     sources: SOURCES,
-  }
+  };
 }
 
 function trustResponse(request, env) {
-  const cfg = getRuntimeConfig(request, env)
+  const cfg = getRuntimeConfig(request, env);
 
   return {
     project: "x0x",
@@ -367,27 +383,25 @@ function trustResponse(request, env) {
       trust_annotation_fields: ["sender", "verified", "trust_level"],
     },
     trust_levels: TRUST_LEVELS,
-  }
+  };
 }
 
 function apiReferenceResponse() {
   return {
     local_base_url: "http://127.0.0.1:12700",
     endpoints: API_REFERENCE,
-  }
+  };
 }
 
 function llmsText(request, env) {
-  const cfg = getRuntimeConfig(request, env)
-  const examples = API_REFERENCE
-    .map((entry) => {
-      const requestLine = entry.request
-        ? `request: ${JSON.stringify(entry.request)}`
-        : "request: none"
-      const responseLine = `response: ${JSON.stringify(entry.response)}`
-      return `${entry.method} ${entry.path}\n- ${entry.summary}\n- ${requestLine}\n- ${responseLine}`
-    })
-    .join("\n\n")
+  const cfg = getRuntimeConfig(request, env);
+  const examples = API_REFERENCE.map((entry) => {
+    const requestLine = entry.request
+      ? `request: ${JSON.stringify(entry.request)}`
+      : "request: none";
+    const responseLine = `response: ${JSON.stringify(entry.response)}`;
+    return `${entry.method} ${entry.path}\n- ${entry.summary}\n- ${requestLine}\n- ${responseLine}`;
+  }).join("\n\n");
 
   return [
     "x0x quick read for agents",
@@ -436,11 +450,11 @@ function llmsText(request, env) {
     `- ${SOURCES.upstream_readme}`,
     `- ${SOURCES.upstream_skill}`,
     `- ${SOURCES.website_repo}`,
-  ].join("\n")
+  ].join("\n");
 }
 
 function htmlResponse(request, env) {
-  const cfg = getRuntimeConfig(request, env)
+  const cfg = getRuntimeConfig(request, env);
   const body = `<!doctype html>
 <html lang="en">
 <head>
@@ -602,7 +616,7 @@ function htmlResponse(request, env) {
     </section>
   </main>
 </body>
-</html>`
+</html>`;
 
   return new Response(body, {
     headers: {
@@ -610,7 +624,7 @@ function htmlResponse(request, env) {
       "cache-control": "public, max-age=300",
       vary: "Accept, User-Agent, Sec-Fetch-Mode",
     },
-  })
+  });
 }
 
 function jsonResponse(data, extraHeaders = {}) {
@@ -619,7 +633,7 @@ function jsonResponse(data, extraHeaders = {}) {
       "content-type": "application/json; charset=utf-8",
       ...extraHeaders,
     },
-  })
+  });
 }
 
 function textResponse(data, extraHeaders = {}) {
@@ -628,5 +642,5 @@ function textResponse(data, extraHeaders = {}) {
       "content-type": "text/plain; charset=utf-8",
       ...extraHeaders,
     },
-  })
+  });
 }

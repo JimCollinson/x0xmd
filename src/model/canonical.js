@@ -31,6 +31,11 @@ const canonicalModel = {
       id: "x0xd-api",
       title: "x0xd REST API implementation",
       source: "/Users/jimcollinson/Code/x0x/src/bin/x0xd.rs"
+    },
+    {
+      id: "x0x-verification-docs",
+      title: "x0x signature verification and security reporting guidance",
+      source: "/Users/jimcollinson/Code/x0x/docs/VERIFICATION.md"
     }
   ],
   capabilities_current: [
@@ -58,6 +63,11 @@ const canonicalModel = {
       id: "integration-contract-artifact",
       description: "Publish API endpoint and retry guidance for x0xd integration",
       evidence: ["plan-01-02", "x0xd-api"]
+    },
+    {
+      id: "trust-metadata-artifact",
+      description: "Publish trust and security policy metadata with current versus planned controls",
+      evidence: ["plan-01-02", "x0x-readme-install", "x0x-verification-docs"]
     }
   ],
   capabilities_planned: [
@@ -443,6 +453,57 @@ const canonicalModel = {
         id: "capability-discovery-api",
         description: "Add integration references for capability discovery endpoints once upstream ships them",
         evidence: ["vision"]
+      }
+    ]
+  },
+  trust: {
+    contract_version: "2026-03-01",
+    current: {
+      policy_guidance: [
+        "Treat only verified + trusted sender messages as action-eligible by default.",
+        "Use contact trust levels to gate automation side effects.",
+        "Re-verify install artifacts and signatures before upgrading automation dependencies."
+      ],
+      controls: {
+        message_signatures: {
+          status: "current",
+          enforced: true,
+          details: "Pub/sub messages include ML-DSA-65 signatures and invalid signatures are dropped.",
+          evidence: ["x0x-readme-install"]
+        },
+        contact_trust_filtering: {
+          status: "current",
+          enforced: true,
+          details: "Contact store trust levels are applied to inbound messages with trust_level annotations.",
+          default_new_sender: "unknown",
+          evidence: ["x0x-readme-install", "x0xd-api"]
+        },
+        install_signature_verification: {
+          status: "current",
+          enforced: "scripted-path",
+          details: "Install scripts verify SKILL.md signatures; manual installs must verify signatures separately.",
+          evidence: ["x0x-readme-install", "x0x-verification-docs"]
+        }
+      },
+      disclosure: {
+        security_email: "security@saorsalabs.com",
+        general_contact_email: "david@saorsalabs.com",
+        issues_url: "https://github.com/saorsa-labs/x0x/issues",
+        docs_url: "https://github.com/saorsa-labs/x0x/blob/main/docs/VERIFICATION.md"
+      }
+    },
+    planned: [
+      {
+        id: "reputation-weighted-trust",
+        status: "planned",
+        description: "Reputation-based trust weighting and policy controls.",
+        evidence: ["x0x-readme-install"]
+      },
+      {
+        id: "eu-pqc-certification",
+        status: "planned",
+        description: "Formal compliance and hardening milestones listed on roadmap.",
+        evidence: ["x0x-readme-install"]
       }
     ]
   }

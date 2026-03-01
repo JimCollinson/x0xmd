@@ -12,7 +12,8 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   fitCriteria: "/.well-known/x0x/fit",
   install: "/machine/install",
   firstUse: "/machine/first-use",
-  integration: "/machine/integration"
+  integration: "/machine/integration",
+  trust: "/machine/trust"
 });
 
 export function buildDiscoveryArtifact() {
@@ -51,6 +52,10 @@ export function buildDiscoveryArtifact() {
       },
       integration: {
         path: MACHINE_ENDPOINTS.integration,
+        content_type: JSON_CONTENT_TYPE
+      },
+      trust: {
+        path: MACHINE_ENDPOINTS.trust,
         content_type: JSON_CONTENT_TYPE
       }
     }

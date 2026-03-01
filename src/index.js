@@ -11,6 +11,7 @@ import {
 import { buildFirstUseArtifact } from "./artifacts/first-use.js";
 import { buildIntegrationArtifact } from "./artifacts/integration.js";
 import { buildInstallArtifact } from "./artifacts/install.js";
+import { buildTrustArtifact } from "./artifacts/trust.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
 const ROOT_MACHINE_HINT_CONTENT_TYPE = "application/json; charset=utf-8";
@@ -53,7 +54,7 @@ function firstAcceptedMediaType(acceptHeader) {
 }
 
 function rootHtmlResponse() {
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>x0xmd</title></head><body><h1>x0xmd discovery surface</h1><p>Machine endpoint map: <a href="${MACHINE_ENDPOINTS.discovery}">${MACHINE_ENDPOINTS.discovery}</a></p></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>x0xmd</title></head><body><h1>x0xmd discovery surface</h1><p>Machine endpoint map: <a href="${MACHINE_ENDPOINTS.discovery}">${MACHINE_ENDPOINTS.discovery}</a></p><p>Trust metadata: <a href="${MACHINE_ENDPOINTS.trust}">${MACHINE_ENDPOINTS.trust}</a></p></body></html>`;
   return new Response(html, {
     status: 200,
     headers: {
@@ -70,6 +71,7 @@ function rootMachineHintResponse() {
       schema_version: "1.0.0",
       service: "x0xmd",
       machine_entrypoint: MACHINE_ENDPOINTS.discovery,
+      trust_metadata_endpoint: MACHINE_ENDPOINTS.trust,
       content_type: JSON_CONTENT_TYPE
     }),
     {
@@ -125,6 +127,10 @@ export default {
 
     if (pathname === MACHINE_ENDPOINTS.integration) {
       return jsonResponse(buildIntegrationArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === MACHINE_ENDPOINTS.trust) {
+      return jsonResponse(buildTrustArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     return notFoundResponse();

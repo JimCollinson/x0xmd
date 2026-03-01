@@ -11,6 +11,10 @@ import {
 import { buildFirstUseArtifact } from "./artifacts/first-use.js";
 import { buildIntegrationArtifact } from "./artifacts/integration.js";
 import { buildInstallArtifact } from "./artifacts/install.js";
+import {
+  buildPropagationPacketArtifact,
+  PROPAGATION_PACKET_PATH
+} from "./artifacts/propagation.js";
 import { buildTrustArtifact } from "./artifacts/trust.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
@@ -131,6 +135,10 @@ export default {
 
     if (pathname === MACHINE_ENDPOINTS.trust) {
       return jsonResponse(buildTrustArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === PROPAGATION_PACKET_PATH) {
+      return jsonResponse(buildPropagationPacketArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     return notFoundResponse();

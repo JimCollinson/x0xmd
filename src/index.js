@@ -9,6 +9,10 @@ import {
   MACHINE_ENDPOINTS
 } from "./artifacts/discovery.js";
 
+const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
+const ROOT_MACHINE_HINT_CONTENT_TYPE = "application/json; charset=utf-8";
+const ROOT_CACHE_CONTROL = "public, max-age=120";
+
 function jsonResponse(payload, contentType, cacheControl) {
   return new Response(JSON.stringify(payload), {
     status: 200,
@@ -32,9 +36,61 @@ function notFoundResponse() {
   );
 }
 
+function firstAcceptedMediaType(acceptHeader) {
+  if (!acceptHeader) {
+    return "*/*";
+  }
+
+  return acceptHeader
+    .split(",")[0]
+    .trim()
+    .split(";")[0]
+    .trim()
+    .toLowerCase();
+}
+
+function rootHtmlResponse() {
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>x0xmd</title></head><body><h1>x0xmd discovery surface</h1><p>Machine endpoint map: <a href="${MACHINE_ENDPOINTS.discovery}">${MACHINE_ENDPOINTS.discovery}</a></p></body></html>`;
+  return new Response(html, {
+    status: 200,
+    headers: {
+      "content-type": ROOT_HTML_CONTENT_TYPE,
+      "cache-control": ROOT_CACHE_CONTROL,
+      vary: "Accept"
+    }
+  });
+}
+
+function rootMachineHintResponse() {
+  return new Response(
+    JSON.stringify({
+      schema_version: "1.0.0",
+      service: "x0xmd",
+      machine_entrypoint: MACHINE_ENDPOINTS.discovery,
+      content_type: JSON_CONTENT_TYPE
+    }),
+    {
+      status: 200,
+      headers: {
+        "content-type": ROOT_MACHINE_HINT_CONTENT_TYPE,
+        "cache-control": ROOT_CACHE_CONTROL,
+        vary: "Accept"
+      }
+    }
+  );
+}
+
 export default {
   async fetch(request) {
     const { pathname } = new URL(request.url);
+
+    if (pathname === "/") {
+      const mediaType = firstAcceptedMediaType(request.headers.get("accept"));
+      if (mediaType === "text/html") {
+        return rootHtmlResponse();
+      }
+      return rootMachineHintResponse();
+    }
 
     if (pathname === MACHINE_ENDPOINTS.discovery) {
       return jsonResponse(buildDiscoveryArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");

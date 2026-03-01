@@ -30,7 +30,7 @@ jobs:
       - name: Run release evidence checks
         run: npm run check:release-evidence
 
-      - name: Run drift checks
+      - name: Run drift checks (including propagation guard)
         run: npm run check:drift
 
       - name: Run interop conformance checks

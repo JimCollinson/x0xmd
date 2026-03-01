@@ -46,3 +46,24 @@ test("root serves machine hint json for wildcard or missing accept", async () =>
   assert.equal(wildcard.response.headers.get("content-type"), "application/json; charset=utf-8");
   assert.equal(missing.response.headers.get("content-type"), "application/json; charset=utf-8");
 });
+
+test("root respects q-weighting when html has lower preference", async () => {
+  const { response } = await fetchRoot("text/html;q=0.3,application/json;q=0.9");
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "application/json; charset=utf-8");
+});
+
+test("root serves html when wildcard exists but html is more specific", async () => {
+  const { response } = await fetchRoot("*/*;q=0.4,text/html;q=0.4");
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "text/html; charset=utf-8");
+});
+
+test("root stays machine-first when html and json tie exactly", async () => {
+  const { response } = await fetchRoot("text/html;q=0.7,application/json;q=0.7");
+
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "application/json; charset=utf-8");
+});

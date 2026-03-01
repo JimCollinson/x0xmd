@@ -44,17 +44,128 @@ function notFoundResponse() {
   );
 }
 
-function firstAcceptedMediaType(acceptHeader) {
+function parseAcceptHeader(acceptHeader) {
   if (!acceptHeader) {
-    return "*/*";
+    return [];
   }
 
   return acceptHeader
-    .split(",")[0]
-    .trim()
-    .split(";")[0]
-    .trim()
-    .toLowerCase();
+    .split(",")
+    .map((entry, index) => {
+      const [typePart, ...parameterParts] = entry.split(";");
+      const type = typePart.trim().toLowerCase();
+      if (!type) {
+        return null;
+      }
+
+      let quality = 1;
+
+      for (const parameter of parameterParts) {
+        const [name, value] = parameter.split("=");
+        if (!name || !value || name.trim().toLowerCase() !== "q") {
+          continue;
+        }
+
+        const parsed = Number.parseFloat(value.trim());
+        if (!Number.isNaN(parsed)) {
+          quality = Math.max(0, Math.min(1, parsed));
+        }
+      }
+
+      return {
+        index,
+        quality,
+        type
+      };
+    })
+    .filter((entry) => entry !== null);
+}
+
+function mediaTypeSpecificity(rangeType, candidateType) {
+  if (rangeType === candidateType) {
+    return 2;
+  }
+
+  const [rangeMain, rangeSub] = rangeType.split("/");
+  const [candidateMain] = candidateType.split("/");
+
+  if (rangeMain === "*" && rangeSub === "*") {
+    return 0;
+  }
+
+  if (rangeMain === candidateMain && rangeSub === "*") {
+    return 1;
+  }
+
+  return -1;
+}
+
+function comparePreference(a, b) {
+  if (a.quality !== b.quality) {
+    return a.quality - b.quality;
+  }
+
+  if (a.specificity !== b.specificity) {
+    return a.specificity - b.specificity;
+  }
+
+  return b.index - a.index;
+}
+
+function comparePreferenceForRootVariant(a, b) {
+  if (a.quality !== b.quality) {
+    return a.quality - b.quality;
+  }
+
+  if (a.specificity !== b.specificity) {
+    return a.specificity - b.specificity;
+  }
+
+  return 0;
+}
+
+function shouldServeRootHtml(acceptHeader) {
+  const parsed = parseAcceptHeader(acceptHeader);
+  if (parsed.length === 0) {
+    return false;
+  }
+
+  const candidates = ["application/json", "text/html"];
+  const bestByCandidate = new Map();
+
+  for (const candidate of candidates) {
+    for (const range of parsed) {
+      const specificity = mediaTypeSpecificity(range.type, candidate);
+      if (specificity < 0 || range.quality <= 0) {
+        continue;
+      }
+
+      const preference = {
+        candidate,
+        quality: range.quality,
+        specificity,
+        index: range.index
+      };
+      const previous = bestByCandidate.get(candidate);
+
+      if (!previous || comparePreference(preference, previous) > 0) {
+        bestByCandidate.set(candidate, preference);
+      }
+    }
+  }
+
+  const htmlPreference = bestByCandidate.get("text/html");
+  const jsonPreference = bestByCandidate.get("application/json");
+
+  if (!htmlPreference) {
+    return false;
+  }
+
+  if (!jsonPreference) {
+    return true;
+  }
+
+  return comparePreferenceForRootVariant(htmlPreference, jsonPreference) > 0;
 }
 
 function rootHtmlResponse() {
@@ -98,8 +209,7 @@ export default {
     const { pathname } = new URL(request.url);
 
     if (pathname === "/") {
-      const mediaType = firstAcceptedMediaType(request.headers.get("accept"));
-      if (mediaType === "text/html") {
+      if (shouldServeRootHtml(request.headers.get("accept"))) {
         return rootHtmlResponse();
       }
       return rootMachineHintResponse();

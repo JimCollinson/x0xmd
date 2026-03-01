@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x0x.md/schemas/release-evidence.schema.json",
+  "title": "x0xmd Release Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "branch",
+    "commit",
+    "deploy",
+    "evaluation",
+    "decision"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{7,40}$"
+    },
+    "deploy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflow_file",
+        "dispatch_command",
+        "run_url",
+        "preview_url"
+      ],
+      "properties": {
+        "workflow_file": {
+          "type": "string",
+          "const": ".github/workflows/deploy.yml"
+        },
+        "dispatch_command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://github\\.com/JimCollinson/x0xmd/actions/runs/[0-9]+$"
+        },
+        "preview_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://x0x-md-[a-z0-9-]+\\.workers\\.dev/?$"
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eval_skill_path",
+        "report_path",
+        "status"
+      ],
+      "properties": {
+        "eval_skill_path": {
+          "type": "string",
+          "const": "planning/EVAL-SKILL.md"
+        },
+        "report_path": {
+          "type": "string",
+          "pattern": "^planning/eval-reports/.+\\.md$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "pass",
+            "fail"
+          ]
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "promote",
+            "reject",
+            "defer"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

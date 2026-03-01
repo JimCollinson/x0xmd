@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-03-01T12:00:00Z",
+  "branch": "codex-v1",
+  "commit": "c1dbfb8",
+  "deploy": {
+    "workflow_file": ".github/workflows/deploy.yml",
+    "dispatch_command": "gh workflow run deploy.yml --ref codex-v1 -f worker_name=x0x-md-codex-v1",
+    "run_url": "https://github.com/JimCollinson/x0xmd/actions/runs/123456789",
+    "preview_url": "https://x0x-md-codex-v1.workers.dev"
+  },
+  "evaluation": {
+    "eval_skill_path": "planning/EVAL-SKILL.md",
+    "report_path": "planning/eval-reports/2026-Mar-01-codex-v1-eval.md",
+    "status": "pending"
+  },
+  "decision": {
+    "status": "pending",
+    "notes": "Awaiting external evaluator report."
+  }
+}

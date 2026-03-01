@@ -8,6 +8,7 @@ import {
   JSON_CONTENT_TYPE,
   MACHINE_ENDPOINTS
 } from "./artifacts/discovery.js";
+import { buildInstallArtifact } from "./artifacts/install.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
 const ROOT_MACHINE_HINT_CONTENT_TYPE = "application/json; charset=utf-8";
@@ -110,6 +111,10 @@ export default {
 
     if (pathname === MACHINE_ENDPOINTS.fitCriteria) {
       return jsonResponse(buildFitCriteriaArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === MACHINE_ENDPOINTS.install) {
+      return jsonResponse(buildInstallArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     return notFoundResponse();

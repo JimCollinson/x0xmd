@@ -9,7 +9,8 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   health: "/health",
   capabilitiesCurrent: "/.well-known/x0x/capabilities/current",
   capabilitiesPlanned: "/.well-known/x0x/capabilities/planned",
-  fitCriteria: "/.well-known/x0x/fit"
+  fitCriteria: "/.well-known/x0x/fit",
+  install: "/machine/install"
 });
 
 export function buildDiscoveryArtifact() {
@@ -36,6 +37,10 @@ export function buildDiscoveryArtifact() {
       },
       fit_criteria: {
         path: MACHINE_ENDPOINTS.fitCriteria,
+        content_type: JSON_CONTENT_TYPE
+      },
+      install: {
+        path: MACHINE_ENDPOINTS.install,
         content_type: JSON_CONTENT_TYPE
       }
     }

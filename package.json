@@ -8,7 +8,10 @@
     "check:drift": "node --test test/drift-contract.test.js",
     "ci": "npm run test && npm run check:drift && npm run deploy -- --dry-run",
     "security:audit": "npm audit --audit-level=low",
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "npm exec wrangler -- dev",
+    "deploy": "npm exec wrangler -- deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.69.0"
   }
 }

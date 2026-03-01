@@ -36,6 +36,11 @@ const canonicalModel = {
       id: "x0x-verification-docs",
       title: "x0x signature verification and security reporting guidance",
       source: "/Users/jimcollinson/Code/x0x/docs/VERIFICATION.md"
+    },
+    {
+      id: "plan-02-01",
+      title: "02-01 interop hardening plan",
+      source: "planning/phases/02-interop-hardening/02-01-PLAN.md"
     }
   ],
   capabilities_current: [
@@ -63,6 +68,11 @@ const canonicalModel = {
       id: "integration-contract-artifact",
       description: "Publish API endpoint and retry guidance for x0xd integration",
       evidence: ["plan-01-02", "x0xd-api"]
+    },
+    {
+      id: "events-contract-artifact",
+      description: "Publish canonical /events envelope schema and delivery semantics for machine consumers",
+      evidence: ["plan-02-01", "x0xd-api"]
     },
     {
       id: "trust-metadata-artifact",
@@ -330,6 +340,148 @@ const canonicalModel = {
         id: "document-sharing-first-use",
         description: "Add first-use operations for document CRDT flows when upstream APIs are available",
         evidence: ["vision"]
+      }
+    ]
+  },
+  events: {
+    contract_version: "2026-03-01",
+    stream: {
+      path: "/events",
+      method: "GET",
+      transport: "sse",
+      content_type: "text/event-stream"
+    },
+    envelope: {
+      required_fields: [
+        {
+          name: "event_id",
+          type: "string",
+          description: "Deterministic identifier for the event frame.",
+          example: "evt_01j5n9j9j6xkrf2v6v3m1nb5e7"
+        },
+        {
+          name: "topic",
+          type: "string",
+          description: "Pub/sub topic used for routing and authorization decisions.",
+          example: "fae.chat"
+        },
+        {
+          name: "publisher_agent_id",
+          type: "string",
+          description: "Agent identifier of the producer.",
+          example: "4f7f19bcb267fdbf18ea22d5d176a31fd9f73f4ceeb8e0f2d39d4e5e8fbec123"
+        },
+        {
+          name: "payload_base64",
+          type: "string",
+          description: "Base64-encoded message payload.",
+          example: "SGVsbG8gZnJvbSB4MHg="
+        },
+        {
+          name: "signature",
+          type: "string",
+          description: "Detached ML-DSA-65 signature over canonical event bytes.",
+          example: "bWwtZHNhLXNpZ25hdHVyZS1ieXRlcw=="
+        },
+        {
+          name: "received_at",
+          type: "string",
+          format: "date-time",
+          description: "RFC3339 timestamp for daemon receive time.",
+          example: "2026-03-01T10:24:18.220Z"
+        },
+        {
+          name: "trust_level",
+          type: "string",
+          enum: ["unknown", "known", "trusted", "blocked"],
+          description: "Resolved trust state for publisher contact at ingest time.",
+          example: "trusted"
+        }
+      ],
+      optional_fields: [
+        {
+          name: "subscription_id",
+          type: "string",
+          description: "Identifier returned by /subscribe if available.",
+          example: "d2f70b5e977adf50"
+        },
+        {
+          name: "sequence",
+          type: "integer",
+          description: "Monotonic sequence number scoped to topic and connection.",
+          example: 42
+        }
+      ]
+    },
+    delivery_semantics: {
+      ordering: {
+        guarantee: "best_effort_in_order",
+        scope: "topic_per_connection",
+        caveat: "Reconnects can shift ordering boundaries between buffered and live events."
+      },
+      replay: {
+        supported: false,
+        guidance: "Persist last accepted sequence per topic externally when at-least-once replay is required."
+      },
+      redelivery: {
+        possible: true,
+        dedupe_key: "event_id",
+        guidance: "Treat event_id as idempotency key and ignore duplicates."
+      },
+      reconnect: {
+        strategy: "incremental_backoff",
+        initial_delay_ms: 250,
+        max_delay_ms: 5000,
+        jitter: true,
+        guidance: "Re-open /events and re-run /subscribe for required topics when session state is uncertain."
+      }
+    },
+    transcript_examples: [
+      {
+        id: "subscribe-then-stream",
+        steps: [
+          {
+            step: "subscribe",
+            request: {
+              method: "POST",
+              path: "/subscribe",
+              body: {
+                topic: "fae.chat"
+              }
+            },
+            response: {
+              status_code: 200,
+              body: {
+                ok: true,
+                subscription_id: "d2f70b5e977adf50"
+              }
+            }
+          },
+          {
+            step: "open-events-stream",
+            request: {
+              method: "GET",
+              path: "/events",
+              headers: {
+                accept: "text/event-stream"
+              }
+            },
+            sse_frame: {
+              event: "message",
+              data: {
+                event_id: "evt_01j5n9j9j6xkrf2v6v3m1nb5e7",
+                topic: "fae.chat",
+                publisher_agent_id: "4f7f19bcb267fdbf18ea22d5d176a31fd9f73f4ceeb8e0f2d39d4e5e8fbec123",
+                payload_base64: "SGVsbG8gZnJvbSB4MHg=",
+                signature: "bWwtZHNhLXNpZ25hdHVyZS1ieXRlcw==",
+                received_at: "2026-03-01T10:24:18.220Z",
+                trust_level: "trusted",
+                sequence: 42,
+                subscription_id: "d2f70b5e977adf50"
+              }
+            }
+          }
+        ]
       }
     ]
   },

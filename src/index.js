@@ -12,6 +12,10 @@ import { buildFirstUseArtifact } from "./artifacts/first-use.js";
 import { buildIntegrationArtifact } from "./artifacts/integration.js";
 import { buildInstallArtifact } from "./artifacts/install.js";
 import {
+  buildEventsContractArtifact,
+  EVENTS_CONTRACT_PATH
+} from "./artifacts/events-contract.js";
+import {
   buildPropagationPacketArtifact,
   PROPAGATION_PACKET_PATH
 } from "./artifacts/propagation.js";
@@ -249,6 +253,10 @@ export default {
 
     if (pathname === MACHINE_ENDPOINTS.integration) {
       return jsonResponse(buildIntegrationArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === EVENTS_CONTRACT_PATH) {
+      return jsonResponse(buildEventsContractArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     if (pathname === MACHINE_ENDPOINTS.trust) {

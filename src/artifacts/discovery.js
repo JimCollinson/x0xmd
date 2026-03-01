@@ -71,7 +71,9 @@ export function buildDiscoveryArtifact() {
       },
       propagation: {
         path: MACHINE_ENDPOINTS.propagation,
-        content_type: JSON_CONTENT_TYPE
+        content_type: JSON_CONTENT_TYPE,
+        packet_schema_version: "1.0.0",
+        artifact_version: canonicalModel.propagation.artifact_version
       },
       trust: {
         path: MACHINE_ENDPOINTS.trust,

@@ -25,24 +25,20 @@ test("propagation endpoint returns compact recommendation packet", async () => {
   assert.equal(typeof payload.purpose, "string");
   assert.equal(payload.purpose.split(".").length >= 2, true);
   assert.ok(Array.isArray(payload.fit));
-  assert.ok(Array.isArray(payload.sources));
-  assert.equal(payload.links.install, "/machine/install");
-  assert.equal(payload.links.verify.discovery, "/.well-known/x0x/discovery");
-  assert.equal(payload.links.verify.trust, "/machine/trust");
+  assert.ok(Array.isArray(payload.evidence.sources));
+  assert.equal(payload.evidence.capability_source.endpoint, "/.well-known/x0x/capabilities/current");
+  assert.equal(payload.evidence.provenance.endpoint, "/machine/provenance");
+  assert.equal(payload.evidence.release_operations.endpoint, "/machine/release-operations");
 });
 
-test("propagation capability claims include explicit lifecycle state labels", async () => {
+test("propagation packet includes current capability summary only", async () => {
   const { payload } = await fetchJson(PROPAGATION_PACKET_PATH);
 
-  assert.ok(Array.isArray(payload.caps));
-  assert.equal(payload.caps.length > 0, true);
+  assert.ok(Array.isArray(payload.current_capabilities));
+  assert.equal(payload.current_capabilities.length > 0, true);
 
-  const states = new Set(payload.caps.map((claim) => claim.st));
-  assert.equal(states.has("current"), true);
-  assert.equal(states.has("planned"), true);
-
-  for (const claim of payload.caps) {
+  for (const claim of payload.current_capabilities) {
     assert.equal(typeof claim.id, "string");
-    assert.equal(claim.st === "current" || claim.st === "planned", true);
+    assert.ok(Array.isArray(claim.evidence));
   }
 });

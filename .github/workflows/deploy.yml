@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      worker_name:
+        description: "Optional workers.dev preview worker name"
+        required: false
+        type: string
 
 jobs:
   deploy:
@@ -19,8 +24,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Deploy Worker
+      - name: Deploy Worker (default)
+        if: ${{ github.event.inputs.worker_name == '' }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           command: deploy
+
+      - name: Deploy Worker (named preview)
+        if: ${{ github.event.inputs.worker_name != '' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: deploy --name ${{ github.event.inputs.worker_name }}

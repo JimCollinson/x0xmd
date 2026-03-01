@@ -1,0 +1,63 @@
+name: Deploy x0x.md Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      worker_name:
+        description: Cloudflare Worker name for deployment
+        required: true
+        default: x0x-md-codex-v1
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy worker
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WORKER_NAME: ${{ inputs.worker_name }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "Missing required secret: CLOUDFLARE_API_TOKEN" >&2
+            exit 1
+          fi
+
+          if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "Missing required secret: CLOUDFLARE_ACCOUNT_ID" >&2
+            exit 1
+          fi
+
+          log_file="$(mktemp)"
+          npm run deploy -- --name "$WORKER_NAME" 2>&1 | tee "$log_file"
+
+          deployed_url="$(sed -nE 's|.*(https://[a-zA-Z0-9.-]+\.workers\.dev).*|\1|p' "$log_file" | tail -n 1)"
+          if [ -z "$deployed_url" ]; then
+            deployed_url="https://${WORKER_NAME}.workers.dev"
+          fi
+
+          echo "url=$deployed_url" >> "$GITHUB_OUTPUT"
+          echo "Deployed URL: $deployed_url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Output deployed URL
+        run: |
+          echo "Deployment complete: ${{ steps.deploy.outputs.url }}"

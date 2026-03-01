@@ -4,6 +4,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
+import { validateRefreshLockData } from "./refresh-upstream-lock.mjs";
+
 import {
   buildCapabilitiesCurrentArtifact,
   buildCapabilitiesPlannedArtifact,
@@ -152,7 +154,7 @@ async function regenerateArtifacts() {
 async function main() {
   await mkdir(summaryDir, { recursive: true });
 
-  const lock = await loadLockData();
+  const lock = validateRefreshLockData(await loadLockData(), UPSTREAM_REFS);
   const refs = [];
 
   for (const ref of UPSTREAM_REFS) {
@@ -164,7 +166,7 @@ async function main() {
       human_url: ref.human_url,
       baseline_sha: baselineSha,
       current_sha: currentSha,
-      changed: baselineSha !== null && baselineSha !== currentSha
+      changed: baselineSha !== currentSha
     });
   }
 

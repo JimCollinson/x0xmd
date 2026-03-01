@@ -28,6 +28,10 @@ import {
   buildProvenanceArtifact,
   PROVENANCE_PATH
 } from "./artifacts/provenance.js";
+import {
+  buildIntegrationConfidenceArtifact,
+  INTEGRATION_CONFIDENCE_PATH
+} from "./artifacts/integration-confidence.js";
 import { buildTrustArtifact } from "./artifacts/trust.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
@@ -202,6 +206,7 @@ function rootMachineHintResponse() {
       trust_metadata_endpoint: MACHINE_ENDPOINTS.trust,
       policy_metadata_endpoint: MACHINE_ENDPOINTS.policy,
       provenance_metadata_endpoint: MACHINE_ENDPOINTS.provenance,
+      integration_confidence_endpoint: MACHINE_ENDPOINTS.integrationConfidence,
       content_type: JSON_CONTENT_TYPE
     }),
     {
@@ -284,6 +289,10 @@ export default {
 
     if (pathname === PROVENANCE_PATH) {
       return jsonResponse(buildProvenanceArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === INTEGRATION_CONFIDENCE_PATH) {
+      return jsonResponse(buildIntegrationConfidenceArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     if (pathname === PROPAGATION_PACKET_PATH) {

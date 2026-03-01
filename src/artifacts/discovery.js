@@ -18,7 +18,8 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   propagation: "/machine/propagation",
   trust: "/machine/trust",
   policy: "/machine/policy",
-  provenance: "/machine/provenance"
+  provenance: "/machine/provenance",
+  integrationConfidence: "/machine/integration-confidence"
 });
 
 export function buildDiscoveryArtifact() {
@@ -81,6 +82,10 @@ export function buildDiscoveryArtifact() {
       },
       provenance: {
         path: MACHINE_ENDPOINTS.provenance,
+        content_type: JSON_CONTENT_TYPE
+      },
+      integration_confidence: {
+        path: MACHINE_ENDPOINTS.integrationConfidence,
         content_type: JSON_CONTENT_TYPE
       }
     }

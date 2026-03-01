@@ -7,6 +7,7 @@
     "test": "node --test test/*.test.js",
     "check:release-evidence": "node --test test/release-evidence-schema.test.js test/release-operations.test.js",
     "check:drift": "node --test test/drift-contract.test.js && node scripts/check-propagation-drift.mjs",
+    "refresh:upstream": "node scripts/ops/refresh-upstream.mjs",
     "check:interop": "node --test test/interop-conformance.test.js",
     "ci": "npm run test && npm run check:release-evidence && npm run check:drift && npm run check:interop && npm run deploy -- --dry-run",
     "security:audit": "npm audit --audit-level=low",

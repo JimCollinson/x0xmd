@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0.0",
+  "refs": {
+    "repo-main": "d2c6e63016d525a3bae38fb2fe40f1e716070604",
+    "install-sh": "106542afe2e168a7c1951f70b1aeaf58bb4fffd6",
+    "install-py": "c0a6a7ea479f80ee665a81f354cd0a672b9df177",
+    "install-ps1": "76b154adb9c4642e915bd1356fb19eb92a51f7c5",
+    "verification-doc": "84c41ef7538f9d3b6731f4212b5a666e45a4efbf"
+  }
+}

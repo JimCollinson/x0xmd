@@ -611,11 +611,132 @@ const canonicalModel = {
   trust: {
     contract_version: "2026-03-01",
     current: {
+      trust_levels: [
+        {
+          id: "unknown",
+          semantics: "Default classification for senders without an explicit contact record.",
+          operational_outcome: "Receive-only; no side effects without additional policy checks."
+        },
+        {
+          id: "known",
+          semantics: "Sender identity is known but not elevated to high-confidence trust.",
+          operational_outcome: "Limited automation allowed for low-risk operations."
+        },
+        {
+          id: "trusted",
+          semantics: "Sender is explicitly trusted for routine automation.",
+          operational_outcome: "Eligible for default action execution when signatures verify."
+        },
+        {
+          id: "blocked",
+          semantics: "Sender is explicitly denied due to risk or policy controls.",
+          operational_outcome: "Drop or quarantine events and deny action execution."
+        }
+      ],
+      threat_assumptions: [
+        "Sender identifiers can be spoofed without cryptographic verification.",
+        "Compromised trusted contacts can still emit harmful payloads.",
+        "Install-time artifacts can drift from expected release state over time."
+      ],
+      default_transitions: [
+        {
+          from: "unknown",
+          to: "known",
+          trigger: "operator or automation records a contact after successful identity lookup",
+          transition_class: "manual_or_policy"
+        },
+        {
+          from: "known",
+          to: "trusted",
+          trigger: "operator approves automation eligibility for sender",
+          transition_class: "manual"
+        },
+        {
+          from: "unknown",
+          to: "blocked",
+          trigger: "policy engine denies sender after repeated invalid signatures",
+          transition_class: "automated"
+        },
+        {
+          from: "known",
+          to: "blocked",
+          trigger: "operator or policy flags malicious behavior",
+          transition_class: "manual_or_policy"
+        },
+        {
+          from: "trusted",
+          to: "blocked",
+          trigger: "high-confidence abuse signal or compromise report",
+          transition_class: "manual_or_policy"
+        },
+        {
+          from: "blocked",
+          to: "known",
+          trigger: "explicit review clears block",
+          transition_class: "manual"
+        }
+      ],
+      action_gating_matrix: [
+        {
+          action_class: "publish",
+          allowed_levels: ["known", "trusted"],
+          blocked_levels: ["unknown", "blocked"],
+          required_signatures: true,
+          decision_default: "deny"
+        },
+        {
+          action_class: "subscribe",
+          allowed_levels: ["unknown", "known", "trusted"],
+          blocked_levels: ["blocked"],
+          required_signatures: false,
+          decision_default: "allow"
+        },
+        {
+          action_class: "mutate_contacts",
+          allowed_levels: ["trusted"],
+          blocked_levels: ["unknown", "known", "blocked"],
+          required_signatures: true,
+          decision_default: "needs-human"
+        },
+        {
+          action_class: "task_list_write",
+          allowed_levels: ["trusted"],
+          blocked_levels: ["unknown", "known", "blocked"],
+          required_signatures: true,
+          decision_default: "needs-human"
+        }
+      ],
       policy_guidance: [
         "Treat only verified + trusted sender messages as action-eligible by default.",
         "Use contact trust levels to gate automation side effects.",
         "Re-verify install artifacts and signatures before upgrading automation dependencies."
       ],
+      controls_current_vs_planned: {
+        current: [
+          {
+            control_id: "message_signatures",
+            scope: "runtime_message_validation"
+          },
+          {
+            control_id: "contact_trust_filtering",
+            scope: "inbound_trust_assignment"
+          },
+          {
+            control_id: "install_signature_verification",
+            scope: "installer_path_verification"
+          }
+        ],
+        planned: [
+          {
+            control_id: "reputation_weighted_trust",
+            scope: "dynamic_trust_scoring"
+          },
+          {
+            control_id: "eu_pqc_certification",
+            scope: "formal_compliance_hardening"
+          }
+        ]
+      },
       controls: {
         message_signatures: {
           status: "current",

@@ -10,7 +10,9 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   capabilitiesCurrent: "/.well-known/x0x/capabilities/current",
   capabilitiesPlanned: "/.well-known/x0x/capabilities/planned",
   fitCriteria: "/.well-known/x0x/fit",
-  install: "/machine/install"
+  install: "/machine/install",
+  firstUse: "/machine/first-use",
+  integration: "/machine/integration"
 });
 
 export function buildDiscoveryArtifact() {
@@ -41,6 +43,14 @@ export function buildDiscoveryArtifact() {
       },
       install: {
         path: MACHINE_ENDPOINTS.install,
+        content_type: JSON_CONTENT_TYPE
+      },
+      first_use: {
+        path: MACHINE_ENDPOINTS.firstUse,
+        content_type: JSON_CONTENT_TYPE
+      },
+      integration: {
+        path: MACHINE_ENDPOINTS.integration,
         content_type: JSON_CONTENT_TYPE
       }
     }

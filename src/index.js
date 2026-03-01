@@ -8,6 +8,8 @@ import {
   JSON_CONTENT_TYPE,
   MACHINE_ENDPOINTS
 } from "./artifacts/discovery.js";
+import { buildFirstUseArtifact } from "./artifacts/first-use.js";
+import { buildIntegrationArtifact } from "./artifacts/integration.js";
 import { buildInstallArtifact } from "./artifacts/install.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
@@ -115,6 +117,14 @@ export default {
 
     if (pathname === MACHINE_ENDPOINTS.install) {
       return jsonResponse(buildInstallArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === MACHINE_ENDPOINTS.firstUse) {
+      return jsonResponse(buildFirstUseArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === MACHINE_ENDPOINTS.integration) {
+      return jsonResponse(buildIntegrationArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     return notFoundResponse();

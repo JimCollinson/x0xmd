@@ -48,6 +48,16 @@ const canonicalModel = {
       id: "install-contract-artifact",
       description: "Expose non-interactive install pathways with explicit local verification probes",
       evidence: ["plan-01-02", "x0x-readme-install", "x0xd-api"]
+    },
+    {
+      id: "first-use-contract-artifact",
+      description: "Publish runnable first-use examples for publish, subscribe, trust, and task-list operations",
+      evidence: ["plan-01-02", "x0x-readme-install", "x0xd-api"]
+    },
+    {
+      id: "integration-contract-artifact",
+      description: "Publish API endpoint and retry guidance for x0xd integration",
+      evidence: ["plan-01-02", "x0xd-api"]
     }
   ],
   capabilities_planned: [
@@ -174,6 +184,264 @@ const canonicalModel = {
       {
         id: "native-package-managers",
         description: "Publish package-manager native install paths with the same verification probes",
+        evidence: ["vision"]
+      }
+    ]
+  },
+  first_use: {
+    contract_version: "2026-03-01",
+    daemon_base_url: "http://127.0.0.1:12700",
+    current: {
+      operations: [
+        {
+          id: "subscribe-topic",
+          purpose: "Subscribe to a pub/sub topic before consuming events",
+          request: {
+            method: "POST",
+            path: "/subscribe",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: {
+              topic: "fae.chat"
+            }
+          },
+          expected_response: {
+            status_code: 200,
+            body: {
+              ok: true,
+              subscription_id: "<hex-string>"
+            }
+          },
+          runnable_example: "curl -sf -X POST http://127.0.0.1:12700/subscribe -H 'Content-Type: application/json' -d '{\"topic\":\"fae.chat\"}'",
+          evidence: ["x0x-readme-install", "x0xd-api"]
+        },
+        {
+          id: "publish-message",
+          purpose: "Publish signed message payload to a topic",
+          request: {
+            method: "POST",
+            path: "/publish",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: {
+              topic: "fae.chat",
+              payload: "SGVsbG8="
+            }
+          },
+          expected_response: {
+            status_code: 200,
+            body: {
+              ok: true
+            }
+          },
+          runnable_example: "curl -sf -X POST http://127.0.0.1:12700/publish -H 'Content-Type: application/json' -d '{\"topic\":\"fae.chat\",\"payload\":\"SGVsbG8=\"}'",
+          evidence: ["x0x-readme-install", "x0xd-api"]
+        },
+        {
+          id: "trust-contact",
+          purpose: "Update trust level so a known agent can deliver messages",
+          request: {
+            method: "POST",
+            path: "/contacts/trust",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: {
+              agent_id: "<64-char-hex-agent-id>",
+              level: "trusted"
+            }
+          },
+          expected_response: {
+            status_code: 200,
+            body: {
+              ok: true
+            }
+          },
+          runnable_example: "curl -sf -X POST http://127.0.0.1:12700/contacts/trust -H 'Content-Type: application/json' -d '{\"agent_id\":\"<64-char-hex-agent-id>\",\"level\":\"trusted\"}'",
+          evidence: ["x0x-readme-install", "x0xd-api"]
+        },
+        {
+          id: "create-task-list",
+          purpose: "Create collaborative task list backed by CRDT sync",
+          request: {
+            method: "POST",
+            path: "/task-lists",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: {
+              name: "Sprint Tasks",
+              topic: "tasks.sprint"
+            }
+          },
+          expected_response: {
+            status_code: 201,
+            body: {
+              ok: true,
+              id: "tasks.sprint"
+            }
+          },
+          runnable_example: "curl -sf -X POST http://127.0.0.1:12700/task-lists -H 'Content-Type: application/json' -d '{\"name\":\"Sprint Tasks\",\"topic\":\"tasks.sprint\"}'",
+          evidence: ["x0xd-api"]
+        },
+        {
+          id: "add-task-item",
+          purpose: "Append task into a collaborative task list",
+          request: {
+            method: "POST",
+            path: "/task-lists/{id}/tasks",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: {
+              title: "Prepare release",
+              description: "Collect changelog and QA notes"
+            },
+            path_params: {
+              id: "tasks.sprint"
+            }
+          },
+          expected_response: {
+            status_code: 201,
+            body: {
+              ok: true,
+              task_id: "<64-char-hex-task-id>"
+            }
+          },
+          runnable_example: "curl -sf -X POST http://127.0.0.1:12700/task-lists/tasks.sprint/tasks -H 'Content-Type: application/json' -d '{\"title\":\"Prepare release\",\"description\":\"Collect changelog and QA notes\"}'",
+          evidence: ["x0xd-api"]
+        }
+      ]
+    },
+    planned: [
+      {
+        id: "document-sharing-first-use",
+        description: "Add first-use operations for document CRDT flows when upstream APIs are available",
+        evidence: ["vision"]
+      }
+    ]
+  },
+  integration: {
+    contract_version: "2026-03-01",
+    current: {
+      endpoint_groups: [
+        {
+          group: "core",
+          endpoints: [
+            { method: "GET", path: "/health", success_status: 200 },
+            { method: "GET", path: "/agent", success_status: 200 },
+            { method: "GET", path: "/peers", success_status: 200 },
+            { method: "GET", path: "/presence", success_status: 200 }
+          ]
+        },
+        {
+          group: "messaging",
+          endpoints: [
+            { method: "POST", path: "/subscribe", success_status: 200 },
+            { method: "DELETE", path: "/subscribe/{id}", success_status: 200 },
+            { method: "POST", path: "/publish", success_status: 200 },
+            { method: "GET", path: "/events", success_status: 200 }
+          ]
+        },
+        {
+          group: "trust",
+          endpoints: [
+            { method: "GET", path: "/contacts", success_status: 200 },
+            { method: "POST", path: "/contacts", success_status: 201 },
+            { method: "PATCH", path: "/contacts/{agent_id}", success_status: 200 },
+            { method: "DELETE", path: "/contacts/{agent_id}", success_status: 200 },
+            { method: "POST", path: "/contacts/trust", success_status: 200 }
+          ]
+        },
+        {
+          group: "task_lists",
+          endpoints: [
+            { method: "GET", path: "/task-lists", success_status: 200 },
+            { method: "POST", path: "/task-lists", success_status: 201 },
+            { method: "GET", path: "/task-lists/{id}/tasks", success_status: 200 },
+            { method: "POST", path: "/task-lists/{id}/tasks", success_status: 201 },
+            { method: "PATCH", path: "/task-lists/{id}/tasks/{tid}", success_status: 200 }
+          ]
+        }
+      ],
+      request_response_examples: [
+        {
+          id: "publish-request",
+          request: {
+            method: "POST",
+            path: "/publish",
+            body: {
+              topic: "fae.chat",
+              payload: "SGVsbG8="
+            }
+          },
+          response: {
+            status_code: 200,
+            body: {
+              ok: true
+            }
+          },
+          evidence: ["x0xd-api"]
+        },
+        {
+          id: "invalid-base64-error",
+          request: {
+            method: "POST",
+            path: "/publish",
+            body: {
+              topic: "fae.chat",
+              payload: "not-base64"
+            }
+          },
+          response: {
+            status_code: 400,
+            body: {
+              ok: false,
+              error_contains: "invalid base64"
+            }
+          },
+          evidence: ["x0xd-api"]
+        },
+        {
+          id: "task-list-not-found",
+          request: {
+            method: "GET",
+            path: "/task-lists/{id}/tasks"
+          },
+          response: {
+            status_code: 404,
+            body: {
+              ok: false,
+              error: "task list not found"
+            }
+          },
+          evidence: ["x0xd-api"]
+        }
+      ],
+      reliability: {
+        retry_policy: {
+          retry_status_codes: [500, 502, 503, 504],
+          do_not_retry_status_codes: [400, 404],
+          backoff: {
+            strategy: "exponential",
+            base_delay_ms: 200,
+            max_delay_ms: 5000,
+            jitter: true,
+            max_attempts: 5
+          }
+        },
+        stream_reconnect: {
+          endpoint: "/events",
+          guidance: "Reconnect on disconnect with incremental backoff; maintain subscription registry and re-subscribe if session state is lost."
+        }
+      }
+    },
+    planned: [
+      {
+        id: "capability-discovery-api",
+        description: "Add integration references for capability discovery endpoints once upstream ships them",
         evidence: ["vision"]
       }
     ]

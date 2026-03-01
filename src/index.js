@@ -16,6 +16,10 @@ import {
   EVENTS_CONTRACT_PATH
 } from "./artifacts/events-contract.js";
 import {
+  buildFailureModesArtifact,
+  FAILURE_MODES_PATH
+} from "./artifacts/failure-modes.js";
+import {
   buildPropagationPacketArtifact,
   PROPAGATION_PACKET_PATH
 } from "./artifacts/propagation.js";
@@ -257,6 +261,10 @@ export default {
 
     if (pathname === EVENTS_CONTRACT_PATH) {
       return jsonResponse(buildEventsContractArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
+    }
+
+    if (pathname === FAILURE_MODES_PATH) {
+      return jsonResponse(buildFailureModesArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     if (pathname === MACHINE_ENDPOINTS.trust) {

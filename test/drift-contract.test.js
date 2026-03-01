@@ -12,6 +12,8 @@ import { FIRST_USE_SCHEMA_VERSION } from "../src/artifacts/first-use.js";
 import { INTEGRATION_SCHEMA_VERSION } from "../src/artifacts/integration.js";
 import { TRUST_SCHEMA_VERSION } from "../src/artifacts/trust.js";
 import { PROPAGATION_PACKET_SCHEMA_VERSION } from "../src/artifacts/propagation.js";
+import { EVENTS_CONTRACT_SCHEMA_VERSION } from "../src/artifacts/events-contract.js";
+import { FAILURE_MODES_SCHEMA_VERSION } from "../src/artifacts/failure-modes.js";
 
 function readPackageJson() {
   const raw = readFileSync(new URL("../package.json", import.meta.url), "utf8");
@@ -25,7 +27,9 @@ test("schema versions remain synchronized across machine artifacts", () => {
     FIRST_USE_SCHEMA_VERSION,
     INTEGRATION_SCHEMA_VERSION,
     TRUST_SCHEMA_VERSION,
-    PROPAGATION_PACKET_SCHEMA_VERSION
+    PROPAGATION_PACKET_SCHEMA_VERSION,
+    EVENTS_CONTRACT_SCHEMA_VERSION,
+    FAILURE_MODES_SCHEMA_VERSION
   ]);
 
   assert.equal(schemaVersions.size, 1);
@@ -45,6 +49,8 @@ test("discovery endpoint contract paths stay aligned", () => {
   assert.equal(discovery.endpoints.install.path, MACHINE_ENDPOINTS.install);
   assert.equal(discovery.endpoints.first_use.path, MACHINE_ENDPOINTS.firstUse);
   assert.equal(discovery.endpoints.integration.path, MACHINE_ENDPOINTS.integration);
+  assert.equal(discovery.endpoints.events_contract.path, MACHINE_ENDPOINTS.eventsContract);
+  assert.equal(discovery.endpoints.failure_modes.path, MACHINE_ENDPOINTS.failureModes);
   assert.equal(discovery.endpoints.propagation.path, MACHINE_ENDPOINTS.propagation);
   assert.equal(discovery.endpoints.trust.path, MACHINE_ENDPOINTS.trust);
 

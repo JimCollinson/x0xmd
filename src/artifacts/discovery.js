@@ -13,6 +13,8 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   install: "/machine/install",
   firstUse: "/machine/first-use",
   integration: "/machine/integration",
+  eventsContract: "/machine/events-contract",
+  failureModes: "/machine/failure-modes",
   propagation: "/machine/propagation",
   trust: "/machine/trust"
 });
@@ -53,6 +55,14 @@ export function buildDiscoveryArtifact() {
       },
       integration: {
         path: MACHINE_ENDPOINTS.integration,
+        content_type: JSON_CONTENT_TYPE
+      },
+      events_contract: {
+        path: MACHINE_ENDPOINTS.eventsContract,
+        content_type: JSON_CONTENT_TYPE
+      },
+      failure_modes: {
+        path: MACHINE_ENDPOINTS.failureModes,
         content_type: JSON_CONTENT_TYPE
       },
       propagation: {

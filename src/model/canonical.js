@@ -97,6 +97,20 @@ const canonicalModel = {
       description: "Consumer must distinguish implemented from planned capability claims"
     }
   ],
+  propagation: {
+    artifact_version: "1.0.0",
+    compatibility: {
+      additive_change_policy: "minor-version",
+      breaking_change_policy: "major-version",
+      consumer_expectation: "Consumers can accept additive fields on matching major artifact versions and must fail closed on major-version mismatch."
+    },
+    compactness: {
+      max_current_capabilities: 16,
+      max_fit_criteria: 16,
+      max_verification_probes: 16,
+      max_sources: 32
+    }
+  },
   install: {
     contract_version: "2026-03-01",
     daemon: {
@@ -789,6 +803,7 @@ function collectEvidenceIds(sourceEvidence) {
 export function validateCanonicalModel(model) {
   const evidenceIds = collectEvidenceIds(model.source_evidence || []);
   const currentIds = new Set((model.capabilities_current || []).map((capability) => capability.id));
+  const propagation = model.propagation || {};
 
   for (const capability of model.capabilities_planned || []) {
     if (currentIds.has(capability.id)) {
@@ -809,6 +824,18 @@ export function validateCanonicalModel(model) {
         throw new Error(`Capability references unknown evidence id: ${evidenceId}`);
       }
     }
+  }
+
+  if (typeof propagation.artifact_version !== "string" || propagation.artifact_version.length === 0) {
+    throw new Error("Propagation artifact version is required");
+  }
+
+  if (!propagation.compatibility || typeof propagation.compatibility !== "object") {
+    throw new Error("Propagation compatibility policy is required");
+  }
+
+  if (!propagation.compactness || typeof propagation.compactness !== "object") {
+    throw new Error("Propagation compactness policy is required");
   }
 
   return true;

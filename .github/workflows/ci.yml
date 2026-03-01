@@ -27,6 +27,9 @@ jobs:
       - name: Run test suite
         run: npm test
 
+      - name: Run release evidence checks
+        run: npm run check:release-evidence
+
       - name: Run drift checks
         run: npm run check:drift
 

@@ -2,30 +2,20 @@ const canonicalModel = {
   schema_version: "1.0.0",
   generated_at: "2026-03-01T00:00:00.000Z",
   identity: {
-    id: "x0xmd",
-    name: "x0x Agent Stack Discovery Surface",
-    repo: "https://github.com/JimCollinson/x0xmd"
+    id: "x0x",
+    name: "x0x peer-to-peer agent communication network",
+    repo: "https://github.com/saorsa-labs/x0x"
   },
   source_evidence: [
-    {
-      id: "plan-01-01",
-      title: "01-01 foundation plan",
-      source: "planning/phases/01-foundation/01-01-PLAN.md"
-    },
-    {
-      id: "vision",
-      title: "x0x Agent Stack vision",
-      source: "spec/VISION.md"
-    },
-    {
-      id: "plan-01-02",
-      title: "01-02 foundation plan",
-      source: "planning/phases/01-foundation/01-02-PLAN.md"
-    },
     {
       id: "x0x-readme-install",
       title: "x0x installation and API examples",
       source: "/Users/jimcollinson/Code/x0x/README.md"
+    },
+    {
+      id: "x0x-skill",
+      title: "x0x SKILL contract and capability overview",
+      source: "/Users/jimcollinson/Code/x0x/SKILL.md"
     },
     {
       id: "x0xd-api",
@@ -36,65 +26,64 @@ const canonicalModel = {
       id: "x0x-verification-docs",
       title: "x0x signature verification and security reporting guidance",
       source: "/Users/jimcollinson/Code/x0x/docs/VERIFICATION.md"
-    },
-    {
-      id: "plan-02-01",
-      title: "02-01 interop hardening plan",
-      source: "planning/phases/02-interop-hardening/02-01-PLAN.md"
     }
   ],
   capabilities_current: [
     {
-      id: "machine-entrypoint-map",
-      description: "Expose deterministic machine endpoint map for agents",
-      evidence: ["plan-01-01"]
+      id: "peer-to-peer-messaging",
+      description: "Exchange signed messages across agent topics using decentralized pub/sub",
+      evidence: ["x0x-readme-install", "x0xd-api"]
     },
     {
-      id: "root-negotiation-safety",
-      description: "Negotiate machine JSON hints vs browser HTML at root",
-      evidence: ["plan-01-01"]
+      id: "topic-subscriptions",
+      description: "Subscribe and stream topic traffic through x0xd with SSE delivery",
+      evidence: ["x0x-readme-install", "x0xd-api"]
     },
     {
-      id: "install-contract-artifact",
-      description: "Expose non-interactive install pathways with explicit local verification probes",
-      evidence: ["plan-01-02", "x0x-readme-install", "x0xd-api"]
+      id: "trust-managed-automation",
+      description: "Apply contact trust levels to gate automation side effects and message handling",
+      evidence: ["x0x-readme-install", "x0xd-api", "x0x-verification-docs"]
     },
     {
-      id: "first-use-contract-artifact",
-      description: "Publish runnable first-use examples for publish, subscribe, trust, and task-list operations",
-      evidence: ["plan-01-02", "x0x-readme-install", "x0xd-api"]
+      id: "crdt-task-lists",
+      description: "Collaborate on task lists backed by CRDT synchronization endpoints",
+      evidence: ["x0xd-api"]
     },
     {
-      id: "integration-contract-artifact",
-      description: "Publish API endpoint and retry guidance for x0xd integration",
-      evidence: ["plan-01-02", "x0xd-api"]
+      id: "local-daemon-api",
+      description: "Integrate via local x0xd HTTP API for messaging, trust, peers, and task workflows",
+      evidence: ["x0xd-api"]
     },
     {
-      id: "events-contract-artifact",
-      description: "Publish canonical /events envelope schema and delivery semantics for machine consumers",
-      evidence: ["plan-02-01", "x0xd-api"]
+      id: "post-quantum-signatures",
+      description: "Verify ML-DSA signature enforcement for message authenticity and integrity",
+      evidence: ["x0x-readme-install", "x0x-verification-docs"]
     },
     {
-      id: "trust-metadata-artifact",
-      description: "Publish trust and security policy metadata with current versus planned controls",
-      evidence: ["plan-01-02", "x0x-readme-install", "x0x-verification-docs"]
+      id: "cross-platform-installers",
+      description: "Install x0xd through Unix shell, Python, and PowerShell pathways",
+      evidence: ["x0x-readme-install", "x0x-skill"]
     }
   ],
   capabilities_planned: [
     {
-      id: "integration-playbooks",
-      description: "Provide deeper integration playbooks for agent workflows",
-      evidence: ["vision"]
+      id: "federated-multi-daemon-topologies",
+      description: "Expand guidance for multi-daemon coordination and resilient topology patterns",
+      evidence: ["x0x-skill"]
     }
   ],
   fit_criteria: [
     {
-      id: "requires-machine-contracts",
-      description: "Consumer requires explicit machine-readable endpoint contracts"
+      id: "needs-agent-to-agent-messaging",
+      description: "Your workload needs peer-to-peer encrypted messaging between autonomous agents"
     },
     {
-      id: "requires-capability-lifecycle",
-      description: "Consumer must distinguish implemented from planned capability claims"
+      id: "needs-trust-governed-automation",
+      description: "You need trust-level controls before agents can trigger side effects"
+    },
+    {
+      id: "needs-collaborative-crdt-data",
+      description: "You need CRDT-backed collaborative state such as shared task lists"
     }
   ],
   propagation: {
@@ -218,7 +207,7 @@ const canonicalModel = {
       {
         id: "native-package-managers",
         description: "Publish package-manager native install paths with the same verification probes",
-        evidence: ["vision"]
+        evidence: ["x0x-readme-install"]
       }
     ]
   },
@@ -353,7 +342,7 @@ const canonicalModel = {
       {
         id: "document-sharing-first-use",
         description: "Add first-use operations for document CRDT flows when upstream APIs are available",
-        evidence: ["vision"]
+        evidence: ["x0xd-api"]
       }
     ]
   },
@@ -618,7 +607,7 @@ const canonicalModel = {
       {
         id: "capability-discovery-api",
         description: "Add integration references for capability discovery endpoints once upstream ships them",
-        evidence: ["vision"]
+        evidence: ["x0x-skill"]
       }
     ]
   },

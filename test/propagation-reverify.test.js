@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 import worker from "../src/index.js";
 import { MACHINE_ENDPOINTS } from "../src/artifacts/discovery.js";
-import { PROPAGATION_PACKET_PATH } from "../src/artifacts/propagation.js";
+
+const PROPAGATION_PACKET_PATH = "/machine/propagation";
 
 async function fetchJson(path) {
   const response = await worker.fetch(new Request(`https://example.test${path}`));

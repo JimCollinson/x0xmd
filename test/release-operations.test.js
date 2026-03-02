@@ -5,9 +5,10 @@ import worker from "../src/index.js";
 import { buildDiscoveryArtifact, MACHINE_ENDPOINTS, JSON_CONTENT_TYPE } from "../src/artifacts/discovery.js";
 import {
   buildReleaseOperationsArtifact,
-  RELEASE_OPERATIONS_PATH,
   RELEASE_OPERATIONS_SCHEMA_VERSION
 } from "../src/artifacts/release-operations.js";
+
+const RELEASE_OPERATIONS_PATH = "/machine/release-operations";
 
 async function fetchJson(path) {
   const response = await worker.fetch(new Request(`https://example.test${path}`));

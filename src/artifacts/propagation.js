@@ -2,7 +2,6 @@ import { MACHINE_ENDPOINTS } from "./discovery.js";
 import { canonicalModel } from "../model/canonical.js";
 
 export const PROPAGATION_PACKET_SCHEMA_VERSION = "1.0.0";
-export const PROPAGATION_PACKET_PATH = "/machine/propagation";
 export const PROPAGATION_PACKET_REQUIRED_KEYS = Object.freeze([
   "schema_version",
   "artifact_version",

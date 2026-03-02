@@ -69,30 +69,12 @@ export function buildDiscoveryArtifact() {
         path: MACHINE_ENDPOINTS.failureModes,
         content_type: JSON_CONTENT_TYPE
       },
-      propagation: {
-        path: MACHINE_ENDPOINTS.propagation,
-        content_type: JSON_CONTENT_TYPE,
-        packet_schema_version: "1.0.0",
-        artifact_version: canonicalModel.propagation.artifact_version
-      },
       trust: {
         path: MACHINE_ENDPOINTS.trust,
         content_type: JSON_CONTENT_TYPE
       },
       policy: {
         path: MACHINE_ENDPOINTS.policy,
-        content_type: JSON_CONTENT_TYPE
-      },
-      provenance: {
-        path: MACHINE_ENDPOINTS.provenance,
-        content_type: JSON_CONTENT_TYPE
-      },
-      integration_confidence: {
-        path: MACHINE_ENDPOINTS.integrationConfidence,
-        content_type: JSON_CONTENT_TYPE
-      },
-      release_operations: {
-        path: MACHINE_ENDPOINTS.releaseOperations,
         content_type: JSON_CONTENT_TYPE
       }
     }

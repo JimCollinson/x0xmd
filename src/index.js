@@ -19,23 +19,7 @@ import {
   buildFailureModesArtifact,
   FAILURE_MODES_PATH
 } from "./artifacts/failure-modes.js";
-import {
-  buildPropagationPacketArtifact,
-  PROPAGATION_PACKET_PATH
-} from "./artifacts/propagation.js";
 import { buildPolicyArtifact, POLICY_PATH } from "./artifacts/policy.js";
-import {
-  buildProvenanceArtifact,
-  PROVENANCE_PATH
-} from "./artifacts/provenance.js";
-import {
-  buildIntegrationConfidenceArtifact,
-  INTEGRATION_CONFIDENCE_PATH
-} from "./artifacts/integration-confidence.js";
-import {
-  buildReleaseOperationsArtifact,
-  RELEASE_OPERATIONS_PATH
-} from "./artifacts/release-operations.js";
 import { buildTrustArtifact } from "./artifacts/trust.js";
 
 const ROOT_HTML_CONTENT_TYPE = "text/html; charset=utf-8";
@@ -190,7 +174,7 @@ function shouldServeRootHtml(acceptHeader) {
 }
 
 function rootHtmlResponse() {
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>x0xmd</title></head><body><h1>x0xmd discovery surface</h1><p>Machine endpoint map: <a href="${MACHINE_ENDPOINTS.discovery}">${MACHINE_ENDPOINTS.discovery}</a></p><p>Trust metadata: <a href="${MACHINE_ENDPOINTS.trust}">${MACHINE_ENDPOINTS.trust}</a></p><p>Policy metadata: <a href="${MACHINE_ENDPOINTS.policy}">${MACHINE_ENDPOINTS.policy}</a></p><p>Provenance metadata: <a href="${MACHINE_ENDPOINTS.provenance}">${MACHINE_ENDPOINTS.provenance}</a></p></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>x0x</title></head><body><h1>x0x peer-to-peer agent communication network</h1><p>Machine discovery map: <a href="${MACHINE_ENDPOINTS.discovery}">${MACHINE_ENDPOINTS.discovery}</a></p><p>Install contract: <a href="${MACHINE_ENDPOINTS.install}">${MACHINE_ENDPOINTS.install}</a></p><p>First-use contract: <a href="${MACHINE_ENDPOINTS.firstUse}">${MACHINE_ENDPOINTS.firstUse}</a></p><p>Integration contract: <a href="${MACHINE_ENDPOINTS.integration}">${MACHINE_ENDPOINTS.integration}</a></p><p>Trust metadata: <a href="${MACHINE_ENDPOINTS.trust}">${MACHINE_ENDPOINTS.trust}</a></p><p>Policy metadata: <a href="${MACHINE_ENDPOINTS.policy}">${MACHINE_ENDPOINTS.policy}</a></p></body></html>`;
   return new Response(html, {
     status: 200,
     headers: {
@@ -205,13 +189,13 @@ function rootMachineHintResponse() {
   return new Response(
     JSON.stringify({
       schema_version: "1.0.0",
-      service: "x0xmd",
+      service: "x0x",
       machine_entrypoint: MACHINE_ENDPOINTS.discovery,
+      install_endpoint: MACHINE_ENDPOINTS.install,
+      first_use_endpoint: MACHINE_ENDPOINTS.firstUse,
+      integration_endpoint: MACHINE_ENDPOINTS.integration,
       trust_metadata_endpoint: MACHINE_ENDPOINTS.trust,
       policy_metadata_endpoint: MACHINE_ENDPOINTS.policy,
-      provenance_metadata_endpoint: MACHINE_ENDPOINTS.provenance,
-      integration_confidence_endpoint: MACHINE_ENDPOINTS.integrationConfidence,
-      release_operations_endpoint: MACHINE_ENDPOINTS.releaseOperations,
       content_type: JSON_CONTENT_TYPE
     }),
     {
@@ -290,22 +274,6 @@ export default {
 
     if (pathname === POLICY_PATH) {
       return jsonResponse(buildPolicyArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
-    }
-
-    if (pathname === PROVENANCE_PATH) {
-      return jsonResponse(buildProvenanceArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
-    }
-
-    if (pathname === INTEGRATION_CONFIDENCE_PATH) {
-      return jsonResponse(buildIntegrationConfidenceArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
-    }
-
-    if (pathname === RELEASE_OPERATIONS_PATH) {
-      return jsonResponse(buildReleaseOperationsArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
-    }
-
-    if (pathname === PROPAGATION_PACKET_PATH) {
-      return jsonResponse(buildPropagationPacketArtifact(), JSON_CONTENT_TYPE, "public, max-age=300");
     }
 
     return notFoundResponse();

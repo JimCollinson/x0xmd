@@ -28,20 +28,16 @@ test("release operations artifact exposes stable schema and evidence requirement
   assert.equal(artifact.version.plan, "03-01");
 });
 
-test("discovery artifact includes release operations endpoint", () => {
+test("discovery artifact omits release operations endpoint", () => {
   const discovery = buildDiscoveryArtifact();
 
-  assert.equal(discovery.endpoints.release_operations.path, MACHINE_ENDPOINTS.releaseOperations);
-  assert.equal(discovery.endpoints.release_operations.content_type, JSON_CONTENT_TYPE);
+  assert.equal(Object.hasOwn(discovery.endpoints, "release_operations"), false);
 });
 
-test("release operations endpoint serves machine-readable contract", async () => {
-  const { response, payload } = await fetchJson(RELEASE_OPERATIONS_PATH);
+test("release operations endpoint is removed from public surface", async () => {
+  const { response } = await fetchJson(RELEASE_OPERATIONS_PATH);
 
-  assert.equal(response.status, 200);
+  assert.equal(response.status, 404);
   assert.equal(response.headers.get("content-type"), JSON_CONTENT_TYPE);
-  assert.equal(response.headers.get("cache-control"), "public, max-age=300");
-  assert.equal(payload.schema_version, RELEASE_OPERATIONS_SCHEMA_VERSION);
-  assert.equal(payload.workflow.dispatch_command_template.includes("gh workflow run deploy.yml --ref <branch>"), true);
-  assert.equal(payload.evidence.schema_path, "docs/ops/release-evidence.schema.json");
+  assert.equal(response.headers.get("cache-control"), "no-store");
 });

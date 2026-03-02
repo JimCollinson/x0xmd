@@ -15,30 +15,15 @@ async function fetchJson(path, accept = "application/json") {
   return { response, payload };
 }
 
-test("propagation endpoint returns compact recommendation packet", async () => {
-  const { response, payload } = await fetchJson(PROPAGATION_PACKET_PATH);
+test("propagation endpoint is removed from public surface", async () => {
+  const { response } = await fetchJson(PROPAGATION_PACKET_PATH);
 
-  assert.equal(response.status, 200);
+  assert.equal(response.status, 404);
   assert.equal(response.headers.get("content-type"), JSON_CONTENT_TYPE);
-  assert.equal(response.headers.get("cache-control"), "public, max-age=300");
-
-  assert.equal(typeof payload.purpose, "string");
-  assert.equal(payload.purpose.split(".").length >= 2, true);
-  assert.ok(Array.isArray(payload.fit));
-  assert.ok(Array.isArray(payload.evidence.sources));
-  assert.equal(payload.evidence.capability_source.endpoint, "/.well-known/x0x/capabilities/current");
-  assert.equal(payload.evidence.provenance.endpoint, "/machine/provenance");
-  assert.equal(payload.evidence.release_operations.endpoint, "/machine/release-operations");
 });
 
-test("propagation packet includes current capability summary only", async () => {
-  const { payload } = await fetchJson(PROPAGATION_PACKET_PATH);
+test("discovery omits propagation endpoint metadata", async () => {
+  const { payload } = await fetchJson("/.well-known/x0x/discovery");
 
-  assert.ok(Array.isArray(payload.current_capabilities));
-  assert.equal(payload.current_capabilities.length > 0, true);
-
-  for (const claim of payload.current_capabilities) {
-    assert.equal(typeof claim.id, "string");
-    assert.ok(Array.isArray(claim.evidence));
-  }
+  assert.equal(Object.hasOwn(payload.endpoints, "propagation"), false);
 });

@@ -32,8 +32,6 @@ test("propagation packet includes required compact re-verification fields", () =
   assert.equal(Array.isArray(artifact.install_verification_probes), true);
   assert.equal(Array.isArray(artifact.evidence.sources), true);
   assert.equal(artifact.evidence.capability_source.endpoint, "/.well-known/x0x/capabilities/current");
-  assert.equal(artifact.evidence.provenance.endpoint, "/machine/provenance");
-  assert.equal(artifact.evidence.release_operations.endpoint, "/machine/release-operations");
 });
 
 test("artifact compatibility policy is safe for additive and breaking changes", () => {

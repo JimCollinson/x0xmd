@@ -23,7 +23,7 @@ test("root serves browser html when text/html is preferred", async () => {
   assert.equal(response.headers.get("content-type"), "text/html; charset=utf-8");
   assert.equal(response.headers.get("vary"), "Accept");
   assert.equal(response.headers.get("cache-control"), ROOT_CACHE_CONTROL);
-  assert.match(body, /x0xmd discovery surface/);
+  assert.match(body, /x0x peer-to-peer agent communication network/);
 });
 
 test("root serves machine hint json for application/json", async () => {
@@ -36,7 +36,13 @@ test("root serves machine hint json for application/json", async () => {
 
   const payload = JSON.parse(body);
   assert.equal(payload.machine_entrypoint, "/.well-known/x0x/discovery");
+  assert.equal(payload.install_endpoint, "/machine/install");
+  assert.equal(payload.first_use_endpoint, "/machine/first-use");
+  assert.equal(payload.integration_endpoint, "/machine/integration");
   assert.equal(payload.content_type, "application/json; charset=utf-8");
+  assert.equal(Object.hasOwn(payload, "provenance_metadata_endpoint"), false);
+  assert.equal(Object.hasOwn(payload, "integration_confidence_endpoint"), false);
+  assert.equal(Object.hasOwn(payload, "release_operations_endpoint"), false);
 });
 
 test("root serves machine hint json for wildcard or missing accept", async () => {

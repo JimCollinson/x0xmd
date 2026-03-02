@@ -18,7 +18,7 @@ test("validation fails if capability is in both current and planned", () => {
       {
         id: duplicateId,
         description: "duplicate lifecycle entry",
-        evidence: ["plan-01-01"]
+        evidence: ["x0x-readme-install"]
       }
     ]
   };

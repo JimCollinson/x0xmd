@@ -18,8 +18,6 @@ test("propagation evidence and reverify links required for independent checks", 
   const artifact = buildPropagationPacketArtifact();
 
   assert.equal(typeof artifact.evidence.capability_source.endpoint, "string");
-  assert.equal(typeof artifact.evidence.provenance.endpoint, "string");
-  assert.equal(typeof artifact.evidence.release_operations.endpoint, "string");
   assert.equal(typeof artifact.reverify.authoritative_endpoints.capabilities_current, "string");
   assert.equal(typeof artifact.reverify.authoritative_endpoints.install, "string");
   assert.equal(Array.isArray(artifact.reverify.command_references), true);

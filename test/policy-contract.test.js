@@ -14,21 +14,14 @@ async function fetchJson(path) {
   return { response, payload };
 }
 
-test("policy endpoint publishes deterministic input/output evaluation schema", async () => {
+test("policy endpoint publishes x0x trust policy identifiers and rules", async () => {
   const { response, payload } = await fetchJson(MACHINE_ENDPOINTS.policy);
 
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("content-type"), JSON_CONTENT_TYPE);
   assert.equal(payload.schema_version, "1.0.0");
-
-  const inputFields = payload.evaluation_contract.input_schema.required_fields.map((field) => field.name);
-  assert.deepEqual(inputFields, ["sender_trust_level", "signature_state", "action_class", "endpoint_context"]);
-
-  const outputFields = payload.evaluation_contract.output_schema.required_fields.map((field) => field.name);
-  assert.deepEqual(outputFields, ["decision", "reason_code"]);
-
-  const decisionField = payload.evaluation_contract.output_schema.required_fields.find((field) => field.name === "decision");
-  assert.deepEqual(decisionField.enum, ["allow", "deny", "needs-human"]);
+  assert.equal(payload.policy_id, "x0x-trust-enforcement-v1");
+  assert.equal(Object.hasOwn(payload, "evaluation_contract"), false);
 });
 
 test("policy endpoint provides action-class rules and deterministic machine examples", async () => {

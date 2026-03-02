@@ -11,30 +11,21 @@ async function fetchJson(path) {
   return { response, payload };
 }
 
-test("propagation packet exposes reverify block with authoritative endpoints", async () => {
-  const { response, payload } = await fetchJson(PROPAGATION_PACKET_PATH);
+test("propagation endpoint returns 404", async () => {
+  const { response } = await fetchJson(PROPAGATION_PACKET_PATH);
 
-  assert.equal(response.status, 200);
-  assert.equal(payload.reverify.authoritative_endpoints.discovery, MACHINE_ENDPOINTS.discovery);
-  assert.equal(payload.reverify.authoritative_endpoints.capabilities_current, MACHINE_ENDPOINTS.capabilitiesCurrent);
-  assert.equal(payload.reverify.authoritative_endpoints.install, MACHINE_ENDPOINTS.install);
-  assert.equal(payload.reverify.authoritative_endpoints.provenance, MACHINE_ENDPOINTS.provenance);
-  assert.equal(payload.reverify.authoritative_endpoints.release_operations, MACHINE_ENDPOINTS.releaseOperations);
+  assert.equal(response.status, 404);
 });
 
-test("reverify command references include endpoint checks and install probes", async () => {
-  const { payload } = await fetchJson(PROPAGATION_PACKET_PATH);
+test("root and discovery do not advertise propagation", async () => {
+  const { payload: discovery } = await fetchJson(MACHINE_ENDPOINTS.discovery);
+  assert.equal(Object.hasOwn(discovery.endpoints, "propagation"), false);
 
-  assert.equal(Array.isArray(payload.reverify.command_references), true);
-  assert.equal(payload.reverify.command_references.length >= 4, true);
-
-  for (const entry of payload.reverify.command_references) {
-    assert.equal(typeof entry.id, "string");
-    assert.equal(typeof entry.command_unix, "string");
-    assert.equal(typeof entry.command_windows, "string");
-    assert.equal(typeof entry.expected_signal, "object");
-  }
-
-  assert.equal(Array.isArray(payload.reverify.install_probe_commands), true);
-  assert.equal(payload.reverify.install_probe_commands.length > 0, true);
+  const rootResponse = await worker.fetch(new Request("https://example.test/", {
+    headers: {
+      accept: "application/json"
+    }
+  }));
+  const rootPayload = await rootResponse.json();
+  assert.equal(Object.hasOwn(rootPayload, "propagation_endpoint"), false);
 });

@@ -6,6 +6,28 @@ import {
 } from "../src/artifacts/propagation.js";
 import { buildDiscoveryArtifact, MACHINE_ENDPOINTS } from "../src/artifacts/discovery.js";
 
+const REQUIRED_PUBLIC_ENDPOINT_KEYS = [
+  "discovery",
+  "health",
+  "capabilities_current",
+  "capabilities_planned",
+  "fit_criteria",
+  "install",
+  "first_use",
+  "integration",
+  "events_contract",
+  "failure_modes",
+  "trust",
+  "policy"
+];
+
+const REMOVED_PUBLIC_ENDPOINT_KEYS = [
+  "propagation",
+  "provenance",
+  "integration_confidence",
+  "release_operations"
+];
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -22,14 +44,13 @@ for (const key of PROPAGATION_PACKET_REQUIRED_KEYS) {
   assert(Object.hasOwn(propagation, key), `Propagation packet missing required key: ${key}`);
 }
 
-assert(
-  discovery.endpoints.propagation.packet_schema_version === propagation.schema_version,
-  "Discovery propagation schema version metadata drift"
-);
-assert(
-  discovery.endpoints.propagation.artifact_version === propagation.artifact_version,
-  "Discovery propagation artifact version metadata drift"
-);
+for (const key of REQUIRED_PUBLIC_ENDPOINT_KEYS) {
+  assert(Object.hasOwn(discovery.endpoints, key), `Discovery missing required public endpoint: ${key}`);
+}
+
+for (const key of REMOVED_PUBLIC_ENDPOINT_KEYS) {
+  assert(Object.hasOwn(discovery.endpoints, key) === false, `Discovery leaked removed public endpoint: ${key}`);
+}
 
 assert(Array.isArray(propagation.current_capabilities), "current_capabilities must be an array");
 assert(Array.isArray(propagation.fit), "fit must be an array");
@@ -54,14 +75,6 @@ assert(
   propagation.evidence.capability_source.endpoint === discovery.endpoints.capabilities_current.path,
   "Capability source endpoint drifted from discovery"
 );
-assert(
-  propagation.evidence.provenance.endpoint === discovery.endpoints.provenance.path,
-  "Provenance endpoint drifted from discovery"
-);
-assert(
-  propagation.evidence.release_operations.endpoint === discovery.endpoints.release_operations.path,
-  "Release operations endpoint drifted from discovery"
-);
 
 assert(
   propagation.reverify.authoritative_endpoints.discovery === discovery.endpoints.discovery.path,
@@ -78,14 +91,6 @@ assert(
 assert(
   propagation.reverify.authoritative_endpoints.install === discovery.endpoints.install.path,
   "Reverify install endpoint drift"
-);
-assert(
-  propagation.reverify.authoritative_endpoints.provenance === discovery.endpoints.provenance.path,
-  "Reverify provenance endpoint drift"
-);
-assert(
-  propagation.reverify.authoritative_endpoints.release_operations === discovery.endpoints.release_operations.path,
-  "Reverify release operations endpoint drift"
 );
 
 assert(

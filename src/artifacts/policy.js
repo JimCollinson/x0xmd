@@ -17,53 +17,7 @@ export function buildPolicyArtifact() {
   return {
     schema_version: POLICY_SCHEMA_VERSION,
     contract_version: canonicalModel.trust.contract_version,
-    policy_id: "x0xmd-trust-enforcement-v1",
-    evaluation_contract: {
-      input_schema: {
-        required_fields: [
-          {
-            name: "sender_trust_level",
-            type: "string",
-            enum: ["unknown", "known", "trusted", "blocked"]
-          },
-          {
-            name: "signature_state",
-            type: "string",
-            enum: ["verified", "invalid", "missing", "not_required"]
-          },
-          {
-            name: "action_class",
-            type: "string",
-            enum: ["publish", "subscribe", "mutate_contacts", "task_list_write"]
-          },
-          {
-            name: "endpoint_context",
-            type: "object",
-            required_keys: ["path", "method", "channel"]
-          }
-        ]
-      },
-      output_schema: {
-        required_fields: [
-          {
-            name: "decision",
-            type: "string",
-            enum: ["allow", "deny", "needs-human"]
-          },
-          {
-            name: "reason_code",
-            type: "string",
-            enum: [
-              "policy.allow",
-              "policy.deny.blocked-trust",
-              "policy.deny.signature-required",
-              "policy.deny.trust-level",
-              "policy.needs-human.high-impact"
-            ]
-          }
-        ]
-      }
-    },
+    policy_id: "x0x-trust-enforcement-v1",
     deterministic_rules: buildDeterministicRules(),
     default_behavior: {
       unknown_action_class: {

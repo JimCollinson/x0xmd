@@ -2,7 +2,7 @@ import { MACHINE_ENDPOINTS } from "./discovery.js";
 import { canonicalModel } from "../model/canonical.js";
 
 export const PROPAGATION_PACKET_SCHEMA_VERSION = "1.0.0";
-export const PROPAGATION_PACKET_PATH = MACHINE_ENDPOINTS.propagation;
+export const PROPAGATION_PACKET_PATH = "/machine/propagation";
 export const PROPAGATION_PACKET_REQUIRED_KEYS = Object.freeze([
   "schema_version",
   "artifact_version",
@@ -13,6 +13,9 @@ export const PROPAGATION_PACKET_REQUIRED_KEYS = Object.freeze([
   "install_verification_probes",
   "evidence"
 ]);
+
+const INTERNAL_PROVENANCE_PATH = "/machine/provenance";
+const INTERNAL_RELEASE_OPERATIONS_PATH = "/machine/release-operations";
 
 function compactCurrentCapabilities() {
   return (canonicalModel.capabilities_current || []).map((capability) => ({
@@ -47,8 +50,8 @@ function buildReverifyBlock(probes) {
       capabilities_current: MACHINE_ENDPOINTS.capabilitiesCurrent,
       fit_criteria: MACHINE_ENDPOINTS.fitCriteria,
       install: MACHINE_ENDPOINTS.install,
-      provenance: MACHINE_ENDPOINTS.provenance,
-      release_operations: MACHINE_ENDPOINTS.releaseOperations
+      provenance: INTERNAL_PROVENANCE_PATH,
+      release_operations: INTERNAL_RELEASE_OPERATIONS_PATH
     },
     command_references: [
       {
@@ -71,8 +74,8 @@ function buildReverifyBlock(probes) {
       },
       {
         id: "fetch-release-operations",
-        command_unix: `curl -sf https://<host>${MACHINE_ENDPOINTS.releaseOperations}`,
-        command_windows: `Invoke-RestMethod -Uri https://<host>${MACHINE_ENDPOINTS.releaseOperations}`,
+        command_unix: `curl -sf https://<host>${INTERNAL_RELEASE_OPERATIONS_PATH}`,
+        command_windows: `Invoke-RestMethod -Uri https://<host>${INTERNAL_RELEASE_OPERATIONS_PATH}`,
         expected_signal: {
           status_code: 200,
           required_keys: ["evidence", "workflow"]
@@ -80,8 +83,8 @@ function buildReverifyBlock(probes) {
       },
       {
         id: "fetch-provenance",
-        command_unix: `curl -sf https://<host>${MACHINE_ENDPOINTS.provenance}`,
-        command_windows: `Invoke-RestMethod -Uri https://<host>${MACHINE_ENDPOINTS.provenance}`,
+        command_unix: `curl -sf https://<host>${INTERNAL_PROVENANCE_PATH}`,
+        command_windows: `Invoke-RestMethod -Uri https://<host>${INTERNAL_PROVENANCE_PATH}`,
         expected_signal: {
           status_code: 200,
           required_keys: ["artifacts", "schema_version"]
@@ -140,10 +143,10 @@ export function buildPropagationPacketArtifact() {
         lifecycle: "current"
       },
       provenance: {
-        endpoint: MACHINE_ENDPOINTS.provenance
+        endpoint: INTERNAL_PROVENANCE_PATH
       },
       release_operations: {
-        endpoint: MACHINE_ENDPOINTS.releaseOperations
+        endpoint: INTERNAL_RELEASE_OPERATIONS_PATH
       },
       sources: canonicalModel.source_evidence.map((entry) => ({
         id: entry.id,

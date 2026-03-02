@@ -1,7 +1,5 @@
-import { MACHINE_ENDPOINTS } from "./discovery.js";
-
 export const RELEASE_OPERATIONS_SCHEMA_VERSION = "1.0.0";
-export const RELEASE_OPERATIONS_PATH = MACHINE_ENDPOINTS.releaseOperations;
+export const RELEASE_OPERATIONS_PATH = "/machine/release-operations";
 
 const REQUIRED_EVIDENCE_KEYS = Object.freeze([
   "schema_version",

@@ -15,12 +15,8 @@ export const MACHINE_ENDPOINTS = Object.freeze({
   integration: "/machine/integration",
   eventsContract: "/machine/events-contract",
   failureModes: "/machine/failure-modes",
-  propagation: "/machine/propagation",
   trust: "/machine/trust",
-  policy: "/machine/policy",
-  provenance: "/machine/provenance",
-  integrationConfidence: "/machine/integration-confidence",
-  releaseOperations: "/machine/release-operations"
+  policy: "/machine/policy"
 });
 
 export function buildDiscoveryArtifact() {

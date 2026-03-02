@@ -17,13 +17,13 @@ import {
 import { buildPolicyArtifact, POLICY_PATH, POLICY_SCHEMA_VERSION } from "./policy.js";
 import {
   buildProvenanceArtifact,
-  PROVENANCE_PATH,
   PROVENANCE_SCHEMA_VERSION
 } from "./provenance.js";
 import { TRUST_SCHEMA_VERSION } from "./trust.js";
 
 export const INTEGRATION_CONFIDENCE_SCHEMA_VERSION = "1.0.0";
-export const INTEGRATION_CONFIDENCE_PATH = "/machine/integration-confidence";
+const INTERNAL_INTEGRATION_CONFIDENCE_PATH = "/machine/integration-confidence";
+const INTERNAL_PROVENANCE_PATH = "/machine/provenance";
 
 const REQUIRED_GATES = Object.freeze([
   "event-schema-compliance",
@@ -114,8 +114,8 @@ function evaluateDriftCheckStatus() {
     EVENTS_CONTRACT_PATH,
     FAILURE_MODES_PATH,
     POLICY_PATH,
-    PROVENANCE_PATH,
-    INTEGRATION_CONFIDENCE_PATH
+    INTERNAL_PROVENANCE_PATH,
+    INTERNAL_INTEGRATION_CONFIDENCE_PATH
   ];
 
   const discoveryPaths = new Set(Object.values(discovery.endpoints).map((endpoint) => endpoint.path));
@@ -180,7 +180,7 @@ function buildBaseGates() {
       criterion:
         "Schema versions and discovery/provenance contract links stay synchronized across hardening artifacts.",
       evidence: {
-        artifacts: [MACHINE_ENDPOINTS.discovery, PROVENANCE_PATH],
+        artifacts: [MACHINE_ENDPOINTS.discovery, INTERNAL_PROVENANCE_PATH],
         commands: [
           "node --test test/drift-contract.test.js test/interop-conformance.test.js",
           "npm run check:drift"
@@ -231,7 +231,7 @@ export function buildIntegrationConfidenceArtifact(options = {}) {
       events_contract: EVENTS_CONTRACT_PATH,
       policy: POLICY_PATH,
       failure_modes: FAILURE_MODES_PATH,
-      provenance: PROVENANCE_PATH,
+      provenance: INTERNAL_PROVENANCE_PATH,
       discovery: MACHINE_ENDPOINTS.discovery
     },
     evidence_bundle: {

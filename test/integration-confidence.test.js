@@ -2,8 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import worker from "../src/index.js";
-import { buildIntegrationConfidenceArtifact, INTEGRATION_CONFIDENCE_PATH } from "../src/artifacts/integration-confidence.js";
+import { buildIntegrationConfidenceArtifact } from "../src/artifacts/integration-confidence.js";
 import { JSON_CONTENT_TYPE, MACHINE_ENDPOINTS } from "../src/artifacts/discovery.js";
+
+const INTEGRATION_CONFIDENCE_PATH = "/machine/integration-confidence";
 
 async function fetchJson(path) {
   const response = await worker.fetch(new Request(`https://example.test${path}`, {

@@ -9,7 +9,6 @@ import {
 import { buildPolicyArtifact, POLICY_SCHEMA_VERSION } from "./policy.js";
 
 export const PROVENANCE_SCHEMA_VERSION = "1.0.0";
-export const PROVENANCE_PATH = "/machine/provenance";
 const TRUST_SCHEMA_VERSION = "1.0.0";
 
 function stableStringify(value) {

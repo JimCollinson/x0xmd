@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import worker from "../src/index.js";
 import { JSON_CONTENT_TYPE, MACHINE_ENDPOINTS } from "../src/artifacts/discovery.js";
 
+const PROVENANCE_PATH = "/machine/provenance";
+
 async function fetchJson(path) {
   const response = await worker.fetch(new Request(`https://example.test${path}`, {
     headers: {
@@ -15,7 +17,7 @@ async function fetchJson(path) {
 }
 
 test("provenance endpoint is removed from public surface", async () => {
-  const response = await worker.fetch(new Request(`https://example.test${MACHINE_ENDPOINTS.provenance}`, {
+  const response = await worker.fetch(new Request(`https://example.test${PROVENANCE_PATH}`, {
     headers: {
       accept: "application/json"
     }

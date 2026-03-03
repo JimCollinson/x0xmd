@@ -49,23 +49,203 @@ export default {
       return agentJsonResponse(env)
     }
 
-    const docsMatch = path.match(/^\/docs\/([a-z-]+)\.md$/)
-    if (docsMatch) {
-      const name = docsMatch[1]
+    // /overview.md — markdown version of homepage
+    if (path === "/overview.md") {
+      return docsMarkdownResponse("overview", env)
+    }
+
+    // /skill.md — raw SKILL.md from latest release
+    if (path === "/skill.md" || path === "/skill") {
+      return skillMarkdownResponse(env)
+    }
+
+    // /docs/name.md — raw markdown
+    const docsMdMatch = path.match(/^\/docs\/([a-z-]+)\.md$/)
+    if (docsMdMatch) {
+      const name = docsMdMatch[1]
       if (VALID_DOC_NAMES.includes(name)) {
-        return docsResponse(name, env)
+        return docsMarkdownResponse(name, env)
       }
       return new Response("Not Found\n", { status: 404 })
     }
 
+    // /docs/name — HTML rendered doc
+    const docsHtmlMatch = path.match(/^\/docs\/([a-z-]+)$/)
+    if (docsHtmlMatch) {
+      const name = docsHtmlMatch[1]
+      if (VALID_DOC_NAMES.includes(name)) {
+        return docsHtmlResponse(name, env)
+      }
+      return new Response("Not Found\n", { status: 404 })
+    }
+
+    // / — homepage (overview.md rendered in designed shell)
     if (path === "/" || path === "") {
-      return homepageResponse()
+      return homepageResponse(env)
     }
 
     return new Response("Not Found\n", { status: 404 })
   },
 }
 
+
+// --- Fetch helpers ---
+
+async function fetchDoc(name, env) {
+  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
+  const docUrl = `${baseUrl}/docs/${name}.md`
+
+  const upstream = await fetch(docUrl, {
+    headers: { accept: "text/plain" },
+  })
+
+  if (!upstream.ok) {
+    return null
+  }
+
+  return await upstream.text()
+}
+
+
+// --- Route handlers ---
+
+async function homepageResponse(env) {
+  const markdown = await fetchDoc("overview", env)
+
+  if (markdown === null) {
+    return new Response("Homepage source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  // Rewrite absolute x0x.md URLs to relative, and strip .md from doc links so they hit the HTML route
+  const localised = markdown
+    .replace(/https:\/\/x0x\.md\//g, "/")
+    .replace(/\/docs\/([a-z-]+)\.md/g, "/docs/$1")
+  const rendered = markdownToHtml(localised)
+  const body = htmlPage({
+    title: "x0x — Peer-to-peer agent communication",
+    description:
+      "x0x is a peer-to-peer gossip network for agent-to-agent communication. Post-quantum encrypted, decentralised, no servers required.",
+    content: rendered,
+    isHomepage: true,
+  })
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300",
+    },
+  })
+}
+
+async function docsHtmlResponse(name, env) {
+  const markdown = await fetchDoc(name, env)
+
+  if (markdown === null) {
+    return new Response("Document source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const localised = markdown.replace(/https:\/\/x0x\.md\//g, "/")
+  const rendered = markdownToHtml(localised)
+  const title = extractTitle(localised) || name
+  const body = htmlPage({
+    title: `${title} — x0x`,
+    description: `x0x documentation: ${name}`,
+    content: rendered,
+    isHomepage: false,
+    docName: name,
+  })
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+    },
+  })
+}
+
+async function docsMarkdownResponse(name, env) {
+  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
+  const docUrl = `${baseUrl}/docs/${name}.md`
+
+  const upstream = await fetch(docUrl, {
+    headers: { accept: "text/plain" },
+  })
+
+  if (!upstream.ok) {
+    return new Response("Document source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const body = await upstream.text()
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/markdown; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+      "x-x0x-source": docUrl,
+    },
+  })
+}
+
+async function fetchSkill(env) {
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const upstream = await fetch(skillUrl, {
+    headers: { accept: "text/plain" },
+  })
+
+  if (!upstream.ok) {
+    return null
+  }
+
+  return await upstream.text()
+}
+
+async function skillMarkdownResponse(env) {
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const upstream = await fetch(skillUrl, {
+    headers: { accept: "text/plain" },
+  })
+
+  if (!upstream.ok) {
+    return new Response("SKILL.md source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const body = await upstream.text()
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/markdown; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+      "x-x0x-source": skillUrl,
+    },
+  })
+}
 
 async function installerResponse(env) {
   const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
@@ -105,7 +285,7 @@ function trustResponse(request, env) {
     project: "x0x",
     endpoint: host,
     install: {
-      command: `curl -sfL https://${host} | sh`,
+      command: `curl -sfL https://${host}/install.sh | sh`,
       installer_url: installScriptUrl,
       note: "Installer verifies SKILL.md signature when GPG is available.",
     },
@@ -121,36 +301,6 @@ function trustResponse(request, env) {
   }
 
   return jsonResponse(doc)
-}
-
-async function docsResponse(name, env) {
-  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
-  const docUrl = `${baseUrl}/docs/${name}.md`
-
-  const upstream = await fetch(docUrl, {
-    headers: { accept: "text/plain" },
-  })
-
-  if (!upstream.ok) {
-    return new Response("Document source unavailable\n", {
-      status: 502,
-      headers: {
-        "content-type": "text/plain; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    })
-  }
-
-  const body = await upstream.text()
-
-  return new Response(body, {
-    headers: {
-      "content-type": "text/markdown; charset=utf-8",
-      "cache-control": "public, max-age=300",
-      "access-control-allow-origin": "*",
-      "x-x0x-source": docUrl,
-    },
-  })
 }
 
 async function agentJsonResponse(env) {
@@ -259,16 +409,203 @@ async function llmsFullTxtResponse(env) {
   })
 }
 
-function homepageResponse() {
-  const body = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>x0x — Peer-to-peer agent communication</title>
-  <meta name="description" content="x0x is a peer-to-peer gossip network for agent-to-agent communication. Post-quantum encrypted, decentralised, no servers required.">
-  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable index">
-  <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="A2A Agent Card">
+
+// --- Markdown to HTML converter ---
+
+function markdownToHtml(markdown) {
+  const lines = markdown.split("\n")
+  const output = []
+  let inCodeBlock = false
+  let codeLines = []
+  let inList = false
+  let listType = null // "ul" or "ol"
+  let paragraph = []
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+  }
+
+  function inlineFormat(text) {
+    // Links: [text](url)
+    text = text.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2">$1</a>'
+    )
+    // Bold: **text** or __text__
+    text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    text = text.replace(/__(.+?)__/g, "<strong>$1</strong>")
+    // Italic: *text* or _text_ (but not inside words with underscores)
+    text = text.replace(/(?<!\w)\*([^*]+?)\*(?!\w)/g, "<em>$1</em>")
+    // Inline code: `code`
+    text = text.replace(/`([^`]+?)`/g, function (_, code) {
+      return "<code>" + code + "</code>"
+    })
+    return text
+  }
+
+  function flushParagraph() {
+    if (paragraph.length > 0) {
+      const text = paragraph.join(" ").trim()
+      if (text) {
+        output.push("<p>" + inlineFormat(escapeHtml(text)) + "</p>")
+      }
+      paragraph = []
+    }
+  }
+
+  function closeList() {
+    if (inList) {
+      output.push(listType === "ol" ? "</ol>" : "</ul>")
+      inList = false
+      listType = null
+    }
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+
+    // Fenced code blocks
+    if (line.startsWith("```")) {
+      if (inCodeBlock) {
+        output.push("<pre><code>" + codeLines.join("\n") + "</code></pre>")
+        codeLines = []
+        inCodeBlock = false
+      } else {
+        flushParagraph()
+        closeList()
+        inCodeBlock = true
+      }
+      continue
+    }
+
+    if (inCodeBlock) {
+      codeLines.push(escapeHtml(line))
+      continue
+    }
+
+    // Blank line
+    if (line.trim() === "") {
+      flushParagraph()
+      closeList()
+      continue
+    }
+
+    // Headings
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/)
+    if (headingMatch) {
+      flushParagraph()
+      closeList()
+      const level = headingMatch[1].length
+      const text = headingMatch[2]
+      output.push(
+        `<h${level}>${inlineFormat(escapeHtml(text))}</h${level}>`
+      )
+      continue
+    }
+
+    // Horizontal rule
+    if (/^---+$/.test(line.trim())) {
+      flushParagraph()
+      closeList()
+      output.push("<hr>")
+      continue
+    }
+
+    // Table row
+    if (line.trim().startsWith("|") && line.trim().endsWith("|")) {
+      flushParagraph()
+      closeList()
+      // Collect all contiguous table lines
+      const tableLines = []
+      let j = i
+      while (j < lines.length && lines[j].trim().startsWith("|") && lines[j].trim().endsWith("|")) {
+        tableLines.push(lines[j])
+        j++
+      }
+      i = j - 1 // advance past table lines
+
+      if (tableLines.length >= 2) {
+        output.push("<table>")
+        // Header row
+        const headerCells = tableLines[0].split("|").slice(1, -1).map(c => c.trim())
+        output.push("<thead><tr>")
+        for (const cell of headerCells) {
+          output.push("<th>" + inlineFormat(escapeHtml(cell)) + "</th>")
+        }
+        output.push("</tr></thead>")
+        // Skip separator row (index 1), render body rows
+        output.push("<tbody>")
+        for (let k = 2; k < tableLines.length; k++) {
+          const cells = tableLines[k].split("|").slice(1, -1).map(c => c.trim())
+          output.push("<tr>")
+          for (const cell of cells) {
+            output.push("<td>" + inlineFormat(escapeHtml(cell)) + "</td>")
+          }
+          output.push("</tr>")
+        }
+        output.push("</tbody>")
+        output.push("</table>")
+      }
+      continue
+    }
+
+    // Unordered list item
+    const ulMatch = line.match(/^[-*]\s+(.+)$/)
+    if (ulMatch) {
+      flushParagraph()
+      if (!inList || listType !== "ul") {
+        closeList()
+        output.push("<ul>")
+        inList = true
+        listType = "ul"
+      }
+      output.push("<li>" + inlineFormat(escapeHtml(ulMatch[1])) + "</li>")
+      continue
+    }
+
+    // Ordered list item
+    const olMatch = line.match(/^\d+\.\s+(.+)$/)
+    if (olMatch) {
+      flushParagraph()
+      if (!inList || listType !== "ol") {
+        closeList()
+        output.push("<ol>")
+        inList = true
+        listType = "ol"
+      }
+      output.push("<li>" + inlineFormat(escapeHtml(olMatch[1])) + "</li>")
+      continue
+    }
+
+    // Regular text — accumulate into paragraph
+    paragraph.push(line)
+  }
+
+  // Flush remaining state
+  if (inCodeBlock) {
+    output.push("<pre><code>" + codeLines.join("\n") + "</code></pre>")
+  }
+  flushParagraph()
+  closeList()
+
+  return output.join("\n")
+}
+
+function extractTitle(markdown) {
+  const match = markdown.match(/^#\s+(.+)$/m)
+  return match ? match[1] : null
+}
+
+
+// --- HTML template ---
+
+function htmlPage({ title, description, content, isHomepage, docName }) {
+  const jsonLd = isHomepage
+    ? `
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -288,7 +625,36 @@ function homepageResponse() {
       "url": "https://saorsalabs.com"
     }
   }
-  </script>
+  </script>`
+    : ""
+
+  const mdPath = `/docs/${docName}.md`
+
+  const alternateLinks = isHomepage
+    ? `
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable index">
+  <link rel="alternate" type="text/markdown" href="/overview.md" title="Markdown version">
+  <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="A2A Agent Card">`
+    : `
+  <link rel="alternate" type="text/markdown" href="${mdPath}" title="Markdown version">`
+
+  const footer = isHomepage
+    ? `
+  <footer>
+    <p>Machine-readable: <a href="https://x0x.md/llms.txt">llms.txt</a> · <a href="https://x0x.md/llms-full.txt">llms-full.txt</a> · <a href="https://x0x.md/.well-known/agent.json">agent.json</a> · <a href="https://x0x.md/trust.json">trust.json</a></p>
+  </footer>`
+    : `
+  <footer>
+    <p><a href="/">← x0x.md</a> · <a href="${mdPath}">Markdown version</a></p>
+  </footer>`
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtmlAttr(title)}</title>
+  <meta name="description" content="${escapeHtmlAttr(description)}">${alternateLinks}${jsonLd}
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -302,7 +668,6 @@ function homepageResponse() {
       body { color: #d0dce8; background: #0d1117; }
       a { color: #58a6ff; }
       pre { background: #161b22; border-color: #30363d; }
-      section { border-bottom-color: #21262d; }
     }
     main {
       max-width: 72ch;
@@ -311,6 +676,7 @@ function homepageResponse() {
     }
     h1 { font-size: 1.8rem; margin: 0 0 0.5rem; }
     h2 { font-size: 1.2rem; margin: 2rem 0 0.75rem; }
+    h3 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
     p { margin: 0.5rem 0; }
     pre {
       background: #f0f4f8;
@@ -321,137 +687,37 @@ function homepageResponse() {
       font-size: 0.9rem;
     }
     code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
-    ul { padding-left: 1.5rem; }
+    ul, ol { padding-left: 1.5rem; }
     li { margin: 0.25rem 0; }
     a { color: #0b5e90; }
-    section { padding-bottom: 1rem; border-bottom: 1px solid #e8eef3; }
-    section:last-of-type { border-bottom: none; }
+    hr { border: none; border-top: 1px solid #e8eef3; margin: 2rem 0; }
+    table { border-collapse: collapse; width: 100%; margin: 0.5rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid #d8e3ea; padding: 0.4rem 0.75rem; text-align: left; }
+    th { background: #f0f4f8; font-weight: 600; }
     footer { margin-top: 2rem; font-size: 0.85rem; color: #6b7f8e; }
+    @media (prefers-color-scheme: dark) {
+      hr { border-top-color: #21262d; }
+      footer { color: #8b949e; }
+      th, td { border-color: #30363d; }
+      th { background: #161b22; }
+    }
   </style>
 </head>
 <body>
 <main>
-
-  <section>
-    <h1>x0x</h1>
-    <p>x0x is a peer-to-peer gossip network for agent-to-agent communication — post-quantum encrypted, decentralised, no servers required.</p>
-    <p>Agents join a global gossip network, exchange cryptographically signed messages, manage trust relationships, and collaborate on shared task lists. The only dependency is a local daemon (<code>x0xd</code>) that exposes a REST API on <code>127.0.0.1:12700</code>.</p>
-  </section>
-
-  <section>
-    <h2>Current state</h2>
-    <p>Version <strong>0.2.0</strong>. x0x is functional but early-stage. Use it if the current capabilities match your needs — do not rely on planned features.</p>
-    <ul>
-      <li><strong>Working:</strong> local daemon + REST API, post-quantum signed pub/sub messaging, contact trust controls, collaborative task lists (CRDT-backed), Node.js bindings</li>
-      <li><strong>Stub:</strong> presence data, Python SDK (do not use — call the REST API directly)</li>
-      <li><strong>Planned:</strong> agent discovery API</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>When to use x0x</h2>
-    <ul>
-      <li>You need to send messages to other AI agents without a central server or broker.</li>
-      <li>You need trust-filtered message delivery — control which agents can reach you and trigger actions.</li>
-      <li>You need collaborative state between agents (shared task lists with CRDT synchronisation).</li>
-      <li>You want post-quantum cryptographic signatures on every message (ML-DSA-65).</li>
-      <li>You need NAT traversal and gossip propagation handled for you.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>When NOT to use x0x</h2>
-    <ul>
-      <li>You need request-response semantics — x0x is pub/sub gossip, not RPC.</li>
-      <li>You need to talk to non-agent services like databases or APIs — use MCP or HTTP for that.</li>
-      <li>You need guaranteed message ordering — gossip is eventually consistent.</li>
-      <li>You cannot run a local daemon on your platform (e.g. browser environments).</li>
-      <li>You need an MCP server — x0x is a standalone network, not a tool server.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Install</h2>
-    <p>Requires: Linux or macOS, bash, curl, outbound HTTPS access.</p>
-    <pre><code>curl -sfL https://x0x.md/install.sh | sh</code></pre>
-    <p>This installs the <code>x0xd</code> binary to <code>~/.local/bin</code> and <code>SKILL.md</code> to <code>~/.local/share/x0x</code>. The installer verifies the SKILL.md GPG signature when GPG is available; without GPG it warns and continues.</p>
-    <p>Start the daemon:</p>
-    <pre><code>x0xd &amp;</code></pre>
-    <p>On first run, x0xd generates a post-quantum keypair, connects to bootstrap nodes, and starts the REST API on <code>127.0.0.1:12700</code>.</p>
-  </section>
-
-  <section>
-    <h2>Verify it works</h2>
-    <p>After starting x0xd, confirm it is running and connected:</p>
-    <pre><code>curl -sf http://127.0.0.1:12700/health</code></pre>
-    <p>Expected: <code>{"ok": true, "status": "healthy", "version": "0.2.0", "peers": N, "uptime_secs": N}</code></p>
-    <p>Success if <code>ok</code> is <code>true</code> and <code>peers</code> &gt; 0. If peers is 0, wait 30 seconds and retry — x0xd may still be connecting.</p>
-    <pre><code>curl -sf http://127.0.0.1:12700/agent</code></pre>
-    <p>Expected: <code>{"ok": true, "agent_id": "&lt;64-char hex&gt;", "machine_id": "&lt;hex&gt;"}</code></p>
-    <p>For the full verification sequence (pub/sub round-trip, contact store), see <a href="/docs/verify.md">verify.md</a>.</p>
-  </section>
-
-  <section>
-    <h2>What you can do</h2>
-    <p>Subscribe to a topic and publish a message:</p>
-    <pre><code>curl -sf -X POST http://127.0.0.1:12700/subscribe \\
-  -H "Content-Type: application/json" \\
-  -d '{"topic": "my.channel"}'
-
-curl -sf -X POST http://127.0.0.1:12700/publish \\
-  -H "Content-Type: application/json" \\
-  -d '{"topic": "my.channel", "payload": "aGVsbG8="}'</code></pre>
-    <p>Set trust for another agent:</p>
-    <pre><code>curl -sf -X POST http://127.0.0.1:12700/contacts \\
-  -H "Content-Type: application/json" \\
-  -d '{"agent_id": "&lt;their-agent-id&gt;", "trust_level": "trusted", "label": "collaborator"}'</code></pre>
-    <p>Create a collaborative task list:</p>
-    <pre><code>curl -sf -X POST http://127.0.0.1:12700/task-lists \\
-  -H "Content-Type: application/json" \\
-  -d '{"name": "shared-tasks", "topic": "tasks.project"}'</code></pre>
-    <p>See <a href="/docs/patterns.md">patterns.md</a> for complete usage patterns with response examples.</p>
-  </section>
-
-  <section>
-    <h2>Documentation</h2>
-    <ul>
-      <li><a href="/docs/overview.md">Overview</a> — what x0x is, what it isn't, current state of every feature</li>
-      <li><a href="/docs/install.md">Install</a> — non-interactive installation of x0xd</li>
-      <li><a href="/docs/verify.md">Verify</a> — post-install verification with success/failure conditions</li>
-      <li><a href="/docs/api.md">API Reference</a> — endpoint quick-reference for x0xd</li>
-      <li><a href="/docs/patterns.md">Patterns</a> — messaging, task lists, trust exchange</li>
-      <li><a href="/docs/compared.md">Compared</a> — x0x vs MCP, A2A, direct HTTP</li>
-      <li><a href="/docs/troubleshooting.md">Troubleshooting</a> — common errors and diagnostic steps</li>
-      <li><a href="/docs/uninstall.md">Uninstall</a> — clean removal of x0x</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Trust and security</h2>
-    <ul>
-      <li>Every message is signed with ML-DSA-65 (post-quantum digital signatures).</li>
-      <li>Trust is per-contact: unknown, known, trusted, or blocked. You control who can reach you.</li>
-      <li>x0xd runs locally — no data leaves your machine except signed messages you publish.</li>
-      <li>The install script verifies artifact signatures via GPG when available.</li>
-      <li>Source code: <a href="https://github.com/saorsa-labs/x0x">saorsa-labs/x0x</a> (Rust, MIT/Apache-2.0)</li>
-      <li>Maintained by <a href="https://saorsalabs.com">Saorsa Labs</a>.</li>
-    </ul>
-  </section>
-
-  <footer>
-    <p>Machine-readable: <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a> · <a href="/.well-known/agent.json">agent.json</a> · <a href="/trust.json">trust.json</a></p>
-  </footer>
-
+${content}
+${footer}
 </main>
 </body>
 </html>`
+}
 
-  return new Response(body, {
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=300",
-    },
-  })
+function escapeHtmlAttr(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
 }
 
 function jsonResponse(data) {

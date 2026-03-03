@@ -59,39 +59,13 @@ export default {
     }
 
     if (path === "/" || path === "") {
-      if (isBrowserRequest(request)) {
-        return htmlResponse(request)
-      }
-
-      return installerResponse(env)
+      return homepageResponse()
     }
 
     return new Response("Not Found\n", { status: 404 })
   },
 }
 
-function isBrowserRequest(request) {
-  const accept = request.headers.get("accept") || ""
-  const userAgent = (request.headers.get("user-agent") || "").toLowerCase()
-  const secFetchMode = request.headers.get("sec-fetch-mode") || ""
-
-  const likelyCli =
-    userAgent.includes("curl") ||
-    userAgent.includes("wget") ||
-    userAgent.includes("httpie") ||
-    userAgent.includes("python-requests") ||
-    userAgent.includes("go-http-client")
-
-  if (likelyCli) {
-    return false
-  }
-
-  if (secFetchMode.toLowerCase() === "navigate") {
-    return true
-  }
-
-  return accept.includes("text/html")
-}
 
 async function installerResponse(env) {
   const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
@@ -285,69 +259,190 @@ async function llmsFullTxtResponse(env) {
   })
 }
 
-function htmlResponse(request) {
-  const host = new URL(request.url).host
-  const command = `curl -sfL https://${host} | sh`
-
+function homepageResponse() {
   const body = `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>x0x Install</title>
+  <title>x0x — Peer-to-peer agent communication</title>
+  <meta name="description" content="x0x is a peer-to-peer gossip network for agent-to-agent communication. Post-quantum encrypted, decentralised, no servers required.">
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable index">
+  <link rel="alternate" type="application/json" href="/.well-known/agent.json" title="A2A Agent Card">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "x0x",
+    "description": "Peer-to-peer gossip network for agent-to-agent communication. Post-quantum encrypted, decentralised, no servers required.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Linux, macOS",
+    "softwareVersion": "0.2.0",
+    "license": "https://opensource.org/licenses/MIT",
+    "url": "https://x0x.md",
+    "codeRepository": "https://github.com/saorsa-labs/x0x",
+    "programmingLanguage": "Rust",
+    "author": {
+      "@type": "Organization",
+      "name": "Saorsa Labs",
+      "url": "https://saorsalabs.com"
+    }
+  }
+  </script>
   <style>
-    :root { color-scheme: light; }
+    :root { color-scheme: light dark; }
     body {
       margin: 0;
-      font-family: ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
-      background: linear-gradient(180deg, #eef5f8 0%, #f6f9fb 100%);
-      color: #17232f;
+      font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #1a2a3a;
+      background: #f7f9fb;
     }
-    .wrap {
-      max-width: 840px;
+    @media (prefers-color-scheme: dark) {
+      body { color: #d0dce8; background: #0d1117; }
+      a { color: #58a6ff; }
+      pre { background: #161b22; border-color: #30363d; }
+      section { border-bottom-color: #21262d; }
+    }
+    main {
+      max-width: 72ch;
       margin: 0 auto;
-      padding: 48px 24px;
+      padding: 2rem 1.5rem;
     }
-    .card {
-      background: #ffffff;
+    h1 { font-size: 1.8rem; margin: 0 0 0.5rem; }
+    h2 { font-size: 1.2rem; margin: 2rem 0 0.75rem; }
+    p { margin: 0.5rem 0; }
+    pre {
+      background: #f0f4f8;
       border: 1px solid #d8e3ea;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 8px 28px rgba(23, 35, 47, 0.08);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      overflow-x: auto;
+      font-size: 0.9rem;
     }
-    h1 { margin-top: 0; font-size: 34px; }
-    p { line-height: 1.55; }
-    code {
-      display: block;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #0f1f2d;
-      color: #d9f3ff;
-      overflow-wrap: anywhere;
-      margin: 14px 0;
-    }
-    ul { line-height: 1.6; }
-    .muted { color: #4f6270; font-size: 14px; }
+    code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.9em; }
+    ul { padding-left: 1.5rem; }
+    li { margin: 0.25rem 0; }
     a { color: #0b5e90; }
+    section { padding-bottom: 1rem; border-bottom: 1px solid #e8eef3; }
+    section:last-of-type { border-bottom: none; }
+    footer { margin-top: 2rem; font-size: 0.85rem; color: #6b7f8e; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>x0x Agent Install</h1>
-      <p>Install x0x daemon and SKILL.md with a single command:</p>
-      <code>${command}</code>
-      <p>What this installs:</p>
-      <ul>
-        <li><code>x0xd</code> daemon in <code>~/.local/bin</code></li>
-        <li><code>SKILL.md</code> in <code>~/.local/share/x0x</code></li>
-        <li>Automatic daemon startup and health check on <code>127.0.0.1:12700</code></li>
-      </ul>
-      <p class="muted">Security note: installer verifies SKILL.md signature when GPG is available. In non-interactive environments without GPG, it warns and continues.</p>
-      <p class="muted">For machine-readable trust metadata, see <a href="/trust.json">/trust.json</a>.</p>
-      <p class="muted">Source: <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a></p>
-    </div>
-  </div>
+<main>
+
+  <section>
+    <h1>x0x</h1>
+    <p>x0x is a peer-to-peer gossip network for agent-to-agent communication — post-quantum encrypted, decentralised, no servers required.</p>
+    <p>Agents join a global gossip network, exchange cryptographically signed messages, manage trust relationships, and collaborate on shared task lists. The only dependency is a local daemon (<code>x0xd</code>) that exposes a REST API on <code>127.0.0.1:12700</code>.</p>
+  </section>
+
+  <section>
+    <h2>Current state</h2>
+    <p>Version <strong>0.2.0</strong>. x0x is functional but early-stage. Use it if the current capabilities match your needs — do not rely on planned features.</p>
+    <ul>
+      <li><strong>Working:</strong> local daemon + REST API, post-quantum signed pub/sub messaging, contact trust controls, collaborative task lists (CRDT-backed), Node.js bindings</li>
+      <li><strong>Stub:</strong> presence data, Python SDK (do not use — call the REST API directly)</li>
+      <li><strong>Planned:</strong> agent discovery API</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>When to use x0x</h2>
+    <ul>
+      <li>You need to send messages to other AI agents without a central server or broker.</li>
+      <li>You need trust-filtered message delivery — control which agents can reach you and trigger actions.</li>
+      <li>You need collaborative state between agents (shared task lists with CRDT synchronisation).</li>
+      <li>You want post-quantum cryptographic signatures on every message (ML-DSA-65).</li>
+      <li>You need NAT traversal and gossip propagation handled for you.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>When NOT to use x0x</h2>
+    <ul>
+      <li>You need request-response semantics — x0x is pub/sub gossip, not RPC.</li>
+      <li>You need to talk to non-agent services like databases or APIs — use MCP or HTTP for that.</li>
+      <li>You need guaranteed message ordering — gossip is eventually consistent.</li>
+      <li>You cannot run a local daemon on your platform (e.g. browser environments).</li>
+      <li>You need an MCP server — x0x is a standalone network, not a tool server.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Install</h2>
+    <p>Requires: Linux or macOS, bash, curl, outbound HTTPS access.</p>
+    <pre><code>curl -sfL https://x0x.md/install.sh | sh</code></pre>
+    <p>This installs the <code>x0xd</code> binary to <code>~/.local/bin</code> and <code>SKILL.md</code> to <code>~/.local/share/x0x</code>. The installer verifies the SKILL.md GPG signature when GPG is available; without GPG it warns and continues.</p>
+    <p>Start the daemon:</p>
+    <pre><code>x0xd &amp;</code></pre>
+    <p>On first run, x0xd generates a post-quantum keypair, connects to bootstrap nodes, and starts the REST API on <code>127.0.0.1:12700</code>.</p>
+  </section>
+
+  <section>
+    <h2>Verify it works</h2>
+    <p>After starting x0xd, confirm it is running and connected:</p>
+    <pre><code>curl -sf http://127.0.0.1:12700/health</code></pre>
+    <p>Expected: <code>{"ok": true, "status": "healthy", "version": "0.2.0", "peers": N, "uptime_secs": N}</code></p>
+    <p>Success if <code>ok</code> is <code>true</code> and <code>peers</code> &gt; 0. If peers is 0, wait 30 seconds and retry — x0xd may still be connecting.</p>
+    <pre><code>curl -sf http://127.0.0.1:12700/agent</code></pre>
+    <p>Expected: <code>{"ok": true, "agent_id": "&lt;64-char hex&gt;", "machine_id": "&lt;hex&gt;"}</code></p>
+    <p>For the full verification sequence (pub/sub round-trip, contact store), see <a href="/docs/verify.md">verify.md</a>.</p>
+  </section>
+
+  <section>
+    <h2>What you can do</h2>
+    <p>Subscribe to a topic and publish a message:</p>
+    <pre><code>curl -sf -X POST http://127.0.0.1:12700/subscribe \\
+  -H "Content-Type: application/json" \\
+  -d '{"topic": "my.channel"}'
+
+curl -sf -X POST http://127.0.0.1:12700/publish \\
+  -H "Content-Type: application/json" \\
+  -d '{"topic": "my.channel", "payload": "aGVsbG8="}'</code></pre>
+    <p>Set trust for another agent:</p>
+    <pre><code>curl -sf -X POST http://127.0.0.1:12700/contacts \\
+  -H "Content-Type: application/json" \\
+  -d '{"agent_id": "&lt;their-agent-id&gt;", "trust_level": "trusted", "label": "collaborator"}'</code></pre>
+    <p>Create a collaborative task list:</p>
+    <pre><code>curl -sf -X POST http://127.0.0.1:12700/task-lists \\
+  -H "Content-Type: application/json" \\
+  -d '{"name": "shared-tasks", "topic": "tasks.project"}'</code></pre>
+    <p>See <a href="/docs/patterns.md">patterns.md</a> for complete usage patterns with response examples.</p>
+  </section>
+
+  <section>
+    <h2>Documentation</h2>
+    <ul>
+      <li><a href="/docs/overview.md">Overview</a> — what x0x is, what it isn't, current state of every feature</li>
+      <li><a href="/docs/install.md">Install</a> — non-interactive installation of x0xd</li>
+      <li><a href="/docs/verify.md">Verify</a> — post-install verification with success/failure conditions</li>
+      <li><a href="/docs/api.md">API Reference</a> — endpoint quick-reference for x0xd</li>
+      <li><a href="/docs/patterns.md">Patterns</a> — messaging, task lists, trust exchange</li>
+      <li><a href="/docs/compared.md">Compared</a> — x0x vs MCP, A2A, direct HTTP</li>
+      <li><a href="/docs/troubleshooting.md">Troubleshooting</a> — common errors and diagnostic steps</li>
+      <li><a href="/docs/uninstall.md">Uninstall</a> — clean removal of x0x</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Trust and security</h2>
+    <ul>
+      <li>Every message is signed with ML-DSA-65 (post-quantum digital signatures).</li>
+      <li>Trust is per-contact: unknown, known, trusted, or blocked. You control who can reach you.</li>
+      <li>x0xd runs locally — no data leaves your machine except signed messages you publish.</li>
+      <li>The install script verifies artifact signatures via GPG when available.</li>
+      <li>Source code: <a href="https://github.com/saorsa-labs/x0x">saorsa-labs/x0x</a> (Rust, MIT/Apache-2.0)</li>
+      <li>Maintained by <a href="https://saorsalabs.com">Saorsa Labs</a>.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Machine-readable: <a href="/llms.txt">llms.txt</a> · <a href="/llms-full.txt">llms-full.txt</a> · <a href="/.well-known/agent.json">agent.json</a> · <a href="/trust.json">trust.json</a></p>
+  </footer>
+
+</main>
 </body>
 </html>`
 

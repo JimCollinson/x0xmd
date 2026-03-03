@@ -6,6 +6,19 @@ const DEFAULT_SKILL_SIGNATURE_URL =
   "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
 const DEFAULT_GPG_KEY_URL =
   "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+const DEFAULT_DOCS_BASE_URL =
+  "https://raw.githubusercontent.com/JimCollinson/x0x/feat/agent-onboarding-docs"
+
+const VALID_DOC_NAMES = [
+  "overview",
+  "install",
+  "verify",
+  "api",
+  "patterns",
+  "compared",
+  "troubleshooting",
+  "uninstall",
+]
 
 export default {
   async fetch(request, env) {
@@ -24,6 +37,27 @@ export default {
       return jsonResponse({ status: "ok", service: "x0x-md-worker" })
     }
 
+    if (path === "/llms.txt") {
+      return llmsTxtResponse()
+    }
+
+    if (path === "/llms-full.txt") {
+      return llmsFullTxtResponse(env)
+    }
+
+    if (path === "/.well-known/agent.json") {
+      return agentJsonResponse(env)
+    }
+
+    const docsMatch = path.match(/^\/docs\/([a-z-]+)\.md$/)
+    if (docsMatch) {
+      const name = docsMatch[1]
+      if (VALID_DOC_NAMES.includes(name)) {
+        return docsResponse(name, env)
+      }
+      return new Response("Not Found\n", { status: 404 })
+    }
+
     if (path === "/" || path === "") {
       if (isBrowserRequest(request)) {
         return htmlResponse(request)
@@ -32,7 +66,7 @@ export default {
       return installerResponse(env)
     }
 
-    return new Response("Not Found", { status: 404 })
+    return new Response("Not Found\n", { status: 404 })
   },
 }
 
@@ -113,6 +147,142 @@ function trustResponse(request, env) {
   }
 
   return jsonResponse(doc)
+}
+
+async function docsResponse(name, env) {
+  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
+  const docUrl = `${baseUrl}/docs/${name}.md`
+
+  const upstream = await fetch(docUrl, {
+    headers: { accept: "text/plain" },
+  })
+
+  if (!upstream.ok) {
+    return new Response("Document source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const body = await upstream.text()
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/markdown; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+      "x-x0x-source": docUrl,
+    },
+  })
+}
+
+async function agentJsonResponse(env) {
+  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
+  const agentJsonUrl = `${baseUrl}/.well-known/agent.json`
+
+  const upstream = await fetch(agentJsonUrl, {
+    headers: { accept: "application/json" },
+  })
+
+  if (!upstream.ok) {
+    return new Response("Agent card source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const body = await upstream.text()
+
+  return new Response(body, {
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+      "x-x0x-source": agentJsonUrl,
+    },
+  })
+}
+
+function llmsTxtResponse() {
+  const content = `# x0x
+
+> Secure gossip network for agent-to-agent communication. Post-quantum encrypted. Decentralised. No servers required.
+
+x0x is a peer-to-peer communication layer for AI agents. Agents join a global gossip network, exchange cryptographically signed messages, manage trust relationships, and collaborate on shared task lists — without any central server or human configuration. Current version: 0.2.0.
+
+Do not use x0x as an MCP server (it is a standalone network, not a tool). Do not use the Python or Node.js SDKs (they are stubs — use the REST API directly).
+
+## Documentation
+
+- [Overview](https://x0x.md/docs/overview.md): What x0x is, what it isn't, current state of every feature, how agents use it
+- [Install](https://x0x.md/docs/install.md): Non-interactive installation of x0xd daemon
+- [Verify](https://x0x.md/docs/verify.md): Post-install verification sequence with success/failure conditions
+- [API Reference](https://x0x.md/docs/api.md): Endpoint quick-reference for x0xd on 127.0.0.1:12700
+- [Patterns](https://x0x.md/docs/patterns.md): Common usage patterns — messaging, task lists, trust exchange
+- [Compared](https://x0x.md/docs/compared.md): x0x vs MCP, A2A, direct HTTP — when to use what
+- [Troubleshooting](https://x0x.md/docs/troubleshooting.md): Common errors and diagnostic steps
+- [Uninstall](https://x0x.md/docs/uninstall.md): Clean removal of x0x
+
+## Optional
+
+- [SKILL.md](https://github.com/saorsa-labs/x0x/blob/main/SKILL.md): Agent Skills format capability definition
+- [Agent Card](https://x0x.md/.well-known/agent.json): A2A-compatible machine-readable capability declaration
+- [Source](https://github.com/saorsa-labs/x0x): Full source code (Rust, MIT/Apache-2.0)
+`
+
+  return new Response(content, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+    },
+  })
+}
+
+async function llmsFullTxtResponse(env) {
+  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
+
+  const fetches = VALID_DOC_NAMES.map(async (name) => {
+    const docUrl = `${baseUrl}/docs/${name}.md`
+    const res = await fetch(docUrl, { headers: { accept: "text/plain" } })
+    if (!res.ok) {
+      return { name, content: null }
+    }
+    return { name, content: await res.text() }
+  })
+
+  const results = await Promise.all(fetches)
+  const failed = results.filter((r) => r.content === null)
+
+  if (failed.length > 0) {
+    const names = failed.map((r) => r.name).join(", ")
+    return new Response(`Documentation source unavailable: ${names}\n`, {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const sections = results.map(
+    (r) => `# ${r.name}.md\n\n${r.content.trim()}`
+  )
+  const body = sections.join("\n\n---\n\n") + "\n"
+
+  return new Response(body, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "access-control-allow-origin": "*",
+    },
+  })
 }
 
 function htmlResponse(request) {

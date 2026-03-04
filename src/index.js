@@ -1,3 +1,5 @@
+import { buildHtmlPage } from "./html.js"
+
 const DEFAULT_INSTALL_SCRIPT_URL =
   "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh"
 const DEFAULT_SKILL_URL =
@@ -6,35 +8,78 @@ const DEFAULT_SKILL_SIGNATURE_URL =
   "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
 const DEFAULT_GPG_KEY_URL =
   "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+const DEFAULT_DOCS_BASE_URL =
+  "https://raw.githubusercontent.com/JimCollinson/x0x/main"
+
+const VALID_DOC_NAMES = [
+  "overview",
+  "install",
+  "verify",
+  "api",
+  "patterns",
+  "compared",
+  "troubleshooting",
+  "uninstall",
+]
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
     const path = url.pathname
 
+    // Trust metadata
     if (path === "/trust.json") {
       return trustResponse(request, env)
     }
 
+    // Install script
     if (path === "/install.sh") {
       return installerResponse(env)
     }
 
+    // Health check
     if (path === "/health") {
       return jsonResponse({ status: "ok", service: "x0x-md-worker" })
     }
 
+    // SKILL.md — proxy from latest release
+    if (path === "/skill.md" || path === "/skill") {
+      return skillResponse(env)
+    }
+
+    // llms.txt — lightweight doc index
+    if (path === "/llms.txt") {
+      return llmsTxtResponse()
+    }
+
+    // llms-full.txt — assembled full docs
+    if (path === "/llms-full.txt") {
+      return llmsFullTxtResponse(env)
+    }
+
+    // /docs/name.md — individual doc as markdown
+    const docsMatch = path.match(/^\/docs\/([a-z-]+)\.md$/)
+    if (docsMatch) {
+      const name = docsMatch[1]
+      if (VALID_DOC_NAMES.includes(name)) {
+        return docMarkdownResponse(name, env)
+      }
+      return notFound()
+    }
+
+    // Root — HTML for browsers, install script for CLI
     if (path === "/" || path === "") {
       if (isBrowserRequest(request)) {
         return htmlResponse(request)
       }
-
       return installerResponse(env)
     }
 
-    return new Response("Not Found", { status: 404 })
+    return notFound()
   },
 }
+
+// --- Request detection ---
 
 function isBrowserRequest(request) {
   const accept = request.headers.get("accept") || ""
@@ -48,15 +93,21 @@ function isBrowserRequest(request) {
     userAgent.includes("python-requests") ||
     userAgent.includes("go-http-client")
 
-  if (likelyCli) {
-    return false
-  }
-
-  if (secFetchMode.toLowerCase() === "navigate") {
-    return true
-  }
-
+  if (likelyCli) return false
+  if (secFetchMode.toLowerCase() === "navigate") return true
   return accept.includes("text/html")
+}
+
+// --- Responses ---
+
+function htmlResponse(request) {
+  const host = new URL(request.url).host
+  return new Response(buildHtmlPage(host), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=300",
+    },
+  })
 }
 
 async function installerResponse(env) {
@@ -76,12 +127,108 @@ async function installerResponse(env) {
   }
 
   const body = await upstream.text()
-
   return new Response(body, {
     headers: {
       "content-type": "text/x-shellscript; charset=utf-8",
       "cache-control": "public, max-age=300",
       "x-x0x-source": installScriptUrl,
+    },
+  })
+}
+
+async function skillResponse(env) {
+  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const upstream = await fetch(skillUrl, {
+    headers: { accept: "text/plain" },
+  })
+
+  if (!upstream.ok) {
+    return new Response("SKILL.md source unavailable\n", {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  const body = await upstream.text()
+  return new Response(body, {
+    headers: {
+      "content-type": "text/markdown; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      "x-x0x-source": skillUrl,
+    },
+  })
+}
+
+function llmsTxtResponse() {
+  const body = `# x0x — quantum secure agent-to-agent gossip network
+
+> x0x lets agents talk to each other over an encrypted gossip mesh.
+> Install with one line, verify with GPG, use via SKILL.md.
+
+## Docs
+
+- [Overview](https://x0x.md/docs/overview.md): What x0x is and when to use it
+- [Install](https://x0x.md/docs/install.md): Installation and setup
+- [Verify](https://x0x.md/docs/verify.md): Signature verification and trust
+- [API](https://x0x.md/docs/api.md): Daemon API reference
+- [Patterns](https://x0x.md/docs/patterns.md): Common usage patterns
+- [Compared](https://x0x.md/docs/compared.md): How x0x compares to alternatives
+- [Troubleshooting](https://x0x.md/docs/troubleshooting.md): Common issues and fixes
+- [Uninstall](https://x0x.md/docs/uninstall.md): Clean removal
+
+## Key resources
+
+- [SKILL.md](https://x0x.md/skill.md): Agent skill file (the best place to start)
+- [Full docs](https://x0x.md/llms-full.txt): All docs concatenated for large context windows
+- [Trust metadata](https://x0x.md/trust.json): Verification endpoints and policy
+- [Source](https://github.com/saorsa-labs/x0x): GitHub repository
+`
+  return new Response(body, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "public, max-age=300",
+    },
+  })
+}
+
+async function llmsFullTxtResponse(env) {
+  const sections = []
+
+  for (const name of VALID_DOC_NAMES) {
+    const markdown = await fetchDoc(name, env)
+    if (markdown) {
+      sections.push(markdown)
+    }
+  }
+
+  const body = sections.join("\n\n---\n\n") + "\n"
+  return new Response(body, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "public, max-age=300",
+    },
+  })
+}
+
+async function docMarkdownResponse(name, env) {
+  const markdown = await fetchDoc(name, env)
+  if (!markdown) {
+    return new Response(`Doc "${name}" not available upstream\n`, {
+      status: 502,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+      },
+    })
+  }
+
+  return new Response(markdown, {
+    headers: {
+      "content-type": "text/markdown; charset=utf-8",
+      "cache-control": "public, max-age=300",
     },
   })
 }
@@ -115,78 +262,21 @@ function trustResponse(request, env) {
   return jsonResponse(doc)
 }
 
-function htmlResponse(request) {
-  const host = new URL(request.url).host
-  const command = `curl -sfL https://${host} | sh`
+// --- Helpers ---
 
-  const body = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>x0x Install</title>
-  <style>
-    :root { color-scheme: light; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
-      background: linear-gradient(180deg, #eef5f8 0%, #f6f9fb 100%);
-      color: #17232f;
-    }
-    .wrap {
-      max-width: 840px;
-      margin: 0 auto;
-      padding: 48px 24px;
-    }
-    .card {
-      background: #ffffff;
-      border: 1px solid #d8e3ea;
-      border-radius: 14px;
-      padding: 28px;
-      box-shadow: 0 8px 28px rgba(23, 35, 47, 0.08);
-    }
-    h1 { margin-top: 0; font-size: 34px; }
-    p { line-height: 1.55; }
-    code {
-      display: block;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #0f1f2d;
-      color: #d9f3ff;
-      overflow-wrap: anywhere;
-      margin: 14px 0;
-    }
-    ul { line-height: 1.6; }
-    .muted { color: #4f6270; font-size: 14px; }
-    a { color: #0b5e90; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h1>x0x Agent Install</h1>
-      <p>Install x0x daemon and SKILL.md with a single command:</p>
-      <code>${command}</code>
-      <p>What this installs:</p>
-      <ul>
-        <li><code>x0xd</code> daemon in <code>~/.local/bin</code></li>
-        <li><code>SKILL.md</code> in <code>~/.local/share/x0x</code></li>
-        <li>Automatic daemon startup and health check on <code>127.0.0.1:12700</code></li>
-      </ul>
-      <p class="muted">Security note: installer verifies SKILL.md signature when GPG is available. In non-interactive environments without GPG, it warns and continues.</p>
-      <p class="muted">For machine-readable trust metadata, see <a href="/trust.json">/trust.json</a>.</p>
-      <p class="muted">Source: <a href="https://github.com/JimCollinson/x0x">JimCollinson/x0x</a></p>
-    </div>
-  </div>
-</body>
-</html>`
+async function fetchDoc(name, env) {
+  const baseUrl = env.DOCS_BASE_URL || DEFAULT_DOCS_BASE_URL
+  const docUrl = `${baseUrl}/docs/${name}.md`
 
-  return new Response(body, {
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=300",
-    },
-  })
+  try {
+    const upstream = await fetch(docUrl, {
+      headers: { accept: "text/plain" },
+    })
+    if (!upstream.ok) return null
+    return await upstream.text()
+  } catch {
+    return null
+  }
 }
 
 function jsonResponse(data) {
@@ -194,6 +284,16 @@ function jsonResponse(data) {
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "public, max-age=300",
+    },
+  })
+}
+
+function notFound() {
+  return new Response("Not Found\n", {
+    status: 404,
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "no-store",
     },
   })
 }

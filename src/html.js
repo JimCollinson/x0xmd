@@ -117,10 +117,12 @@ footer .closing { font-weight: 700; }
 <body>
 <header>
   <span class="logo">X0X</span>
+  <!-- nav hidden until human site is ready
   <nav>
     <span class="nav-link active">}} FOR AGENTS {{</span>
     <a href="/humans" class="nav-link inactive"><span class="highlight">FOR HUMANS</span></a>
   </nav>
+  -->
 </header>
 
 <main>

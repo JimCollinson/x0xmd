@@ -37,6 +37,11 @@ export default {
       return installerResponse(env)
     }
 
+    // Staging install script
+    if (path === "/install-staging.sh") {
+      return installerResponse(env, { channel: "staging" })
+    }
+
     // Health check
     if (path === "/health") {
       return jsonResponse({ status: "ok", service: "x0x-md-worker" })
@@ -110,8 +115,19 @@ function htmlResponse(request) {
   })
 }
 
-async function installerResponse(env) {
-  const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+async function installerResponse(env, options = {}) {
+  const channel = options.channel || "production"
+  const isStaging = channel === "staging"
+
+  const installScriptUrl = isStaging
+    ? env.INSTALL_SCRIPT_URL_STAGING || env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+    : env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
+
+  const repoOverride = isStaging ? env.INSTALL_SCRIPT_REPO_STAGING : null
+  const releaseUrlOverride = isStaging
+    ? env.INSTALL_SCRIPT_RELEASE_URL_STAGING
+    : null
+
   const upstream = await fetch(installScriptUrl, {
     headers: { accept: "text/plain" },
   })
@@ -126,12 +142,25 @@ async function installerResponse(env) {
     })
   }
 
-  const body = await upstream.text()
+  let body = await upstream.text()
+
+  if (repoOverride) {
+    body = body.replace(/REPO="[^"]+"/, `REPO="${repoOverride}"`)
+  }
+
+  if (releaseUrlOverride) {
+    body = body.replace(
+      /RELEASE_URL="[^"]+"/,
+      `RELEASE_URL="${releaseUrlOverride}"`,
+    )
+  }
+
   return new Response(body, {
     headers: {
       "content-type": "text/x-shellscript; charset=utf-8",
       "cache-control": "public, max-age=300",
       "x-x0x-source": installScriptUrl,
+      "x-x0x-channel": channel,
     },
   })
 }

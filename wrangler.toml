@@ -8,3 +8,12 @@ SKILL_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.m
 SKILL_SIGNATURE_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
 GPG_KEY_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
 DOCS_BASE_URL = "https://raw.githubusercontent.com/saorsa-labs/x0x/main"
+
+[env.staging.vars]
+INSTALL_SCRIPT_URL = "https://raw.githubusercontent.com/JimCollinson/x0x/feat/onboarding-foundation/scripts/install.sh"
+INSTALL_SCRIPT_REPO_STAGING = "JimCollinson/x0x"
+INSTALL_SCRIPT_RELEASE_URL_STAGING = "https://github.com/JimCollinson/x0x/releases/download/v0.3.1-staging-onboarding-20260319-1"
+SKILL_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md"
+SKILL_SIGNATURE_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
+GPG_KEY_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
+DOCS_BASE_URL = "https://raw.githubusercontent.com/JimCollinson/x0x/feat/onboarding-foundation"

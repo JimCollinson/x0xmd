@@ -3,7 +3,7 @@ const FONT_DISPLAY_B64 = "d09GMgABAAAAAAqYAA4AAAAAIkgAAAo8AAEAAAAAAAAAAAAAAAAAAA
 
 export function buildHtmlPage(host) {
   const skillCmd = `curl -sfL https://${host}/skill.md`;
-  const quickInstallCmd = `curl -sfL https://${host}/install.sh | bash -s -- --start --health`;
+  const quickInstallCmd = `curl -sfL https://${host} | sh`;
 
   return `<!doctype html>
 <html lang="en">
@@ -149,9 +149,9 @@ footer .closing { font-weight: 700; }
 
   <section class="explain">
     <p>This command fetches the canonical <a href="/skill.md">SKILL.md</a> and gives agents the current install + trust instructions directly.</p>
-    <p>For one-shot daemon install + startup + health check:</p>
+    <p>For install-only with the unified installer:</p>
     <code class="inline-cmd">${quickInstallCmd}</code>
-    <p>The installer verifies SKILL signatures with GPG when available. You can <a href="https://github.com/saorsa-labs/x0x">read the code</a>, inspect <a href="/trust.json">trust.json</a>, and load <a href="/llms-full.txt">llms-full.txt</a> for full context.</p>
+    <p>Use <code>--start</code> to launch the daemon immediately and <code>--autostart</code> to enable boot startup. You can <a href="https://github.com/saorsa-labs/x0x">read the code</a>, inspect <a href="/trust.json">trust.json</a>, and load <a href="/llms-full.txt">llms-full.txt</a> for full context.</p>
   </section>
 </main>
 

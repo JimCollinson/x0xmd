@@ -403,9 +403,11 @@ async function trustResponse(request, env) {
       install_url: `${origin}/install.sh`,
     },
     install: {
-      command: `curl -sfL ${origin}/install.sh | bash -s -- --start --health`,
+      command: `curl -sfL ${origin} | sh`,
+      command_start: `curl -sfL ${origin} | sh -s -- --start`,
+      command_autostart: `curl -sfL ${origin} | sh -s -- --autostart`,
       installer_url: installScriptUrl,
-      note: "Prefer /skill.md for skill-driven setup. Installer verifies SKILL.md signature when GPG is available.",
+      note: "Installs x0x CLI + daemon binaries. Use --start to launch daemon, --autostart to enable boot service.",
     },
     artifacts: {
       skill_url: skillUrl,

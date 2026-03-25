@@ -1,7 +1,8 @@
 import { buildHtmlPage } from "./html.js"
 
+const DEFAULT_GITHUB_REPO = "saorsa-labs/x0x"
 const DEFAULT_INSTALL_SCRIPT_URL =
-  "https://raw.githubusercontent.com/JimCollinson/x0x/main/scripts/install.sh"
+  "https://raw.githubusercontent.com/saorsa-labs/x0x/main/scripts/install.sh"
 const DEFAULT_SKILL_URL =
   "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md"
 const DEFAULT_SKILL_SIGNATURE_URL =
@@ -9,7 +10,9 @@ const DEFAULT_SKILL_SIGNATURE_URL =
 const DEFAULT_GPG_KEY_URL =
   "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
 const DEFAULT_DOCS_BASE_URL =
-  "https://raw.githubusercontent.com/JimCollinson/x0x/main"
+  "https://raw.githubusercontent.com/saorsa-labs/x0x/main"
+
+const RELEASES_CACHE_TTL = 300 // 5 minutes
 
 const VALID_DOC_NAMES = [
   "overview",
@@ -47,7 +50,7 @@ export default {
       return jsonResponse({ status: "ok", service: "x0x-md-worker" })
     }
 
-    // SKILL.md — proxy from latest release
+    // SKILL.md — resolve from latest release with matching assets
     if (path === "/skill.md" || path === "/skill") {
       return skillResponse(env)
     }
@@ -101,6 +104,80 @@ function isBrowserRequest(request) {
   if (likelyCli) return false
   if (secFetchMode.toLowerCase() === "navigate") return true
   return accept.includes("text/html")
+}
+
+// --- Release resolution ---
+
+function validateRepo(repo) {
+  return typeof repo === "string" && /^[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+$/.test(repo)
+}
+
+async function fetchReleasesIndex(repo) {
+  const cacheKey = `https://x0x-release-index/${repo}`
+  const cache = caches.default
+
+  const cached = await cache.match(cacheKey)
+  if (cached) {
+    const releases = await cached.json()
+    return { releases, cacheStatus: "hit" }
+  }
+
+  try {
+    const apiUrl = `https://api.github.com/repos/${repo}/releases?per_page=100`
+    const resp = await fetch(apiUrl, {
+      headers: {
+        "user-agent": "x0x-md-worker",
+        accept: "application/vnd.github+json",
+      },
+    })
+
+    if (!resp.ok) {
+      return { releases: null, cacheStatus: "fallback" }
+    }
+
+    const allReleases = await resp.json()
+    const releases = allReleases.filter((r) => !r.draft)
+
+    const cacheResp = new Response(JSON.stringify(releases), {
+      headers: {
+        "content-type": "application/json",
+        "cache-control": `public, max-age=${RELEASES_CACHE_TTL}`,
+      },
+    })
+    await cache.put(cacheKey, cacheResp)
+
+    return { releases, cacheStatus: "miss" }
+  } catch {
+    return { releases: null, cacheStatus: "fallback" }
+  }
+}
+
+function resolveAssetUrl(releases, assetName) {
+  if (!releases) return null
+  for (const release of releases) {
+    const asset = release.assets.find((a) => a.name === assetName)
+    if (asset) {
+      return { url: asset.browser_download_url, tag: release.tag_name }
+    }
+  }
+  return null
+}
+
+function resolveSignedPair(releases, fileName) {
+  if (!releases) return null
+  const sigName = `${fileName}.sig`
+  for (const release of releases) {
+    const file = release.assets.find((a) => a.name === fileName)
+    const sig = release.assets.find((a) => a.name === sigName)
+    if (file && sig) {
+      return {
+        fileUrl: file.browser_download_url,
+        sigUrl: sig.browser_download_url,
+        tag: release.tag_name,
+      }
+    }
+  }
+  return null
 }
 
 // --- Responses ---
@@ -166,7 +243,26 @@ async function installerResponse(env, options = {}) {
 }
 
 async function skillResponse(env) {
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const repo = env.GITHUB_REPO || DEFAULT_GITHUB_REPO
+  const fallbackUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+
+  let skillUrl = fallbackUrl
+  let releaseTag = "unknown"
+  let cacheStatus = "fallback"
+
+  if (validateRepo(repo)) {
+    const index = await fetchReleasesIndex(repo)
+    cacheStatus = index.cacheStatus
+
+    const pair = resolveSignedPair(index.releases, "SKILL.md")
+    if (pair) {
+      skillUrl = pair.fileUrl
+      releaseTag = pair.tag
+    } else {
+      cacheStatus = "fallback"
+    }
+  }
+
   const upstream = await fetch(skillUrl, {
     headers: { accept: "text/plain" },
   })
@@ -177,6 +273,7 @@ async function skillResponse(env) {
       headers: {
         "content-type": "text/plain; charset=utf-8",
         "cache-control": "no-store",
+        "x-x0x-cache": cacheStatus,
       },
     })
   }
@@ -187,6 +284,8 @@ async function skillResponse(env) {
       "content-type": "text/markdown; charset=utf-8",
       "cache-control": "public, max-age=300",
       "x-x0x-source": skillUrl,
+      "x-x0x-release": releaseTag,
+      "x-x0x-cache": cacheStatus,
     },
   })
 }
@@ -262,20 +361,51 @@ async function docMarkdownResponse(name, env) {
   })
 }
 
-function trustResponse(request, env) {
-  const host = new URL(request.url).host
+async function trustResponse(request, env) {
+  const reqUrl = new URL(request.url)
+  const host = reqUrl.host
+  const origin = reqUrl.origin
+  const repo = env.GITHUB_REPO || DEFAULT_GITHUB_REPO
   const installScriptUrl = env.INSTALL_SCRIPT_URL || DEFAULT_INSTALL_SCRIPT_URL
-  const skillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
-  const skillSignatureUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
-  const gpgKeyUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+
+  // Fallback URLs
+  const fallbackSkillUrl = env.SKILL_URL || DEFAULT_SKILL_URL
+  const fallbackSigUrl = env.SKILL_SIGNATURE_URL || DEFAULT_SKILL_SIGNATURE_URL
+  const fallbackGpgUrl = env.GPG_KEY_URL || DEFAULT_GPG_KEY_URL
+
+  let skillUrl = fallbackSkillUrl
+  let skillSignatureUrl = fallbackSigUrl
+  let gpgKeyUrl = fallbackGpgUrl
+
+  if (validateRepo(repo)) {
+    const index = await fetchReleasesIndex(repo)
+
+    // Resolve SKILL.md + .sig atomically from the same release
+    const pair = resolveSignedPair(index.releases, "SKILL.md")
+    if (pair) {
+      skillUrl = pair.fileUrl
+      skillSignatureUrl = pair.sigUrl
+    }
+    // If pair fails, both stay on fallback (atomic fallback)
+
+    // GPG key resolves independently
+    const gpg = resolveAssetUrl(index.releases, "SAORSA_PUBLIC_KEY.asc")
+    if (gpg) {
+      gpgKeyUrl = gpg.url
+    }
+  }
 
   const doc = {
     project: "x0x",
     endpoint: host,
+    entrypoints: {
+      skill_url: `${origin}/skill.md`,
+      install_url: `${origin}/install.sh`,
+    },
     install: {
-      command: `curl -sfL https://${host} | sh`,
+      command: `curl -sfL ${origin}/install.sh | bash -s -- --start --health`,
       installer_url: installScriptUrl,
-      note: "Installer verifies SKILL.md signature when GPG is available.",
+      note: "Prefer /skill.md for skill-driven setup. Installer verifies SKILL.md signature when GPG is available.",
     },
     artifacts: {
       skill_url: skillUrl,

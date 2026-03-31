@@ -1,12 +1,28 @@
 ## x0x.md
 
-Cloudflare Worker endpoint for x0x install and trust metadata.
+Cloudflare Worker for `https://x0x.md`.
 
-### Behavior
+### Public surface
 
-- Browser (`https://x0x.md`) -> human-readable install page
-- CLI/agents (`curl -sfL https://x0x.md | sh`) -> installer script
-- Trust metadata (`https://x0x.md/trust.json`) -> machine-readable policy and artifact links
+- `/` -> browser homepage or installer script for CLI requests
+- `/skill.md` and `/skill.md.sig` -> current release skill and detached signature
+- `/install.sh` -> unified installer script
+- `/trust.json` -> machine-readable install and verification metadata
+- `/.well-known/agent.json` -> current release agent card
+- `/release-manifest.json` and `/release-manifest.json.sig` -> release inventory and signature
+- `/SAORSA_PUBLIC_KEY.asc` -> upstream release verification key
+- `/docs/...` -> public operator docs from upstream `main`
+- `/docs/primers/...` -> public primers from upstream `main`
+- `/llms.txt` and `/llms-full.txt` -> indexed public docs for agents
+
+Mixed-case URLs are redirected to the canonical route where supported, for example `/SKILL.md` -> `/skill.md`.
+
+### Upstream sources
+
+- Release artifacts come from the latest published release in `saorsa-labs/x0x`
+- Public docs come from `saorsa-labs/x0x` `main`
+- Embedded `SKILL.md` metadata is treated as informational only; the published release asset bytes are authoritative
+- No fork or staging source is used
 
 ### Local development
 
@@ -19,14 +35,3 @@ npx wrangler dev
 ```bash
 npx wrangler deploy
 ```
-
-### Config vars
-
-- `INSTALL_SCRIPT_URL`
-- `SKILL_URL`
-- `SKILL_SIGNATURE_URL`
-- `GPG_KEY_URL`
-
-Defaults are currently set to:
-- installer source: `JimCollinson/x0x` (fork)
-- release artifacts (SKILL/signature/key): `saorsa-labs/x0x` (latest published release)

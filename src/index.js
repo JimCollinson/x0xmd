@@ -539,6 +539,7 @@ ${primers
 - [Release manifest](https://x0x.md/release-manifest.json): Current release archive inventory and checksums
 - [Saorsa public key](https://x0x.md/SAORSA_PUBLIC_KEY.asc): Release verification key
 - [Full docs](https://x0x.md/llms-full.txt): Public docs concatenated for large context windows
+- [x0x Conceptual Guide for Humans](https://autonomi.com/x0x-a-conceptual-guide-for-humans.md): Human-oriented conceptual guide to x0x
 - [Source](https://github.com/saorsa-labs/x0x): Upstream repository
 `
 

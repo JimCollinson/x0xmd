@@ -1444,8 +1444,6 @@ img, svg { display: block; }
 
   <header class="agent-header">
     <h1>X0X: A Conceptual Guide for Humans</h1>
-    <p class="agent-lede">X0X is a peer-to-peer network protocol where agents and humans collaborate directly — agent-to-agent, human-to-agent, or any combination, across any AI vendor and any infrastructure. Participants find each other, communicate, share work, manage trust, and coordinate at the protocol level. No central platforms, no expensive harnesses, no vendor lock-in, no privacy compromises from going through the cloud.</p>
-    <p class="agent-lede">Agents can just get on and network themselves — an internet-wide network of specialised skills and abilities, combining to be greater than the sum of their parts, with privacy, control, and trust at its heart. This is what a network looks like when it's built natively for agents from the ground up.</p>
   </header>
 
   <div class="concepts-layout">
@@ -1453,25 +1451,8 @@ img, svg { display: block; }
       <div class="concepts-loading">Loading the latest from <a href="https://github.com/saorsa-labs/x0x/blob/main/docs/conceptual-guide-for-humans.md" target="_blank" rel="noopener">upstream</a>…</div>
     </section>
 
-    <aside class="concepts-toc">
+    <aside class="concepts-toc" id="concepts-toc">
       <h4>Contents</h4>
-      <a href="#concepts/why-x0x-exists">Why X0X exists</a>
-      <a class="indent" href="#concepts/why-now">Why this matters now</a>
-      <a href="#concepts/what-x0x-is">What X0X is</a>
-      <a href="#concepts/how-it-works">How it works</a>
-      <a class="indent" href="#concepts/daemon">The Daemon</a>
-      <a class="indent" href="#concepts/identity">Identity</a>
-      <a class="indent" href="#concepts/trust">Trust</a>
-      <a class="indent" href="#concepts/identity-cards">Identity cards</a>
-      <a class="indent" href="#concepts/a2a-card">A2A Agent Card</a>
-      <a class="indent" href="#concepts/gossip">Gossip</a>
-      <a class="indent" href="#concepts/presence">Presence &amp; Discovery</a>
-      <a class="indent" href="#concepts/connections">Connections</a>
-      <a class="indent" href="#concepts/groups">Groups</a>
-      <a class="indent" href="#concepts/coordination">Coordination</a>
-      <a href="#concepts/what-you-create">What you can create</a>
-      <a href="#concepts/examples">Examples</a>
-      <a href="#concepts/constitution">The Constitution</a>
     </aside>
   </div>
 
@@ -1688,6 +1669,28 @@ function renderConcepts(md) {
   });
 }
 
+function buildToc(container) {
+  const toc = document.getElementById('concepts-toc');
+  if (!toc) return;
+  // Clear any existing entries beyond the <h4>Contents</h4> heading
+  const h4 = toc.querySelector('h4');
+  toc.textContent = '';
+  if (h4) toc.appendChild(h4);
+
+  const headings = container.querySelectorAll('h2[id], h3[id]');
+  for (const h of headings) {
+    const a = document.createElement('a');
+    a.href = '#concepts/' + h.id;
+    if (h.tagName === 'H3') a.className = 'indent';
+    // Heading text: trim everything after an em-dash for the TOC label
+    // (upstream uses "Short — long description" — we want just "Short")
+    const fullText = (h.textContent || '').trim();
+    const dashIdx = fullText.indexOf('—');
+    a.textContent = dashIdx >= 0 ? fullText.slice(0, dashIdx).trim() : fullText;
+    toc.appendChild(a);
+  }
+}
+
 async function loadConcepts(section) {
   const container = document.getElementById('concepts-main-content');
   if (!container) return;
@@ -1702,6 +1705,7 @@ async function loadConcepts(section) {
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const md = await resp.text();
     container.innerHTML = renderConcepts(md);
+    buildToc(container);
     conceptsLoaded = true;
     if (section) scrollToSection(section);
   } catch (err) {

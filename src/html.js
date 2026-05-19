@@ -1186,7 +1186,7 @@ img, svg { display: block; }
         </div>
         <div class="cmd-body" data-tab="download" hidden>
           <div class="cmd-line">
-            <span class="cmd"><span class="pp">↓</span><a href="https://x0x.md/skill.md" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-decoration-thickness:1px;">Download skill.md</a></span>
+            <span class="cmd"><span class="pp">↓</span><a href="https://x0x.md/skill.md" download="skill.md" style="color:inherit;text-decoration:underline;text-decoration-thickness:1px;">Download skill.md</a></span>
           </div>
           <div class="comment"># Save the file to your agent's skills directory. Works in any agent that loads skills from disk.</div>
         </div>

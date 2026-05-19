@@ -928,10 +928,8 @@ img, svg { display: block; }
   letter-spacing: -0.01em;
   line-height: 1.05;
   margin: 56px 0 16px;
-  padding-top: 32px;
-  border-top: 1px solid var(--keyline);
 }
-.concepts-main > h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.concepts-main > h2:first-child { margin-top: 0; }
 .concepts-main > h3 {
   font-family: var(--method);
   font-weight: 400;

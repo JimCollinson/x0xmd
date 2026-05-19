@@ -9,3 +9,7 @@ SKILL_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.m
 SKILL_SIGNATURE_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SKILL.md.sig"
 GPG_KEY_URL = "https://github.com/saorsa-labs/x0x/releases/latest/download/SAORSA_PUBLIC_KEY.asc"
 DOCS_BASE_URL = "https://raw.githubusercontent.com/saorsa-labs/x0x/main"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"

@@ -22,6 +22,11 @@ const RELEASES_CACHE_TTL = 300 // 5 minutes
 
 const PUBLIC_DOCS = [
   {
+    path: "docs/conceptual-guide-for-humans.md",
+    title: "Conceptual Guide",
+    description: "A conceptual guide to x0x for humans",
+  },
+  {
     path: "docs/overview.md",
     title: "Overview",
     description: "What x0x is and when to use it",

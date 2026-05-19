@@ -179,6 +179,10 @@ export default {
 
     const path = canonicalPath || url.pathname
 
+    if (path.startsWith("/fonts/") || path.startsWith("/assets/")) {
+      return env.ASSETS.fetch(request)
+    }
+
     if (path === "/trust.json") {
       return trustResponse(request, env)
     }

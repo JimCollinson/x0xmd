@@ -772,7 +772,7 @@ img, svg { display: block; }
 .concepts-main {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 0;
 }
 .concepts-section {
   display: flex;

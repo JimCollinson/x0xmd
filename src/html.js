@@ -1172,6 +1172,7 @@ img, svg { display: block; }
       <div class="cmd-widget">
         <div class="cmd-tabs">
           <button class="cmd-tab active" data-cmd="one">One-liner</button>
+          <button class="cmd-tab" data-cmd="openclaw">Openclaw</button>
           <button class="cmd-tab" data-cmd="download">Download</button>
           <button class="cmd-tab" data-cmd="manual">Manual Install</button>
         </div>
@@ -1181,6 +1182,13 @@ img, svg { display: block; }
             <button class="copy-btn" aria-label="Copy"><svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.67 0.92H3.67C2.66 0.92 1.83 1.74 1.83 2.75V15.58H3.67V2.75H14.67V0.92ZM17.42 4.58H7.33C6.32 4.58 5.50 5.41 5.50 6.42V19.25C5.50 20.26 6.32 21.08 7.33 21.08H17.42C18.42 21.08 19.25 20.26 19.25 19.25V6.42C19.25 5.41 18.42 4.58 17.42 4.58ZM17.42 19.25H7.33V6.42H17.42V19.25Z" fill="currentColor"/></svg></button>
           </div>
           <div class="comment"># Installs the skill. One command, any agent. Detects your environment and installs the skill in the right place. Requires Node.js.</div>
+        </div>
+        <div class="cmd-body" data-tab="openclaw" hidden>
+          <div class="cmd-line">
+            <span class="cmd"><span class="pp">$</span>openclaw skills install x0x</span>
+            <button class="copy-btn" aria-label="Copy"><svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.67 0.92H3.67C2.66 0.92 1.83 1.74 1.83 2.75V15.58H3.67V2.75H14.67V0.92ZM17.42 4.58H7.33C6.32 4.58 5.50 5.41 5.50 6.42V19.25C5.50 20.26 6.32 21.08 7.33 21.08H17.42C18.42 21.08 19.25 20.26 19.25 19.25V6.42C19.25 5.41 18.42 4.58 17.42 4.58ZM17.42 19.25H7.33V6.42H17.42V19.25Z" fill="currentColor"/></svg></button>
+          </div>
+          <div class="comment"># Installs the X0X skill from ClawHub. Requires the Openclaw CLI.</div>
         </div>
         <div class="cmd-body" data-tab="download" hidden>
           <div class="cmd-line">
@@ -1636,8 +1644,6 @@ function fallbackMessage(detail) {
 }
 
 function renderConcepts(md) {
-  // Fail closed: if either dependency failed to load, show a fallback rather
-  // than injecting unsanitised markdown into the DOM.
   if (!window.marked) return fallbackMessage('markdown renderer unavailable');
   if (!window.DOMPurify) return fallbackMessage('sanitiser unavailable');
 
@@ -1660,7 +1666,6 @@ function renderConcepts(md) {
 
   let body = md.replace(/^#\\s+[^\\n]+\\n+/, '');
   const dirty = marked.parse(body);
-
   return DOMPurify.sanitize(dirty, {
     ADD_ATTR: ['target', 'rel'],
     FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
@@ -1670,7 +1675,6 @@ function renderConcepts(md) {
 function buildToc(container) {
   const toc = document.getElementById('concepts-toc');
   if (!toc) return;
-  // Clear any existing entries beyond the <h4>Contents</h4> heading
   const h4 = toc.querySelector('h4');
   toc.textContent = '';
   if (h4) toc.appendChild(h4);
@@ -1680,8 +1684,6 @@ function buildToc(container) {
     const a = document.createElement('a');
     a.href = '#concepts/' + h.id;
     if (h.tagName === 'H3') a.className = 'indent';
-    // Heading text: trim everything after an em-dash for the TOC label
-    // (upstream uses "Short — long description" — we want just "Short")
     const fullText = (h.textContent || '').trim();
     const dashIdx = fullText.indexOf('—');
     a.textContent = dashIdx >= 0 ? fullText.slice(0, dashIdx).trim() : fullText;

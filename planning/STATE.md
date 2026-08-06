@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended remediation review checkpoint after draft PR #4. ADR validation returned `valid`; code review found one LOW bookkeeping issue in this state's stale next-step wording. This update records the actual checkpoint, but code review and goal verification must rerun before the branch is pushed for exact-head CI. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Code review and expanded goal verification passed for the attended remediation after draft PR #4. The branch is ready for its approved exact-head push and structural ADR CI, after which adversarial, Craft, and clean-context gates remain required. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -57,10 +57,13 @@
   CDN/SRI/CSP disposition remains a later human design question.
 - Independent code re-review passed with no ranked findings and authorised goal
   verification to proceed.
-- Goal verification passed 7/7 and is recorded at
-  `planning/phases/01-adr-foundation/VERIFICATION.md`. It independently
-  reproduced source fidelity, governance, wiring, statuses, artifact boundaries,
-  comment-only frontend change, and scope restrictions.
+- The original goal verification passed 7/7 at its historical target. Expanded
+  goal verification now passes 9/9 at assessed target `294aab8` and is refreshed
+  in `planning/phases/01-adr-foundation/VERIFICATION.md` by commit `f8a5a4a`.
+  It independently reproduced source fidelity, governance, wiring, eight
+  Proposed statuses, ADR-0005's four exposure classes, ADR-0008's bounded
+  Workers Assets decision, the six-slice unapproved conformance plan, and the
+  runtime/mechanism scope boundary.
 - Draft PR #4 exists at `https://github.com/JimCollinson/x0xmd/pull/4`.
   Prior ADR Governance runs, including `31107285981` at
   `87068d519e02671228c4f25815f54bfd19b011bf` and `31108385268` at
@@ -101,6 +104,13 @@
   authority, security, scope, or mechanism finding was reported. This state
   update corrects the handoff wording; the review must rerun against the updated
   commit before goal verification proceeds.
+- Code review reran at `294aab8` and passed with no findings. Both governance
+  modes, relative-link checks, JavaScript syntax checks, and branch/remediation
+  diff checks passed. The reviewer authorised goal verification while correctly
+  withholding any CI-green, push, merge, deployment, or ADR-acceptance claim.
+- Expanded goal verification passed 9/9 at `294aab8`; its record is committed at
+  `f8a5a4a`. Exact-current-head CI and fresh adversarial, Craft, and clean-context
+  gates remain pending and are not implied by that verification pass.
 - Clean-context review was not run because adversarial review blocked the
   work-unit first.
 
@@ -123,7 +133,7 @@
 - Removed only the stale generated-source comment from `src/html.js`; that file is now the authoritative directly maintained frontend source.
 - This remediation changed no runtime code, tests, CI, deployment, build,
   environment, copied kit bytes, agent guidance, or ADR status.
-- Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create a PR, push, merge, publish, deploy, or mark an ADR Accepted.
+- Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create another PR, merge, publish, deploy, or mark an ADR Accepted. The approved push is limited to updating existing draft PR #4's branch so exact-head structural ADR CI can run.
 - Pre-existing untracked `.artifacts/` and `.claude/` are outside scope and must remain untracked and uncommitted.
 
 ## Known Current Divergence and Decision Queue
@@ -164,9 +174,8 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Attended LOW-review checkpoint: rerun code review against this corrected state,
-then rerun goal verification. If those pass, push the remediation commits and
-obtain exact-head ADR CI before rerunning adversarial and Craft Review. Dispatch
-the fresh clean-context gate only if those gates unblock the work-unit, then
-return to Jim's attended checkpoint. Plan 01-01 remains in progress and Proposed
-Plan 02-01 remains parked pending its stated prerequisites.
+Push the updated branch for existing draft PR #4 and obtain exact-head ADR
+Governance CI. If CI is green and consistent with local evidence, rerun fresh
+adversarial and Craft Review, then dispatch the fresh clean-context gate. Return
+to Jim's attended checkpoint with all results. Plan 01-01 remains in progress
+and Proposed Plan 02-01 remains parked pending its stated prerequisites.

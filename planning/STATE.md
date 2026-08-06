@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended draft remediation completed on `feat/adopt-adr-standard`. Jim has disposed the ADR/conformance-boundary question; four Proposed ADRs now state intended durable architecture, and a separate Proposed conformance plan records runtime gaps. No ADR is Accepted, affected reviews must rerun, and no runtime implementation is approved.
+- **Status:** Goal verification passed on `feat/adopt-adr-standard`; exact PR-action checkpoint reached. Four Proposed ADRs state intended durable architecture, and a separate Proposed conformance plan records runtime gaps. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -39,11 +39,20 @@
   `git diff --check origin/main...HEAD` passed; status and scope inspection found
   only the four ADR revisions, this state update, and the new Proposed plan.
 - The prior ADR helper findings remain evidence, not a passing review of the
-  remediated drafts. Independent ADR validation and any affected goal,
-  adversarial, Craft, and clean-context review must rerun against the new commit.
-- CI has not run because no PR was created. Goal verification, adversarial
-  review, Craft Review, and clean-context review have not completed and remain
-  required; no CI or full-gauntlet green is claimed.
+  original drafts.
+- Independent ADR revalidation returned `valid` with no bootstrap blockers. It
+  confirmed intended-architecture/conformance-plan separation, all seven
+  Proposed statuses, and correct ADR/spec/plan boundaries. ADR-0007's
+  CDN/SRI/CSP disposition remains a later human design question.
+- Independent code re-review passed with no ranked findings and authorised goal
+  verification to proceed.
+- Goal verification passed 7/7 and is recorded at
+  `planning/phases/01-adr-foundation/VERIFICATION.md`. It independently
+  reproduced source fidelity, governance, wiring, statuses, artifact boundaries,
+  comment-only frontend change, and scope restrictions.
+- CI has not run because no PR was created. Adversarial review, Craft Review,
+  and clean-context review remain pending until the ADR CI result exists; no CI
+  or full-gauntlet green is claimed.
 
 ## Scope State
 
@@ -91,10 +100,11 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Rerun independent ADR validation for ADR-0003, ADR-0004, ADR-0006, and ADR-0007,
-then continue the required goal, adversarial, Craft, and clean-context reviews for
-the ADR bootstrap work-unit. Jim retains the attended acceptance and exact
-PR-action checkpoints. Proposed Plan 02-01 remains parked until the relevant ADRs
-complete human review/acceptance, its unresolved contract decisions are specified,
-and a separate implementation packet approves each runtime slice and any required
-test mechanism.
+Attended exact PR-action checkpoint: Jim decides whether to authorise pushing
+`feat/adopt-adr-standard` to `JimCollinson/x0xmd` and opening a pull request into
+`main` titled `Adopt ADR governance and document x0x.md architecture`. If opened,
+wait for the ADR Governance CI result, then run adversarial, Craft, and
+clean-context gates before calling the work-unit review-ready. Proposed Plan 02-01
+remains parked until the relevant ADRs complete human review/acceptance, its
+unresolved contract decisions are specified, and a separate implementation packet
+approves each runtime slice and any required test mechanism.

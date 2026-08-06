@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Jim-approved attended remediation is drafted locally after the review failure on draft PR #4. ADR-0005 now records the complete route/namespace exposure model, Proposed ADR-0008 records static asset serving, and Proposed Plan 02-01 has six future slices. Affected reviews and exact-head CI have not rerun, so the work-unit is not green or Done. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Attended remediation review checkpoint after draft PR #4. ADR validation returned `valid`; code review found one LOW bookkeeping issue in this state's stale next-step wording. This update records the actual checkpoint, but code review and goal verification must rerun before the branch is pushed for exact-head CI. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -92,6 +92,15 @@
   only the approved documentation changes plus the pre-existing untracked
   `.artifacts/` and `.claude/`. Final committed-head diff verification remains
   required.
+- Independent ADR validation of the route/static-asset remediation returned
+  `valid` with no blockers. It confirmed ADR-0005's four exposure classes,
+  ADR-0008's separate Workers Assets rationale, eight Proposed statuses, and the
+  bounded/unapproved Plan 02 slices.
+- Code review found one LOW issue only: the prior Next Step still said to complete
+  the two remediation commits after they already existed. No route, asset,
+  authority, security, scope, or mechanism finding was reported. This state
+  update corrects the handoff wording; the review must rerun against the updated
+  commit before goal verification proceeds.
 - Clean-context review was not run because adversarial review blocked the
   work-unit first.
 
@@ -155,9 +164,9 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Complete the two approved remediation commits, then rerun affected code/ADR
-review, goal verification, adversarial review, Craft Review, and exact-head ADR
-CI. If those unblock the work-unit, dispatch the fresh clean-context gate and
+Attended LOW-review checkpoint: rerun code review against this corrected state,
+then rerun goal verification. If those pass, push the remediation commits and
+obtain exact-head ADR CI before rerunning adversarial and Craft Review. Dispatch
+the fresh clean-context gate only if those gates unblock the work-unit, then
 return to Jim's attended checkpoint. Plan 01-01 remains in progress and Proposed
-Plan 02-01 remains parked pending its stated review, acceptance, specification,
-mechanism-approval, and implementation-approval prerequisites.
+Plan 02-01 remains parked pending its stated prerequisites.

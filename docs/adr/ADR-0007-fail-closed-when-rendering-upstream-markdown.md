@@ -6,13 +6,13 @@
 - **Reviewers:** Pending human review
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** [PR #2](https://github.com/JimCollinson/x0xmd/pull/2); [initial sanitization review fix](https://github.com/JimCollinson/x0xmd/commit/a7daff7ec56b89dd75f1155f01ba2c3190a14cda); [fail-closed review fix](https://github.com/JimCollinson/x0xmd/commit/7a5625b196baefcda9fe5d2c04e2eea74c846cdd); [live-content cleanup](https://github.com/JimCollinson/x0xmd/commit/951de86a40847508336b7b9dcaa8e0b1849bab1b)
+- **Related:** [PR #2](https://github.com/JimCollinson/x0xmd/pull/2); [initial sanitization review fix](https://github.com/JimCollinson/x0xmd/commit/a7daff7ec56b89dd75f1155f01ba2c3190a14cda); [fail-closed review fix](https://github.com/JimCollinson/x0xmd/commit/7a5625b196baefcda9fe5d2c04e2eea74c846cdd); [live-content cleanup](https://github.com/JimCollinson/x0xmd/commit/951de86a40847508336b7b9dcaa8e0b1849bab1b); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
 
 ## Context
 
 This is a retrospective record prepared on 2026-08-06 for the security boundary established during PR #2 on 2026-05-19. The frontend fetches an upstream conceptual guide at runtime, parses Markdown into HTML, rewrites relative links, builds navigation, and inserts the result into the document. Although the upstream repository is trusted, Markdown and its links are network-delivered input crossing into an HTML execution context.
 
-The first live-rendering implementation needed explicit URL restrictions and sanitization. Review then found that treating the sanitizer as optional could fall back to injecting parsed or raw content without the protection the design depended on. The current implementation loads version-pinned parser and sanitizer scripts from a runtime CDN, but the availability model and the absence or presence of SRI/CSP guarantees have not been accepted as a durable policy.
+The rendering boundary therefore requires explicit URL restrictions, sanitization, and safe failure behaviour. Runtime delivery of parser and sanitizer dependencies also raises a separate human design question about CDN availability, Subresource Integrity (SRI), and Content Security Policy (CSP).
 
 ## Decision Drivers
 
@@ -32,7 +32,7 @@ The first live-rendering implementation needed explicit URL restrictions and san
 
 We will treat upstream Markdown rendering as an untrusted-content boundary: parse the Markdown, restrict and escape rendered links, sanitize the generated HTML, and only then insert it into the page.
 
-The parser and sanitizer are both required for rendered output. If the fetch, parser, sanitizer, or rendering pipeline is unavailable, the page must show a locally controlled safe fallback that links to the upstream source. It must never inject raw Markdown or unsanitized generated HTML as a fallback.
+The parser and sanitizer are both required for rendered output. If the fetch, parser, sanitizer, or rendering pipeline is unavailable, the page must show a locally controlled safe fallback that links to the upstream source. Fallback markup and content must be locally controlled: network input and exception details must never be interpolated as HTML. If diagnostic details are shown, they must be escaped and rendered as text. The fallback must never inject raw Markdown or unsanitized generated HTML.
 
 ## Consequences
 
@@ -50,15 +50,16 @@ The parser and sanitizer are both required for rendered output. If the fetch, pa
 
 ### Neutral / Operational
 
-- The current implementation uses version-pinned `marked` and DOMPurify CDN URLs; version pinning does not by itself decide CDN availability, SRI, or CSP policy.
+- Version-pinned parser and sanitizer URLs do not by themselves decide CDN availability, SRI, or CSP policy.
 - The safe fallback is a degraded presentation, not a cached substitute for the upstream content.
 
 ## Validation
 
 - Exercise Markdown containing raw scripts, active/embed elements, event handlers, malformed attributes, and `javascript:`, `data:`, `vbscript:`, and `file:` links; require the rendered DOM to contain no executable result.
-- Simulate missing parser, missing sanitizer, fetch failure, and parse failure; require only the safe fallback and confirm no raw or unsanitized upstream bytes enter `innerHTML`.
+- Simulate missing parser, missing sanitizer, fetch failure, and parse failure; require only locally controlled fallback markup, confirm no raw or unsanitized upstream bytes enter `innerHTML`, and confirm network input or exception details cannot create markup.
+- If diagnostics are displayed, inject HTML metacharacters and active-element payloads into the diagnostic source and confirm they are escaped and rendered only as text.
 - Verify permitted relative, fragment, HTTP(S), and mail links are rewritten or retained as intended and escaped before insertion.
-- Human review must decide whether runtime CDN availability and the current SRI/CSP posture are accepted trade-offs of this decision or require a named follow-up. This Proposed ADR records the question and does not invent a resolution.
+- Human review must decide whether runtime CDN dependency delivery and the SRI/CSP posture are accepted trade-offs of this decision or require a named follow-up. This Proposed ADR records the question and does not invent a resolution.
 
 ## Notes for AI-assisted work
 

@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Goal verification passed on `feat/adopt-adr-standard`; exact PR-action checkpoint reached. Four Proposed ADRs state intended durable architecture, and a separate Proposed conformance plan records runtime gaps. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Attended review failure on draft PR #4. Goal verification and structural ADR CI passed, but adversarial review returned `NOT-READY` with two HIGH findings; Craft Review returned one CONFORMANCE finding. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -50,9 +50,24 @@
   `planning/phases/01-adr-foundation/VERIFICATION.md`. It independently
   reproduced source fidelity, governance, wiring, statuses, artifact boundaries,
   comment-only frontend change, and scope restrictions.
-- CI has not run because no PR was created. Adversarial review, Craft Review,
-  and clean-context review remain pending until the ADR CI result exists; no CI
-  or full-gauntlet green is claimed.
+- Draft PR #4 exists at `https://github.com/JimCollinson/x0xmd/pull/4`.
+  ADR Governance run `31107285981` passed at exact pre-review head
+  `87068d519e02671228c4f25815f54bfd19b011bf`; no general quality CI arbiter
+  exists and no full-gauntlet green is claimed.
+- Adversarial review returned `NOT-READY`. HIGH: ADR-0005 states that only
+  explicit allowlist/canonical-map routes are exposed, while `/`, `/fonts/*`,
+  and `/assets/*` are governed by separate routing branches and the asset
+  namespaces can expose tracked files without map entries. HIGH: the branch
+  lacked a post-PR/post-CI auditable checkpoint with all gate results at the
+  current head. MEDIUM: production authority remains overrideable through
+  runtime configuration; the Proposed conformance plan does not yet cover the
+  local product-claim audit or production deployment/override authority.
+- Craft Review returned `CONCERNS` with one CONFORMANCE finding: this state file
+  still described the pre-PR checkpoint rather than PR #4, current CI, and the
+  actual review status. This update disposes only that bookkeeping gap; it does
+  not remediate the adversarial architectural findings.
+- Clean-context review was not run because adversarial review blocked the
+  work-unit first.
 
 ## Scope State
 
@@ -90,6 +105,12 @@
 - Release resolution can currently combine per-artefact fallback URLs with a
   release identity established by another resolution path; Proposed Slice D
   tracks coherent one-release resolution and specified fallback/degraded tests.
+- ADR-0005 public-route scope must explicitly account for `/` and bounded local
+  static-asset namespaces, or the implementation divergence must be added to a
+  separately approved conformance slice.
+- Production runtime override authority and the local index/presentation
+  product-claim audit remain in the decision queue but are not yet represented
+  by bounded Plan 02-01 slices.
 
 The former frontend-generator queue item is resolved by removing the stale comment: `src/html.js` itself is authoritative and directly maintained.
 
@@ -100,11 +121,11 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Attended exact PR-action checkpoint: Jim decides whether to authorise pushing
-`feat/adopt-adr-standard` to `JimCollinson/x0xmd` and opening a pull request into
-`main` titled `Adopt ADR governance and document x0x.md architecture`. If opened,
-wait for the ADR Governance CI result, then run adversarial, Craft, and
-clean-context gates before calling the work-unit review-ready. Proposed Plan 02-01
-remains parked until the relevant ADRs complete human review/acceptance, its
-unresolved contract decisions are specified, and a separate implementation packet
-approves each runtime slice and any required test mechanism.
+Attended remediation checkpoint: Jim decides whether to (1) amend ADR-0005 to
+describe the intended `/`, canonical-route, document-allowlist, and bounded
+static-asset namespace model and extend the Proposed conformance plan for
+production override authority plus local product-claim auditing, or (2) return
+to decision preparation for a different route/authority model. After an approved
+remediation, rerun affected review, refresh exact-head CI/checkpoint evidence,
+and only then dispatch a fresh clean-context gate. Proposed Plan 02-01 otherwise
+remains parked pending its stated prerequisites.

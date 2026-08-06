@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended documentation remediation after Jim selected Worker-first bounded static namespaces. Effective Cloudflare routing remains asset-first and divergent; the remediation is local and unpushed, and fresh code review, goal verification, exact-head CI, adversarial, Craft, and clean-context gates remain pending. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Worker-first bounded-namespace documentation remediation passed independent code review and 8/8 foundation goal verification. Effective Cloudflare routing remains asset-first and divergent; the local branch is ready for Jim-authorised push, PR #4 description refresh, and exact-head structural CI before fresh adversarial, Craft, and clean-context gates. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -111,10 +111,18 @@
   commit ahead of `origin/feat/adopt-adr-standard@a2d44bc`. The current
   six-file documentation remediation is also local and unpushed. It has not
   altered PR #4 or its description.
-- The current documentation remediation is not independently verified and does
-  not resolve the effective runtime divergence. Independent code review must run
-  first, followed by fresh goal verification. Craft and clean-context review
-  remain not run because the prior adversarial review blocked readiness.
+- The documentation remediation deliberately does not resolve the effective
+  runtime divergence. Craft and clean-context review remain not run because the
+  prior adversarial review blocked readiness.
+- Independent code/ADR review passed at `bcf65ee` with no findings. It confirmed
+  the six-file documentation scope, eight Proposed statuses, seven bounded Plan
+  02 slices, Slice G's separate mechanism approvals and collision controls, and
+  no runtime/configuration/workflow/test/dependency/environment change.
+- Fresh goal verification passed 8/8 at implementation target `bcf65ee`; the
+  result is committed at `c4666cd` in `VERIFICATION.md`. It verifies the ADR
+  foundation and intended architecture, not runtime Worker-first conformance.
+  Exact-current-head CI and fresh adversarial, Craft, and clean-context gates
+  remain pending.
 
 ## Scope State
 
@@ -137,7 +145,7 @@
   ADR-0008, Plan 01-01, Proposed Plan 02-01, `VERIFICATION.md`, and this state.
   It changes no runtime code, static assets, tests, CI, deployment, build,
   environment, copied kit bytes, agent guidance, or ADR status.
-- Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create another PR, merge, publish, deploy, or mark an ADR Accepted. No push or PR-description change is authorised by this remediation.
+- Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create another PR, merge, publish, deploy, or mark an ADR Accepted. Jim's live “proceed” instruction authorises updating the existing draft PR #4 branch and description for the remaining review gates; it does not authorise any other external action.
 - Pre-existing untracked `.artifacts/` and `.claude/` are outside scope and must remain untracked and uncommitted.
 
 ## Known Current Divergence
@@ -183,16 +191,12 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Keep Plan 01-01 in progress and Proposed Plan 02-01 parked. Run the remaining
-gates in this order:
-
-1. independent code/ADR review of the committed six-file remediation;
-2. fresh goal verification that replaces the superseded 9/9 result;
-3. separately authorised push and PR #4 description refresh;
-4. exact-remediation-head ADR Governance CI;
-5. fresh adversarial review;
-6. fresh Craft Review; and
-7. fresh clean-context review before Jim's attended checkpoint.
+Keep Plan 01-01 in progress and Proposed Plan 02-01 parked. Push the reviewed
+documentation remediation and verification record to existing draft PR #4,
+refresh its stale seven-ADR/7-of-7 description, and obtain exact-current-head ADR
+Governance CI. If CI is green and consistent with local evidence, run fresh
+adversarial review, then Craft Review, then a fresh clean-context gate before
+Jim's attended checkpoint.
 
 No later gate may be inferred from an earlier one. All ADRs remain Proposed,
 Plan 02-01 remains unapproved, and no runtime/configuration/test/deployment

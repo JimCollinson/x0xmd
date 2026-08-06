@@ -2,13 +2,24 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended review failure on draft PR #4. Goal verification and structural ADR CI passed, but adversarial review returned `NOT-READY` with two HIGH findings; Craft Review returned one CONFORMANCE finding. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Jim-approved attended remediation is drafted locally after the review failure on draft PR #4. ADR-0005 now records the complete route/namespace exposure model, Proposed ADR-0008 records static asset serving, and Proposed Plan 02-01 has six future slices. Affected reviews and exact-head CI have not rerun, so the work-unit is not green or Done. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
 
 ## Attended Disposition
 
+- On 2026-08-06 Jim approved amending ADR-0005, adding a separate static-assets
+  ADR, and completing Proposed Plan 02-01 coverage for local product claims and
+  production override authority.
+- ADR-0005 now treats explicit individual routes and bounded static namespaces as
+  valid governed exposure choices. It covers the special dual-response `/`,
+  canonical exact routes and aliases, curated upstream documents, and the
+  `/fonts/*` and `/assets/*` Workers Assets namespaces.
+- Proposed ADR-0008 separately captures why reviewed files under `public/` are
+  packaged and served through the bounded `ASSETS` binding. Separate static
+  directories are not treated as a route-model defect, and neither ADR freezes
+  the current file inventory.
 - Jim decided that ADRs, including retrospective records, describe intended
   durable architecture rather than embedding current implementation gaps as bug
   reports or acceptance blockers.
@@ -26,14 +37,14 @@
 - There is no `.gsd/gate.sh` in this repository.
 - For this slice, the installed `.github/workflows/adr-governance.yml` is the structural CI arbiter for ADR changes after a PR is created. Adding that workflow is an explicitly approved CI-mechanism change in this slice.
 - No general quality CI arbiter currently exists. `.github/workflows/deploy.yml` deploys the Worker; it is not a validation workflow and is out of scope for this slice.
-- Local bootstrap verification passed: `python3 scripts/adr-governance.py` checked seven ADR files; `git diff --check origin/main` passed; all eight direct kit destinations matched the pinned source blobs and required modes; scope/status inspection passed.
+- Original local bootstrap verification passed: `python3 scripts/adr-governance.py` checked seven ADR files; `git diff --check origin/main` passed; all eight direct kit destinations matched the pinned source blobs and required modes; scope/status inspection passed. This is historical evidence for the original bootstrap head.
 - Independent code review passed with no ranked findings. It confirmed source fidelity, legal/provenance handling, workflow isolation, Proposed statuses, current-code/history accuracy, and comment-only frontend change.
 - Independent ADR validation passed structurally and identified authority,
   cache-safety, fallback-escaping, and trust-contract concerns. Jim's disposition
   moved implementation-gap reporting into the Proposed conformance plan while
   retaining the intended invariants in ADR-0003, ADR-0004, ADR-0006, and
   ADR-0007.
-- Draft remediation verification passed locally: both
+- Pre-adversarial remediation verification passed locally: both
   `python3 scripts/adr-governance.py` and
   `GITHUB_BASE_REF=main python3 scripts/adr-governance.py` checked seven ADRs;
   `git diff --check origin/main...HEAD` passed; status and scope inspection found
@@ -51,9 +62,13 @@
   reproduced source fidelity, governance, wiring, statuses, artifact boundaries,
   comment-only frontend change, and scope restrictions.
 - Draft PR #4 exists at `https://github.com/JimCollinson/x0xmd/pull/4`.
-  ADR Governance run `31107285981` passed at exact pre-review head
-  `87068d519e02671228c4f25815f54bfd19b011bf`; no general quality CI arbiter
-  exists and no full-gauntlet green is claimed.
+  Prior ADR Governance runs, including `31107285981` at
+  `87068d519e02671228c4f25815f54bfd19b011bf` and `31108385268` at
+  `b76399da7cb3cd3c1626934b60352c629b0723c9`, passed their exact historical
+  heads. Both runs predate the current remediation and are historical evidence
+  only. Exact-head CI must rerun after the updated branch is pushed through a
+  separately authorised action. No general quality CI arbiter exists and no
+  current full-gauntlet green is claimed.
 - Adversarial review returned `NOT-READY`. HIGH: ADR-0005 states that only
   explicit allowlist/canonical-map routes are exposed, while `/`, `/fonts/*`,
   and `/assets/*` are governed by separate routing branches and the asset
@@ -62,22 +77,40 @@
   current head. MEDIUM: production authority remains overrideable through
   runtime configuration; the Proposed conformance plan does not yet cover the
   local product-claim audit or production deployment/override authority.
+- Jim's approved draft remediation addresses the route-model HIGH by amending
+  ADR-0005 and adding ADR-0008. It also adds the two missing Plan 02-01 authority
+  slices. The affected code/ADR review, goal verification, adversarial review,
+  and Craft Review must rerun; these draft changes are not a review pass.
 - Craft Review returned `CONCERNS` with one CONFORMANCE finding: this state file
   still described the pre-PR checkpoint rather than PR #4, current CI, and the
-  actual review status. This update disposes only that bookkeeping gap; it does
-  not remediate the adversarial architectural findings.
+  actual review status. The bookkeeping finding is updated here, but Craft
+  Review must rerun against the current remediation.
+- Current local documentation checks pass: both
+  `python3 scripts/adr-governance.py` and
+  `GITHUB_BASE_REF=main python3 scripts/adr-governance.py` validate eight ADRs;
+  all eight statuses are Proposed, and worktree diff/scope/link inspection finds
+  only the approved documentation changes plus the pre-existing untracked
+  `.artifacts/` and `.claude/`. Final committed-head diff verification remains
+  required.
 - Clean-context review was not run because adversarial review blocked the
   work-unit first.
 
 ## Scope State
 
 - Installed the eight direct consumer-kit files byte-exact from the pinned source and merged its agent-guidance fragment into repository-specific `AGENTS.md`.
-- Drafted ADR-0001 through ADR-0007 as Proposed records only; none is Accepted.
-- Revised only ADR-0003, ADR-0004, ADR-0006, and ADR-0007 to state intended
-  authority, cache-safety, provenance, release-coherence, and safe-fallback
-  invariants without presenting current implementation gaps as ADR content.
-- Added Proposed Plan 02-01 with four bounded future conformance slices. It is
-  not approved for implementation and does not authorise runtime or test changes.
+- Drafted ADR-0001 through ADR-0008 as Proposed records only; none is Accepted.
+- The pre-adversarial remediation revised ADR-0003, ADR-0004, ADR-0006, and
+  ADR-0007 to state intended authority, cache-safety, provenance,
+  release-coherence, and safe-fallback invariants without presenting current
+  implementation gaps as ADR content.
+- Amended ADR-0005 to record four governed exposure classes at route or bounded-
+  namespace level, and added ADR-0008 for repository-owned static files served
+  through Workers Assets.
+- Extended Proposed Plan 02-01 from four to six bounded future conformance
+  slices. Slices E and F cover local index/presentation product-claim authority
+  and production configuration/override authority. The plan remains Proposed,
+  is not approved for implementation, and does not authorise runtime, test,
+  deployment, or CI changes.
 - Removed only the stale generated-source comment from `src/html.js`; that file is now the authoritative directly maintained frontend source.
 - This remediation changed no runtime code, tests, CI, deployment, build,
   environment, copied kit bytes, agent guidance, or ADR status.
@@ -86,10 +119,14 @@
 
 ## Known Current Divergence and Decision Queue
 
-- Locally generated `/llms.txt` and other x0xmd-owned indexes/route descriptions
-  need conformance review to ensure product claims derive from or cite upstream
-  truth while remaining distinguishable from upstream-authored bytes.
-- Production deployment authority.
+- Locally generated `/llms.txt`, route descriptions, trust/provenance prose, and
+  frontend claims need a source/evidence and drift audit so product claims derive
+  from or cite upstream truth while remaining distinguishable from upstream-
+  authored bytes; Proposed Slice E now tracks this work.
+- Production configuration and override authority need a specification plus an
+  audit of actual deployed Cloudflare values, noncanonical-source prevention or
+  detection, and an authorised emergency reconciliation path; Proposed Slice F
+  now tracks this work.
 - `/trust.json` currently exposes unsupported experimental GPG/strict-verification
   policy fields and lacks approved schema evolution plus unknown/degraded and
   failure semantics; Proposed Plan 02-01 Slice C tracks specification and
@@ -105,12 +142,9 @@
 - Release resolution can currently combine per-artefact fallback URLs with a
   release identity established by another resolution path; Proposed Slice D
   tracks coherent one-release resolution and specified fallback/degraded tests.
-- ADR-0005 public-route scope must explicitly account for `/` and bounded local
-  static-asset namespaces, or the implementation divergence must be added to a
-  separately approved conformance slice.
-- Production runtime override authority and the local index/presentation
-  product-claim audit remain in the decision queue but are not yet represented
-  by bounded Plan 02-01 slices.
+- The prior ADR-0005 route-model gap is addressed in the current draft at
+  route/namespace level. ADR-0008 records the separate static-serving rationale.
+  Both remain Proposed and require the affected review lanes to rerun.
 
 The former frontend-generator queue item is resolved by removing the stale comment: `src/html.js` itself is authoritative and directly maintained.
 
@@ -121,11 +155,9 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Attended remediation checkpoint: Jim decides whether to (1) amend ADR-0005 to
-describe the intended `/`, canonical-route, document-allowlist, and bounded
-static-asset namespace model and extend the Proposed conformance plan for
-production override authority plus local product-claim auditing, or (2) return
-to decision preparation for a different route/authority model. After an approved
-remediation, rerun affected review, refresh exact-head CI/checkpoint evidence,
-and only then dispatch a fresh clean-context gate. Proposed Plan 02-01 otherwise
-remains parked pending its stated prerequisites.
+Complete the two approved remediation commits, then rerun affected code/ADR
+review, goal verification, adversarial review, Craft Review, and exact-head ADR
+CI. If those unblock the work-unit, dispatch the fresh clean-context gate and
+return to Jim's attended checkpoint. Plan 01-01 remains in progress and Proposed
+Plan 02-01 remains parked pending its stated review, acceptance, specification,
+mechanism-approval, and implementation-approval prerequisites.

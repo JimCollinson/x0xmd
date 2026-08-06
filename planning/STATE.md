@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Worker-first bounded-namespace documentation remediation passed independent code review and 8/8 foundation goal verification. Effective Cloudflare routing remains asset-first and divergent; the local branch is ready for Jim-authorised push, PR #4 description refresh, and exact-head structural CI before fresh adversarial, Craft, and clean-context gates. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Phase 01 is ready for Jim's attended review once the current checkpoint commit has a green structural ADR Governance check on draft PR #4. Code review and 8/8 foundation verification passed; fresh adversarial review returned `READY-WITH-NITS`; Craft Review passed; clean-context returned non-blocking `Concerns`. Effective runtime remains asset-first and divergent. No ADR is Accepted and no runtime implementation is approved.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -94,10 +94,10 @@
 - Jim's earlier approved remediation addressed a different route-model finding
   by amending ADR-0005, adding ADR-0008, and adding two Plan 02-01 authority
   slices. That work did not address Cloudflare's later asset-precedence HIGH.
-- Craft Review returned `CONCERNS` with one CONFORMANCE finding: this state file
+- An earlier Craft Review returned `CONCERNS` with one CONFORMANCE finding: this state file
   still described the pre-PR checkpoint rather than PR #4, current CI, and the
-  actual review status. The bookkeeping finding is updated here, but Craft
-  Review must rerun against the current remediation.
+  actual review status. That historical finding was corrected before the fresh
+  Craft pass recorded below.
 - Fresh adversarial review at remote/PR head `a2d44bc` returned `NOT-READY` with
   one HIGH blocker. Cloudflare Workers Assets defaults to asset-first routing
   when `run_worker_first` is absent, so any matching tracked file under `public/`
@@ -107,13 +107,12 @@
   reviewer also found a MEDIUM stale PR description (seven ADRs/7-of-7) and this
   state's now-stale pre-push wording at LOW. Craft Review may not proceed as a
   readiness gate until the HIGH is resolved and adversarial review reruns.
-- Local start checkpoint `fc4ad4d` records that blocker and is unpushed, one
-  commit ahead of `origin/feat/adopt-adr-standard@a2d44bc`. The current
-  six-file documentation remediation is also local and unpushed. It has not
-  altered PR #4 or its description.
+- Local start checkpoint `fc4ad4d` recorded that blocker before the six-file
+  documentation remediation and later push. It is historical; the current
+  branch/PR state is recorded below.
 - The documentation remediation deliberately does not resolve the effective
-  runtime divergence. Craft and clean-context review remain not run because the
-  prior adversarial review blocked readiness.
+  runtime divergence. The prior adversarial block prevented Craft and clean-
+  context review until the documentation remediation was complete.
 - Independent code/ADR review passed at `bcf65ee` with no findings. It confirmed
   the six-file documentation scope, eight Proposed statuses, seven bounded Plan
   02 slices, Slice G's separate mechanism approvals and collision controls, and
@@ -121,8 +120,29 @@
 - Fresh goal verification passed 8/8 at implementation target `bcf65ee`; the
   result is committed at `c4666cd` in `VERIFICATION.md`. It verifies the ADR
   foundation and intended architecture, not runtime Worker-first conformance.
-  Exact-current-head CI and fresh adversarial, Craft, and clean-context gates
-  remain pending.
+  At that verification checkpoint, exact-current-head CI and fresh adversarial,
+  Craft, and clean-context gates remained pending; their later results follow.
+- The reviewed branch and draft PR were updated to `406a56d`. Structural ADR
+  Governance run `31118541443` passed at that exact head. The refreshed PR
+  description records eight Proposed ADRs, seven unapproved Plan 02 slices, the
+  8/8 foundation result, and the current runtime divergence without claiming
+  general quality CI.
+- Fresh adversarial review at `406a56d` returned `READY-WITH-NITS` with no
+  CRITICAL, HIGH, or MEDIUM findings. The prior asset-precedence HIGH is resolved
+  for Phase 01 documentation readiness and explicitly unresolved at runtime.
+  LOW findings concerned stale pre-push state/PR text, unavailable standalone
+  code-review transcripts, and the authenticated-access prerequisite for
+  re-fetching the private pinned source.
+- Fresh Craft Review at `406a56d` passed with no CONFORMANCE, SIMPLICITY, or NIT
+  findings.
+- The fresh clean-context gate returned non-blocking `Concerns` and found the
+  phase ready for Jim's attended review only. Its durable report is
+  `planning/phases/01-adr-foundation/CLEAN-CONTEXT.md`; its model disclosure is:
+  `models: claude-opus-4-8 · 173s`.
+- `planning/phases/01-adr-foundation/CHECKPOINT.md` reconciles current gate
+  results and evidence limitations. Because these checkpoint artifacts follow
+  reviewed head `406a56d`, the current PR head must receive its own structural
+  ADR Governance pass before handoff.
 
 ## Scope State
 
@@ -191,12 +211,10 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Keep Plan 01-01 in progress and Proposed Plan 02-01 parked. Push the reviewed
-documentation remediation and verification record to existing draft PR #4,
-refresh its stale seven-ADR/7-of-7 description, and obtain exact-current-head ADR
-Governance CI. If CI is green and consistent with local evidence, run fresh
-adversarial review, then Craft Review, then a fresh clean-context gate before
-Jim's attended checkpoint.
+Commit and push the evidence-only clean-context report, checkpoint, and current-
+state reconciliation to existing draft PR #4. Confirm the structural ADR
+Governance check is green at that final current head and refresh the PR evidence
+section without another branch change. Then stop for Jim's attended review.
 
 No later gate may be inferred from an earlier one. All ADRs remain Proposed,
 Plan 02-01 remains unapproved, and no runtime/configuration/test/deployment

@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended documentation remediation for the reopened stable-entrypoint work. Jim approved the disposition of one HIGH and two MEDIUM Plan 02 Slice H findings, and the targeted two-file remediation addresses them pending fresh independent code review. Goal verification remains blocked until that review reruns. All pre-reopening evidence remains historical. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. The three approved Plan 02 fixes passed reinspection, but fresh review found a HIGH contradiction in Proposed ADR-0003/0009: their validation wording rejects every stale or unsigned delivery even though Jim approved clearly disclosed last-known installer bytes supported by revision/digest evidence. Goal verification remains blocked pending Jim's approval to align those Proposed ADRs. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson approved the documentation-only reopening and this targeted review remediation on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -93,6 +93,23 @@
 - These are documentation remediations, not a fresh review result. Code review
   must rerun before goal verification. No external action or later runtime or
   mechanism gate is authorised or current for the reopened scope.
+
+## Fresh Code-review Rerun — Blocked
+
+- The three approved Plan 02 fixes passed reinspection: the A-to-B outage and
+  recovery fixture is explicit, C/D/F/G must finish before H, and Slice H neither
+  changes nor relies on `x0x.sh`.
+- HIGH: Proposed ADR-0009 currently says to reject every stale or unsigned
+  delivery and always verify signatures/manifests. Proposed ADR-0003 similarly
+  requires every verification form for every delivery. That contradicts Jim's
+  approved rule for the mutable-`main` installer, which may be offered as clearly
+  last-known verified/stale using canonical revision, digest, and verification-
+  time evidence even when that artefact has no signature or release manifest.
+- The Proposed ADR validations must reject stale bytes only when they are
+  misrepresented as current/latest, and require signatures, manifests, and
+  release identity only when the canonical artefact actually supplies them.
+- Goal verification is blocked. Amending Proposed ADR-0003/0009 requires Jim's
+  attended scope approval; no such edit or external action has been inferred.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -316,10 +333,21 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Rerun independent code review against the committed two-file documentation
-remediation. If that review passes, rerun independent goal verification. Do not
-push or refresh PR #4, and do not run or infer any external, runtime, operational,
-or mechanism gate without its separate explicit approval.
+Attended scope decision required. Recommended documentation-only remediation:
+
+1. amend Proposed ADR-0009 validation so a disclosed last-known verified/stale
+   installer is permitted, while stale bytes presented as current/latest remain
+   forbidden;
+2. require revision/digest/time evidence for the mutable-`main` installer and
+   signatures/manifests/release identity only for artefacts that canonically
+   provide them; and
+3. align Proposed ADR-0003's delivery-equality validation to the same artefact-
+   appropriate rule.
+
+If Jim approves, amend only Proposed ADR-0003, Proposed ADR-0009, Plan 01's
+attended addendum if needed, and this handoff; then rerun code review and goal
+verification. Do not push or refresh PR #4, and do not infer any external,
+runtime, operational, or mechanism gate.
 
 No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
 ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H

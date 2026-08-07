@@ -1,45 +1,25 @@
 # Phase 01 ADR Foundation Verification
 
-## Owner Scope-correction Notice — 2026-08-07
+Date: 2026-08-07
 
-**All evidence below is historical.** The later nine-ADR/eight-slice reopening
-has been corrected from `b55eb2b`: Proposed ADR-0009 remains and Slice H is
-withdrawn. The last-verification finding was valid only against the withdrawn
-independent-retention text and is not a current blocker. This record provides no
-current readiness proof; the corrected nine-ADR/seven-slice scope requires fresh
-independent review.
-
-Date: 2026-08-06
-
-## Scope-reopened Notice — 2026-08-07
-
-**This verification is historical and no longer establishes current Phase 01
-readiness.** Its pass, score, findings, and exact evidence below apply only to
-the eight-ADR/seven-slice scope at assessed target
-`bcf65eedc9b266387d228f39e3214e3cc92b23df`. Jim's attended documentation-only
-reopening adds Proposed ADR-0009 and an eighth Proposed Plan 02 slice. The new
-nine-ADR/eight-slice scope awaits fresh independent code/ADR review, goal
-verification, adversarial review, Craft Review, and clean-context review.
-ADR-0009 has not been independently verified by this record, and no result below
-may be extended to it by inference.
-
-## Result
+## Current Independent Result
 
 - **Verification:** passed
-- **Assessed implementation target:** `feat/adopt-adr-standard@bcf65eedc9b266387d228f39e3214e3cc92b23df`
-- **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
-- **Score:** 8/8 expanded ADR-foundation goals verified
-- **Goal boundary:** Phase 01 installs faithful ADR governance and leaves eight substantive, reviewable Proposed decisions describing intended durable architecture. Runtime conformance with the Worker-first decision is deliberately not a Phase 01 success condition.
-- **Current runtime boundary:** `wrangler.toml` does not set `assets.run_worker_first`; effective matching-asset routing is therefore asset-first and divergent from Proposed ADR-0005/0008. Proposed Plan 02 Slice G, not this phase, owns future conformance after its distinct approvals.
-- **External-gate boundary:** The preceding independent code review passed with no findings. This goal verification passes the documentation foundation only. Exact-current-head structural CI, fresh adversarial review, Craft Review, clean-context review, and Jim's attended checkpoint remain pending. No ADR is Accepted and Plan 02-01 remains Proposed and unapproved.
+- **Assessed implementation target:** `feat/adopt-adr-standard@801275b5ee64e34f48cb584c8bc864c3c50f5281`
+- **Base:** local `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
+- **Score:** 10/10 current owner-specified goals verified
+- **Preceding review:** the supplied independent code/ADR review passed at the same implementation target with no findings. No standalone transcript is tracked, so that result is process evidence rather than a repository-reproducible check.
+- **Goal boundary:** Phase 01's goal is a faithful, legally attributed ADR-governance foundation with nine substantive Proposed records and an honestly bounded future plan. It does not establish runtime conformance with every Proposed ADR, approve Plan 02, accept any ADR, or authorise implementation or operations.
+- **Current-scope boundary:** ADR-0009's statement that the canonical GitHub-`main` installer proxy conforms is verified only for the stable-entrypoint and authority decision. Other disclosed runtime divergences remain Plan 02 inputs; this result does not convert them into Phase 01 failures or claim they are fixed.
+- **External-gate boundary:** the local target is unpushed. Draft PR #4 and its successful structural CI remain at historical remote head `52ecb10dca1b2478a010f641509ab90f97daf385`, not this target. Current-scope adversarial review, Craft Review, clean-context review, exact-pushed-head structural CI, and Jim's attended checkpoint remain pending.
 
 ## Goal-backward Findings
 
-### 1. Canonical pinned ADR kit fidelity and wiring — VERIFIED
+### 1. Original pinned ADR kit fidelity, wiring, legal, and status goals remain — VERIFIED
 
-The source pin is real and eligible: GitHub identifies `WithAutonomi/adr-standard@0b36be07b4730c158eaed3655b551318c81352bf` as the founding merge, and comparison with current canonical `main@ef3f52b48e12773a4ba081cd67a010d852e74a11` shows the pin as its merge base, seven commits behind and zero ahead.
-
-The source tree and target tree agree for all eight direct-install destinations. Seven files are mode `100644`; `scripts/adr-governance.py` is `100755`:
+The canonical source pin remains real and eligible. GitHub's tree for
+`WithAutonomi/adr-standard@0b36be07b4730c158eaed3655b551318c81352bf`
+and the installed destinations have identical blobs and required modes:
 
 ```text
 docs/adr/README.md                    100644 6eea809622a5d77caa4cd92b3512e44eb24bfc6c
@@ -52,144 +32,260 @@ docs/adr/LICENSE-APACHE               100644 ceb6118c8c3e5ebd5e720b503bcccc40587
 docs/adr/NOTICE                       100644 d0e1091053fbaab4e3d6dc498c20833538d54a55
 ```
 
-`AGENTS.md` correctly merges rather than copies the kit fragment. It preserves inspect-before-change, Proposed drafting, immutable Accepted records, human-only acceptance, and substantive review while adding repository-specific authority, artifact boundaries, and honest CI scope. The workflow watches the canonical ADR/script/workflow paths, fetches full history, and invokes the installed executable gate. Neither the eight direct destinations nor `AGENTS.md` changed after installation commit `7de2275e5576ac7d2f5cac30b2a455290119766f`.
+The source repository's current `main` is nine commits ahead and zero behind the
+pin, with the pin as merge base. The pin is therefore still in canonical history
+without silently moving the adopted baseline.
 
-Both requested governance invocations passed and discovered eight ADRs. The default invocation selects `HEAD^1`; because the target's final commit changes only planning records, its “8 checked” output is discovery, not proof that eight changed ADRs received full validation. `GITHUB_BASE_REF=main` is the meaningful full branch-diff structural pass and did validate all eight. The inherited gate's documented fail-open, discovery, parsing, history, and self-modification limitations remain honestly stated.
+The eight direct destinations and repository-specific `AGENTS.md` are unchanged
+from installation commit `7de2275e5576ac7d2f5cac30b2a455290119766f`.
+`AGENTS.md` merges the source guidance with x0xmd-specific authority, artifact,
+deployment, and CI boundaries. It wires architectural work to `docs/adr/`, the
+template, tooling, and governance command. The workflow watches the canonical
+ADR, script, and workflow paths, fetches full history, and invokes the installed
+gate. The kit-scoped dual licences and NOTICE retain exact source blobs; no
+consumer-root legal file or `.adr-kit.yaml` was added.
 
-### 2. Eight substantive Proposed ADRs and clean artifact boundaries — VERIFIED
+Both governance modes passed and discovered nine ADRs. The default mode selected
+`HEAD^1`; because the final implementation commit changed planning documents but
+no ADR, its count is discovery output rather than full validation of all nine.
+`GITHUB_BASE_REF=main` compared the branch against `origin/main` and is the
+meaningful full structural pass. The inherited gate's documented fail-open,
+discovery, history, parsing, and self-modification limits remain disclosed.
 
-ADR-0001 through ADR-0008 exist at 65–86 lines each. Every record is `Proposed`, uses all template sections plus decision drivers and considered options, presents real alternatives and trade-offs, and supplies concrete validation. No TODO, FIXME, template placeholder, stub, Accepted, Superseded, Deprecated, or Rejected record was found.
+### 2. Nine ADRs are substantive Proposed records with clean boundaries — VERIFIED
 
-The records state durable decisions and invariants. They do not sequence implementation work or turn current implementation defects into ADR acceptance criteria. Concrete schemas and failure/cache contracts are left to future specs; divergence and sequencing are kept in state and Proposed Plan 02-01. All eight are referenced through repository guidance, state, the future plan, or relevant ADR cross-links, so they are substantive and wired rather than orphaned.
+ADR-0001 through ADR-0009 exist and are 66, 67, 75, 72, 86, 73, 66, 78, and 92
+lines respectively. All nine are `Proposed`. Every record has Context, Decision
+Drivers, Considered Options, Decision, Consequences, Validation, and AI-assistance
+sections. No TODO, FIXME, template token, placeholder decision, Accepted,
+Superseded, Deprecated, or Rejected record was found.
 
-### 3. ADR-0005/0008 encode Worker-first, no-shadowing intent — VERIFIED
+The ADRs state durable decisions, alternatives, consequences, and validation
+obligations. Concrete schemas, cache/failure contracts, implementation sequence,
+and mechanism approvals remain in future specs and the Proposed plan rather than
+being smuggled into ADR acceptance. Repository guidance, state, Plan 02, and ADR
+cross-links connect the records to the system; none is a stub or orphan.
 
-ADR-0005 gives Worker routing policy the first decision on every public request, defines four governed exposure classes, permits `ASSETS` delegation only after classification into `/fonts/*` or `/assets/*`, treats `public/` as packaging input rather than a route allowlist, and forbids file presence from creating or shadowing root, exact, alias/redirect, document, or unknown routes.
+### 3. ADR-0009 captures the owner's current rationale without overengineering or false conformance — VERIFIED
 
-ADR-0008 separately governs reviewed deployable files and the subordinate Assets delivery mechanism. It rejects asset-first public-tree authority, requires files outside approved namespaces to remain unreachable, and requires Cloudflare-level matchable controls because direct `worker.fetch` tests cannot prove platform ordering.
+ADR-0009 substantively records all current owner decisions:
 
-Both are phrased as intended durable architecture with alternatives, consequences, and validation obligations. Neither mentions the absent current setting or claims current runtime conformance. This is the intended ADR/bug-report boundary.
+- `x0x.md` is the canonical stable public origin;
+- the exact canonical ergonomic command is `curl -sfL https://x0x.md | sh`;
+- one origin adapts for human, CLI/agent, and machine-readable consumers;
+- the stable origin is distinct from product, source, installer, release, and product-name authority;
+- the current canonical GitHub-`main` proxy is sufficient and its GitHub availability dependence is an accepted trade-off;
+- stable public URLs preserve backend replaceability without requiring a backend change now;
+- intended Autonomi Foundation stewardship is stated without asserting registrar ownership, legal custody, or completed transfer;
+- `x0x.sh` is reserved optionality with no redirect, route, failover, uptime, or compatibility contract; and
+- future independent hosting or failover is only a reconsideration trigger after demonstrated need, a new architectural decision, a bounded spec, and a separately approved plan.
 
-### 4. Current asset-first divergence is honestly separated — VERIFIED
+The record explicitly excludes current independent retention/storage, automated
+ingestion or attestation, freshness ledgers, outage guarantees, plural advertised
+delivery, signed-skill changes, provenance-based host choice, and client-selection
+machinery. It also records curl-pipe-shell risk and inspect/verify alternatives.
 
-The implementation evidence matches the recorded divergence: `wrangler.toml` configures `directory = "./public"` and `binding = "ASSETS"` but no `run_worker_first`; `src/index.js` delegates only `/fonts/*` and `/assets/*` when the Worker is invoked. Cloudflare's Worker-script documentation states that matching static assets are served before the Worker by default and that `run_worker_first = true` is required to run the Worker before every request.
+Its conformance statement is narrow and supportable: the tracked installer path
+matches the stable-origin and canonical-authority decision. ADR-0009 does not
+claim that current cache, trust-schema, release-coherence, rendering, production-
+override, or Worker-first behaviour already conforms to the other Proposed ADRs.
 
-`planning/STATE.md`, this verification, and Proposed Plan 02-01 all preserve that effective asset-first behaviour as an implementation/configuration divergence. The ADRs preserve Jim's intended architecture instead. No runtime fix or runtime-conformance claim was smuggled into Phase 01.
+### 4. ADR-0002, ADR-0003, ADR-0004, and ADR-0006 remain coherent and canonical-upstream authority is preserved — VERIFIED
 
-### 5. Proposed Plan 02 contains seven bounded slices and a correctly gated Slice G — VERIFIED
+- ADR-0002 gives x0xmd serving, presentation, static-asset, and Cloudflare responsibility while leaving product, protocol, docs, installer, and signed-release truth with `saorsa-labs/x0x`. A future delivery mechanism remains serving infrastructure, not new authority.
+- ADR-0003 permits only `saorsa-labs/x0x` as production upstream, keeps docs and installer on upstream `main`, and keeps signed artefacts associated with one stable release. Its conditional future-delivery sentence neither requires another mechanism nor permits another authority.
+- ADR-0004 governs the dual browser/CLI root, deterministic `/install.sh`, cache-safety obligation, and exact canonical command while delegating stable-origin identity to ADR-0009.
+- ADR-0006 governs evidenced `/trust.json` provenance. It distinguishes x0xmd entrypoints from upstream sources and does not require x0xmd to discover, verify, enumerate, retain, or serve paths independently offered by clients or skills.
 
-The plan is explicitly `Proposed; not approved for implementation` and contains exactly seven slices, A through G. Slices A–F retain bounded cache, rendering, trust-contract, release-coherence, local-claim-authority, and production-configuration work.
+The four records cross-link coherently with ADR-0009 and Plan 02. No fork,
+staging source, retained copy, x0xmd-created installer truth, or alternate product
+authority is introduced.
 
-Slice G separately requires:
+### 5. Proposed Plan 02 is exactly seven unapproved slices A–G — VERIFIED
 
-- human review and acceptance of ADR-0005/0008;
-- Plan/Slice G implementation approval;
-- distinct explicit approval for the Wrangler routing-precedence mechanism change;
-- distinct explicit approval for the Cloudflare integration harness, fixtures, and command, with neither mechanism approval implying the other;
-- `run_worker_first = true` without unrelated Worker route or namespace changes;
-- Cloudflare/Wrangler-path tests rather than direct Worker invocation alone;
-- positive, matchable asset controls for approved delivery and root, exact-route, alias, curated-document, unknown, and non-approved-namespace collision resistance; and
-- stops for absent approvals, an integration path unable to distinguish platform precedence, route/response/namespace expansion, or any unapproved runtime, harness, CI, workflow, build, deployment, dependency, or environment change.
+`planning/phases/02-contract-conformance/02-01-PLAN.md` is headed
+`Status: Proposed; not approved for implementation.` Automated heading inspection
+found exactly seven slices: A, B, C, D, E, F, and G. There is no Slice H heading.
 
-That is a bounded future conformance slice, not present implementation authority.
+The independent-hosting/failover text is under `Future Consideration`, after the
+seven slices. It says explicitly that the idea is not a slice, requirement, or
+predesigned solution and can be reconsidered only after demonstrated availability
+problems and new decision/spec/plan gates. It is therefore optionality, not a
+commitment or hidden eighth slice.
 
-### 6. Worker-first remediation changed exactly the six authorised documents — VERIFIED
+### 6. Historical eight-ADR and withdrawn nine/eight evidence is preserved honestly — VERIFIED
 
-The committed remediation range `fc4ad4dee009c4ab1b7d5870d8d83f1b6fd9c309..bcf65eedc9b266387d228f39e3214e3cc92b23df` changes exactly:
+Plan 01, `planning/STATE.md`, `CHECKPOINT.md`, and this record distinguish three
+different scopes instead of extending old results by inference:
 
-```text
-docs/adr/ADR-0005-expose-only-canonical-explicitly-public-routes.md
-docs/adr/ADR-0008-serve-tracked-static-files-through-workers-assets.md
-planning/STATE.md
-planning/phases/01-adr-foundation/01-01-PLAN.md
-planning/phases/01-adr-foundation/VERIFICATION.md
-planning/phases/02-contract-conformance/02-01-PLAN.md
-```
+1. the completed historical eight-ADR/seven-slice foundation;
+2. the later nine-ADR/eight-slice draft with independent-retention Slice H; and
+3. the current corrected nine-ADR/seven-slice target.
 
-It changes no Worker/frontend/runtime source, `public/` asset, Wrangler/configuration file, test or harness, workflow, governance script, dependency/lockfile, build, deployment, `.gsd`, or environment setup. `git diff --check` passed for both the full branch and remediation range. Pre-existing `.artifacts/` and `.claude/` remain untracked; neither has tracked paths.
+The historical evidence retains the old targets, review findings, structural-CI
+limits, and withdrawn last-verification gap. It states that the retained-installer
+freshness finding was valid against the withdrawn draft but is not a current
+blocker. No eight-ADR pass or nine/eight draft review is presented as proof of the
+current scope.
 
-### 7. State, review, and CI claims are honest — VERIFIED
+### 7. Current source matches the accepted GitHub-backed delivery trade-off — VERIFIED
 
-At the assessed target, `planning/STATE.md` accurately recorded the then-pending fresh code review and goal verification. The work packet subsequently supplied the independent code-review result: passed at `bcf65ee` with no findings. No standalone current review transcript is tracked, so this verification records the supplied gate result without inventing additional evidence; its own full diff inspection found no goal gap.
+`src/index.js` and `wrangler.toml` both identify `saorsa-labs/x0x`. Their default
+and configured installer URL is exactly
+`https://raw.githubusercontent.com/saorsa-labs/x0x/main/scripts/install.sh`.
+CLI-like `/` requests and `/install.sh` call `installerResponse`, which proxies the
+configured canonical URL. An executable mock-fetch smoke check confirmed that a
+CLI root request fetched that exact URL and returned installer bytes; the browser
+root returned HTML containing the exact canonical command.
 
-GitHub confirms draft PR #4 remains open at remote head `a2d44bc8bd23ddce33d15a2a1e70bffc21d65b66`. ADR Governance run `31115279538` succeeded for that historical head. At assessment, local `bcf65ee` was three commits ahead of the remote and unpushed. The historical run is not exact-target CI and is not general code-quality evidence. This repository has no general code-quality CI arbiter; `deploy.yml` is a deployment workflow, not validation.
+No independent retention primitive or new source was added. This verifies tracked
+source and configuration, not actual deployed Cloudflare variable custody; the
+latter remains a separately gated Plan 02 Slice F audit.
 
-This verification completes only the goal-verification gate. Exact-current-head structural CI, fresh adversarial review, Craft Review, and clean-context review remain pending, followed by Jim's attended checkpoint. Plan 01-01 remains in progress; no later gate is inferred from this pass.
+### 8. Reopening and correction scopes are exact; no mechanism changed — VERIFIED
 
-### 8. Original source, legal, status, scope, link, and frontend-authority goals remain intact — VERIFIED
+The cumulative reopening range
+`52ecb10dca1b2478a010f641509ab90f97daf385..801275b5ee64e34f48cb584c8bc864c3c50f5281`
+changes exactly the authorised ten files: ADR-0002, ADR-0003, ADR-0004, ADR-0006,
+new ADR-0009, Plan 01, Proposed Plan 02, STATE, VERIFICATION, and CHECKPOINT.
 
-- The direct kit bytes/modes and merged guidance remain unchanged, `.adr-kit.yaml` remains absent, consumer-root legal files remain untouched, and the kit-scoped MIT/Apache licences and NOTICE retain exact source blobs.
-- Every ADR remains Proposed, and Plan 02 remains Proposed and unapproved.
-- The complete branch diff changes the originally approved governance/docs/planning surface plus only the authorised `src/html.js` source-notice correction. The Worker-first remediation is the narrower six-document range verified above.
-- Eight relative Markdown links across the ADRs and plans resolved with zero broken targets. All eight cited x0xmd commits exist; PR links #1–#4 resolve; and the pinned founding commit and bootstrap-spec link resolve in the canonical source repository.
-- `src/html.js` differs from `origin/main` by four deleted comment/blank lines and no additions. Removing exactly the stale generated-source notice from the base produces the target file byte-for-byte (SHA-256 `27863f107039d0257fa69b86992170179eadbd6f56f323afa1fbe2c3c3370100`). `AGENTS.md` and ADR-0002 consistently identify it as directly maintained authoritative frontend source.
+The correction range
+`b55eb2b49e2c66a16d9358d75818d11a46d325d0..801275b5ee64e34f48cb584c8bc864c3c50f5281`
+changes exactly the authorised nine files: ADR-0002, ADR-0003, ADR-0006,
+ADR-0009, Plan 01, Proposed Plan 02, STATE, VERIFICATION, and CHECKPOINT. ADR-0004
+is absent from the correction range, as required.
+
+Both ranges contain only Markdown documents. They change no runtime, Wrangler or
+other configuration, storage, asset, skill, test/harness, workflow, governance
+script, dependency/lockfile, build, deployment, environment, domain/DNS, custody,
+secret, or spend mechanism. Full-branch, reopening-range, and correction-range
+`git diff --check` all passed.
+
+The complete branch still contains the originally authorised ADR kit/workflow and
+only one source change: four deleted stale generated-source notice lines at the
+start of `src/html.js`. `src/index.js`, `wrangler.toml`, and `deploy.yml` are
+unchanged from `origin/main`.
+
+### 9. Naming rationale and Foundation custody statements are honest — VERIFIED
+
+ADR-0009 frames `x0x.md` as short and distinctive only within the known ecosystem,
+not universally unique. It records exact-text and agent-first usefulness, the
+natural `.md` association, and suitability for Foundation stewardship. It does
+not claim pronounceability; it records `0`/`O` and “tic-tac-toe” ambiguity as
+negatives. Product-name authority remains upstream.
+
+The Foundation statement is explicitly intended future stewardship. Current
+registrar ownership, legal custody, and completed transfer are not asserted, and
+unevidenced custody is not mislabeled as a current conformance gap. This is a
+bounded rationale and stewardship intent, not fabricated operational evidence.
+
+### 10. Review and CI limitations are accurate — VERIFIED
+
+Before this verification record, local HEAD `801275b` was nine commits ahead of
+`origin/feat/adopt-adr-standard`; `.artifacts/` and `.claude/` remained untracked.
+GitHub confirms draft PR #4 is open and its remote head is
+`52ecb10dca1b2478a010f641509ab90f97daf385`. ADR Governance run `31120406392`
+succeeded for that historical head. It is not CI for `801275b` or for the commit
+containing this verification record.
+
+The installed workflow is a structural ADR arbiter only. No general code-quality
+CI arbiter exists, and `.github/workflows/deploy.yml` is deployment rather than
+validation. Local checks are evidence, not CI. The current code/ADR review pass is
+a supplied gate result without a tracked transcript. This independent verification
+completes only the goal-verification lane.
 
 ## Artifact and Wiring Status
 
 | Artifact/link | Exists | Substantive | Wired | Status |
 | --- | --- | --- | --- | --- |
-| Eight direct consumer-kit destinations | Yes | Exact pinned bytes and required modes | Canonical paths; gate invoked by workflow and guidance | VERIFIED |
-| `AGENTS.md` | Yes | Repository authority, ADR rules, artifact/CI boundaries | Directs architectural work to ADR records, template, tooling, and gate | VERIFIED |
-| ADR-0001 through ADR-0008 | Yes | 65–86 lines; real options, consequences, validation | Cross-linked from guidance/state/plan and one another where relevant | VERIFIED |
-| ADR-0005 route decision | Yes | Worker-first four-class exposure and no-shadowing invariant | Governs ADR-0008 and future Slice G | VERIFIED |
-| ADR-0008 asset decision | Yes | Subordinate tracked-asset mechanism and platform-level validation | Cross-linked to ADR-0002/0005 and future Slice G | VERIFIED |
-| Proposed Plan 02-01 | Yes | Seven bounded future slices | Explicit prerequisites, approvals, stops, and review gates; unapproved | VERIFIED (not approved) |
-| `planning/STATE.md` | Yes | Records intended architecture, current divergence, and historical/pending gates | Connects phase, ADRs, plan, PR/CI history, and next sequence | VERIFIED at target, with code-review completion superseded here |
-| `src/html.js` authority correction | Yes | Comment-only; maintained bytes unchanged | Matches `AGENTS.md` and ADR-0002 authority declarations | VERIFIED |
-| Worker-first runtime conformance | No | `run_worker_first` remains absent by design for this phase | Parked behind Proposed Slice G and separate mechanism approvals | OUT OF PHASE GOAL / PENDING |
+| Eight direct consumer-kit destinations | Yes | Exact pinned blobs and modes | Canonical paths; workflow and guidance invoke gate | VERIFIED |
+| `AGENTS.md` | Yes | Repository authority, ADR, artifact, deployment, and CI boundaries | Directs architectural work to ADR records/template/tooling | VERIFIED |
+| ADR-0001 through ADR-0009 | Yes | 66–92 lines; full sections, options, consequences, validation | State, plan, guidance, and relevant ADR cross-links | VERIFIED |
+| ADR-0009 stable-entrypoint decision | Yes | Full rationale, trade-offs, authority and non-goals | Cross-linked from ADR-0002/3/4/6 and Plan 02 | VERIFIED |
+| Proposed Plan 02-01 | Yes | Exactly seven bounded slices A–G | Prerequisites, mechanism gates, reviews, and stops; unapproved | VERIFIED (not approved) |
+| Current installer proxy path | Yes | Canonical GitHub `main` source in Worker and Wrangler | Root and `/install.sh` call the proxy path | VERIFIED for tracked source |
+| Historical handoff evidence | Yes | Targets, findings, CI limits, and withdrawn scope retained | Clearly segregated from current result | VERIFIED |
+| Runtime conformance to all Proposed ADRs | No/partial by disclosed design | Plan 02 records known gaps and audits | Parked behind human acceptance and separate approvals | OUT OF PHASE 01 GOAL |
 
 ## Reproducible Evidence
 
-Commands were run from `/Users/jimcollinson/code/x0xmd` with implementation target `bcf65eedc9b266387d228f39e3214e3cc92b23df` checked out:
+Commands were run from `/Users/jimcollinson/code/x0xmd` with implementation target
+`801275b5ee64e34f48cb584c8bc864c3c50f5281` checked out.
 
 ```text
 $ python3 scripts/adr-governance.py
-ADR governance passed (8 ADR file(s) checked).
+ADR governance passed (9 ADR file(s) checked).
 
 $ GITHUB_BASE_REF=main python3 scripts/adr-governance.py
-ADR governance passed (8 ADR file(s) checked).
+ADR governance passed (9 ADR file(s) checked).
 
-$ git diff --check origin/main...bcf65eedc9b266387d228f39e3214e3cc92b23df
+$ git diff --check origin/main...HEAD
 # no output; exit 0
 
-$ git diff --check fc4ad4dee009c4ab1b7d5870d8d83f1b6fd9c309..bcf65eedc9b266387d228f39e3214e3cc92b23df
+$ git diff --check 52ecb10dca1b2478a010f641509ab90f97daf385..HEAD
 # no output; exit 0
 
-$ git rev-list --left-right --count origin/feat/adopt-adr-standard...bcf65eedc9b266387d228f39e3214e3cc92b23df
-0       3
-
-$ git status --short --branch
-## feat/adopt-adr-standard...origin/feat/adopt-adr-standard [ahead 3]
-?? .artifacts/
-?? .claude/
+$ git diff --check b55eb2b49e2c66a16d9358d75818d11a46d325d0..HEAD
+# no output; exit 0
 
 $ structural/content checks
-ADR_COUNT=8
-STATUSES=Proposed,Proposed,Proposed,Proposed,Proposed,Proposed,Proposed,Proposed
+ADR_COUNT=9
+STATUSES=Proposed,Proposed,Proposed,Proposed,Proposed,Proposed,Proposed,Proposed,Proposed
+ADR_LINES=66,67,75,72,86,73,66,78,92
+MISSING_SECTIONS=[]
+PLACEHOLDERS=[]
 SLICE_COUNT=7; SLICES=A,B,C,D,E,F,G
-LOCAL_LINKS_CHECKED=8; BROKEN_LOCAL_LINKS=0
-CITED_LOCAL_COMMITS=8/8
+SLICE_H_HEADING=False
+FUTURE_CONSIDERATION_NON_BINDING=True
+LOCAL_LINKS_CHECKED=20; BROKEN_LOCAL_LINKS=0
+CITED_LOCAL_COMMITS=8; MISSING_CITED_LOCAL_COMMITS=0
+REOPENED_FILES=10; REOPENED_EXACT_SCOPE=True
+CORRECTION_FILES=9; CORRECTION_EXACT_SCOPE=True
 ```
 
-GitHub read-only evidence:
+Read-only GitHub evidence:
 
 ```text
 Canonical pin: 0b36be07b4730c158eaed3655b551318c81352bf
-Current source main: ef3f52b48e12773a4ba081cd67a010d852e74a11
-Comparison: source main ahead by 7, behind by 0, merge base is the pin
+Source main comparison: ahead 9, behind 0, merge base is the pin
 Draft PR: https://github.com/JimCollinson/x0xmd/pull/4
-Remote PR head: a2d44bc8bd23ddce33d15a2a1e70bffc21d65b66
-Historical structural CI: https://github.com/JimCollinson/x0xmd/actions/runs/31115279538 — success
+Remote PR head: 52ecb10dca1b2478a010f641509ab90f97daf385
+Historical structural CI: https://github.com/JimCollinson/x0xmd/actions/runs/31120406392 — success at 52ecb10
 ```
 
-## Historical Evidence Preserved
+Several ad hoc Python probe one-liners initially had verifier quoting/scoping
+errors. Corrected probes produced the results above; no repository test or gate
+failed, and no test, harness, workflow, build, or environment was changed.
 
-- Earlier expanded verification reported 9/9 at `294aab803d3759c9005a409cb99110afe1246756`. A later adversarial review showed that it had matched direct Worker classification while missing Cloudflare's effective asset-first precedence. That score remains superseded and is not reused here.
-- The historical structural CI at `a2d44bc` remains valid only for that remote/PR head. It does not cover the local Worker-first documentation remediation or this verification record.
-- The remediation did not resolve or test runtime precedence. This pass verifies that Phase 01 now records the intended architecture and separates the known divergence honestly; it does not revive the superseded runtime-conformance finding.
+## Clearly Historical Evidence — Not Current Readiness Proof
+
+### Original and eight-ADR foundation
+
+- Original seven-ADR bootstrap verification passed 7/7 at its historical target.
+- An expanded result reported 9/9 at `294aab803d3759c9005a409cb99110afe1246756`; later adversarial review found that it had missed Cloudflare asset-first precedence. That score is superseded and is not reused.
+- Worker-first documentation remediation was independently goal-verified 8/8 at `bcf65eedc9b266387d228f39e3214e3cc92b23df`, with its record committed at `c4666cd`. Code/ADR review passed there with no findings.
+- The eight-ADR/seven-slice branch later reached reviewed PR head `406a56d37d606fe29f8bdeafb8b289395b6a652c`; structural run `31118541443` passed, adversarial review returned READY-WITH-NITS with no CRITICAL/HIGH/MEDIUM findings, Craft Review passed, and the clean-context report recorded non-blocking concerns.
+- Historical checkpoint head `52ecb10` received successful structural run `31120406392`. None of these eight-ADR results covers ADR-0009.
+
+### Withdrawn nine-ADR/eight-slice draft
+
+- The reopening from `52ecb10` initially added ADR-0009 plus Slice H for independent retained delivery. Review at and after `a494c70` found mutable-`main` identity/freshness, prerequisite sequencing, `x0x.sh`, evidence-matching, and verification-time freshness problems.
+- The last goal-verification gap was recorded at `b55eb2b`: fetch time could not substitute for verification time in the retained-installer freshness ledger.
+- Jim withdrew that distribution design instead of adding machinery to repair it. The finding remains valid against the withdrawn draft but is not a defect in the current direct-proxy decision.
+- All nine-ADR/eight-slice review and remediation evidence is superseded draft history. It proves neither current readiness nor a requirement for Slice H.
 
 ## Pending Gates and Recommendation
 
-**No foundation-goal gaps found.** Treat the expanded Phase 01 ADR-foundation goal as achieved at `bcf65eedc9b266387d228f39e3214e3cc92b23df`, while keeping Phase 01 in progress for its external gauntlet and attended checkpoint.
+**No current Phase 01 documentation-goal gaps were found.** Treat the corrected
+nine-ADR/seven-slice ADR-foundation goal as achieved at
+`801275b5ee64e34f48cb584c8bc864c3c50f5281`.
 
-Next, only through separately authorised actions: push the remediation and verification record, refresh the draft PR description, obtain exact-current-head ADR Governance CI, run fresh adversarial review, Craft Review, and clean-context review, then return to Jim. Keep Proposed Plan 02-01 parked. Do not implement Slice G, alter Wrangler or the integration harness, accept an ADR, merge, publish, or deploy on the strength of this foundation verification.
+Proceed only to the remaining external gates under separate authority: push the
+implementation and verification record if authorised, obtain structural ADR CI
+for that exact pushed head, run fresh adversarial, Craft, and clean-context review
+against the corrected scope, then return to Jim's attended checkpoint.
+
+Keep all nine ADRs Proposed and Plan 02 unapproved. Do not infer runtime
+conformance, accept an ADR, approve or implement slices A–G, modify PR #4, merge,
+publish, deploy, change domain custody, or add independent delivery machinery from
+this verification.

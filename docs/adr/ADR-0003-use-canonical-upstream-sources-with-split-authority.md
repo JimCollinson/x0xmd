@@ -33,7 +33,7 @@ The serving layer needs fresh upstream-authored documentation and installer byte
 
 We will use only `saorsa-labs/x0x` as the production upstream, with authority split by artefact role.
 
-Canonical authority does not require one network delivery location. Verified replicas, mirrors, caches, or retained stores may deliver canonical bytes while preserving their source and release identity, hashes, signatures, manifests, and provenance; no such delivery location becomes an alternate authority.
+Canonical authority does not require one network delivery location. Verified replicas, mirrors, caches, or retained stores may deliver canonical bytes while preserving the identity and artefact-appropriate evidence that the canonical artefact actually supplies; no such delivery location becomes an alternate authority.
 
 Upstream-authored product documentation and installer bytes are backed by upstream `main`. Signed `SKILL.md` bytes and signature, release manifest and signature, verification key, and agent card are backed by one latest published stable release. Production must not source any of these surfaces from a fork or staging repository. Configuration hooks must not be used to change production authority without a reviewed superseding decision.
 
@@ -69,7 +69,7 @@ Release-backed trust artefacts must resolve coherently from one stable release i
 - Audit locally generated indexes, route descriptions, provenance metadata, and presentation so product claims derive from or cite canonical upstream truth and remain distinguishable from upstream-authored bytes.
 - Test incomplete releases, release changes, cache transitions, and upstream/API failures; require that responses never mix release identities or overstate established release or verification state.
 - Validate concrete fallback precedence, cross-artefact atomicity, and user-visible failure semantics against the separately reviewed public contract specification.
-- Compare canonical bytes delivered through every approved location and require byte, hash, signature, manifest, provenance, and release-identity equality for the selected source or release.
+- Compare canonical bytes delivered through every approved location. For mutable-`main` documentation and installer bytes, require equality with the selected canonical source revision and its digest, provenance, fetch or last-verification time, and freshness state. A retained older installer may match its actual canonical revision only when explicitly disclosed as last-known verified/stale, never current/latest, and remains subject to client policy. For signed release artefacts, additionally require the applicable canonical hashes, signatures, manifests, provenance, and release identity to match one coherent selected release.
 
 ## Notes for AI-assisted work
 

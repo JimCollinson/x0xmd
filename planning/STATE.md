@@ -2,9 +2,9 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. The three approved Plan 02 fixes passed reinspection, but fresh review found a HIGH contradiction in Proposed ADR-0003/0009: their validation wording rejects every stale or unsigned delivery even though Jim approved clearly disclosed last-known installer bytes supported by revision/digest evidence. Goal verification remains blocked pending Jim's approval to align those Proposed ADRs. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. Jim approved the documentation-only correction to the HIGH contradiction in Proposed ADR-0003/0009, and their artefact-evidence validation wording is now aligned pending fresh review. Code review and then goal verification must rerun. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
-- **Mode:** Attended. Jim Collinson approved the documentation-only reopening and this targeted review remediation on 2026-08-07; stop and surface any escalation trigger.
+- **Mode:** Attended. Jim Collinson approved the documentation-only reopening, targeted Plan remediation, and this ADR evidence correction on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
 
 ## Binding Stable-entrypoint Decisions — 2026-08-07
@@ -19,8 +19,8 @@
   upstream product/source/release authority remains unchanged; verified replicas,
   mirrors, caches, retained stores, and future locations remain delivery only.
 - `x0x.md` is intended to serve independently retained verified installer and
-  artefact bytes during GitHub outages. Canonical source/release identity,
-  hashes, signatures, manifests, provenance, and coherent sets must be preserved.
+  artefact bytes during GitHub outages. Canonical identity, artefact-appropriate
+  evidence, and coherent sets must be preserved.
 - If the mutable-`main` installer advances from A to B before `x0x.md` can refresh
   and GitHub then becomes unavailable, retained verified A may be offered only as
   explicitly last-known verified/stale, with A's immutable canonical revision,
@@ -64,6 +64,9 @@
   and client-policy semantics plus an independently controlled A-to-B outage and
   recovery fixture. It also keeps `x0x.sh` wholly outside Slice H implementation
   and service testing without treating incidental DNS/HTTP state as a defect.
+- Jim's approved follow-up correction may change only Proposed ADR-0003,
+  Proposed ADR-0009, and this state. It aligns verification evidence with the
+  evidence the canonical artefact actually supplies without changing authority.
 - This targeted remediation may change only Proposed Plan 02-01 and this state.
 - The reopening may change only ADR-0009, ADR-0002/0003/0004/0006, Plan 01-01,
   Proposed Plan 02-01, this state, `VERIFICATION.md`, and `CHECKPOINT.md`.
@@ -94,22 +97,24 @@
   must rerun before goal verification. No external action or later runtime or
   mechanism gate is authorised or current for the reopened scope.
 
-## Fresh Code-review Rerun — Blocked
+## Fresh Code-review Rerun — Finding Addressed Pending Fresh Review
 
 - The three approved Plan 02 fixes passed reinspection: the A-to-B outage and
   recovery fixture is explicit, C/D/F/G must finish before H, and Slice H neither
   changes nor relies on `x0x.sh`.
-- HIGH: Proposed ADR-0009 currently says to reject every stale or unsigned
-  delivery and always verify signatures/manifests. Proposed ADR-0003 similarly
-  requires every verification form for every delivery. That contradicts Jim's
-  approved rule for the mutable-`main` installer, which may be offered as clearly
-  last-known verified/stale using canonical revision, digest, and verification-
-  time evidence even when that artefact has no signature or release manifest.
-- The Proposed ADR validations must reject stale bytes only when they are
-  misrepresented as current/latest, and require signatures, manifests, and
-  release identity only when the canonical artefact actually supplies them.
-- Goal verification is blocked. Amending Proposed ADR-0003/0009 requires Jim's
-  attended scope approval; no such edit or external action has been inferred.
+- Jim approved the documentation-only correction to the HIGH. Proposed ADR-0003
+  and ADR-0009 now use canonical revision, digest, provenance, verification-time,
+  and freshness evidence for mutable-`main` documentation and installer bytes;
+  signatures, manifests, and release identity remain required for signed release
+  artefacts that canonically supply them.
+- Their validation now permits an older retained installer only as explicitly
+  last-known verified/stale with its actual evidence and subject to client
+  policy. It rejects stale bytes misrepresented as current/latest and rejects
+  corrupt, partial, unverifiable, cross-source, cross-release, and identity-
+  mismatched combinations without implying an installer signature.
+- This records a documentation correction, not a fresh review result. Code
+  review must rerun before goal verification. No external action or later runtime
+  or mechanism gate is authorised or current for the reopened scope.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -333,21 +338,9 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Attended scope decision required. Recommended documentation-only remediation:
-
-1. amend Proposed ADR-0009 validation so a disclosed last-known verified/stale
-   installer is permitted, while stale bytes presented as current/latest remain
-   forbidden;
-2. require revision/digest/time evidence for the mutable-`main` installer and
-   signatures/manifests/release identity only for artefacts that canonically
-   provide them; and
-3. align Proposed ADR-0003's delivery-equality validation to the same artefact-
-   appropriate rule.
-
-If Jim approves, amend only Proposed ADR-0003, Proposed ADR-0009, Plan 01's
-attended addendum if needed, and this handoff; then rerun code review and goal
-verification. Do not push or refresh PR #4, and do not infer any external,
-runtime, operational, or mechanism gate.
+Rerun fresh code/ADR review of the approved three-file documentation correction,
+then, if it passes, rerun goal verification. Do not push or refresh PR #4, and do
+not infer any external, runtime, operational, or mechanism gate.
 
 No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
 ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H

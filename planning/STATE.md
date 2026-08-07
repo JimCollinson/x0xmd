@@ -2,9 +2,9 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended documentation-only scope correction completed locally from `b55eb2b`. Proposed ADR-0009 remains, Proposed Plan 02-01 contains seven slices A-G, and the withdrawn independent-distribution design is no longer a current blocker or conformance target. Fresh independent review is required; no ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Corrected nine-ADR/seven-slice scope passed independent code review with no findings and 10/10 goal verification. The local branch is ready for the approved existing-PR update and exact-head structural ADR CI, followed by fresh adversarial, Craft, and clean-context gates. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
-- **Mode:** Attended. Jim Collinson approved this documentation-only scope correction from `b55eb2b` on 2026-08-07; stop and surface any escalation trigger.
+- **Mode:** Attended. Jim Collinson approved this documentation-only scope correction and instructed the build-mode run to proceed on 2026-08-07. Updating the existing draft PR #4 branch and description is authorised only to run the remaining review gates; stop and surface any other escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
 
 ## Binding Stable-entrypoint Decisions — 2026-08-07
@@ -56,8 +56,9 @@
   unapproved.
 - No runtime, configuration, storage, asset, skill, test/harness, workflow,
   governance-script, build, deployment, dependency, environment, domain, DNS,
-  secret, spend, push, PR #4, merge, publish, release, or deploy action is
-  authorised.
+  secret, spend, merge, publish, release, or deploy action is authorised. The
+  only external action authorised is updating the existing draft PR #4 branch
+  and description for exact-head CI and review.
 
 ## Superseded Nine-ADR/Eight-slice Review History
 
@@ -88,6 +89,21 @@
 - Fresh independent code/ADR review, goal verification, adversarial review,
   Craft Review, and clean-context review are required before the next attended
   readiness checkpoint. No external action or implementation gate is inferred.
+
+## Current Nine-ADR/Seven-slice Review
+
+- Independent code/ADR review passed at implementation head `801275b` with no
+  findings. It reproduced both governance modes, nine Proposed statuses, exactly
+  seven unapproved Plan 02 slices A-G, link and source-kit integrity, the exact
+  authorised correction scopes, and zero runtime or mechanism changes.
+- Independent goal verification passed 10/10 at implementation target `801275b`;
+  the refreshed record is committed at `5f89cdf`. It verified the stable-
+  entrypoint rationale, current canonical-GitHub proxy as conformant, accepted
+  GitHub availability trade-off, non-binding future hosting consideration, and
+  historical-evidence boundaries.
+- Draft PR #4 and its structural CI remain at historical remote head `52ecb10`.
+  No exact-current-head CI, adversarial, Craft, or clean-context result is yet
+  claimed for the corrected scope.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -309,10 +325,13 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Run fresh independent review of the corrected nine-ADR/seven-slice scope. Prior
-eight-ADR/seven-slice readiness evidence and later nine-ADR/eight-slice review
-history do not prove current readiness. Do not push or modify PR #4, and do not
-infer any external, runtime, operational, status, or mechanism gate.
+Commit this review-state reconciliation, push the corrected documentation and
+verification record to existing draft PR #4, and refresh its narrative to nine
+Proposed ADRs, seven unapproved Plan 02 slices, and the 10/10 current goal result.
+Obtain exact-current-head structural ADR Governance CI. If green, run fresh
+adversarial review, then Craft Review, then a new clean-context gate before the
+attended checkpoint. Do not infer any runtime, operational, acceptance, merge,
+deployment, or mechanism authority.
 
 All nine ADRs remain Proposed. Plan 02-01 and all seven slices remain unapproved.
 No runtime/configuration/storage/asset/skill/test/workflow/build/deploy/

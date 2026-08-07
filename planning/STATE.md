@@ -2,9 +2,9 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. The nine-ADR/eight-slice documentation implementation is committed locally, but independent review found one HIGH and two MEDIUM Plan 02 Slice H gaps; goal verification is blocked pending Jim's disposition and remediation. All pre-reopening evidence remains historical. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Attended documentation remediation for the reopened stable-entrypoint work. Jim approved the disposition of one HIGH and two MEDIUM Plan 02 Slice H findings, and the targeted two-file remediation addresses them pending fresh independent code review. Goal verification remains blocked until that review reruns. All pre-reopening evidence remains historical. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
-- **Mode:** Attended. Jim Collinson approved the documentation-only reopening on 2026-08-07; stop and surface any escalation trigger.
+- **Mode:** Attended. Jim Collinson approved the documentation-only reopening and this targeted review remediation on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
 
 ## Binding Stable-entrypoint Decisions — 2026-08-07
@@ -21,6 +21,12 @@
 - `x0x.md` is intended to serve independently retained verified installer and
   artefact bytes during GitHub outages. Canonical source/release identity,
   hashes, signatures, manifests, provenance, and coherent sets must be preserved.
+- If the mutable-`main` installer advances from A to B before `x0x.md` can refresh
+  and GitHub then becomes unavailable, retained verified A may be offered only as
+  explicitly last-known verified/stale, with A's immutable canonical revision,
+  digest, and last-verification time. It must never be called current or latest;
+  client policy may accept or refuse it. Verification claims must match the
+  artefact's actual evidence rather than implying an installer signature.
 - Signed skills and machine-readable provenance may expose an extensible set of
   verified delivery choices for different sandbox/security policies. Client
   selection never grants authority, and the durable decision freezes no host
@@ -29,8 +35,10 @@
   registrar ownership and legal custody have not been evidenced in this work;
   the custody/transfer gap is future operational conformance and no present
   custody claim is made.
-- `x0x.sh` is foundation-controlled reserved strategic optionality only, with no
-  redirect, route, failover, uptime, or compatibility contract.
+- `x0x.sh` is foundation-controlled reserved strategic optionality only. Slice H
+  must not add, change, test as a service, advertise, depend on, or infer any
+  redirect, failover, uptime, or compatibility contract for it; incidental
+  current DNS or HTTP state remains outside scope.
 - Product-name authority remains upstream. `x0x.md`'s shortness, exact-text use,
   distinctiveness in the known ecosystem, Foundation control, stability,
   ordinarily low character/token burden, and `.md` fit outweigh its negative
@@ -46,10 +54,17 @@
   ADR-0002, ADR-0003, ADR-0004, and ADR-0006.
 - Extended Proposed Plan 02-01 from seven to eight slices. Slice H covers
   multi-location verified distribution and GitHub-outage resilience behind
-  accepted applicable ADRs, an approved concrete specification, C/D/F/G
-  coordination, a domain-custody audit, and separate approvals for every
+  accepted applicable ADRs, an approved concrete specification, completed and
+  verified Slices C/D/F/G before H implementation starts, a domain-custody audit,
+  and separate approvals for every
   upstream, storage/cache, runtime/network/configuration/deployment, harness/CI,
   secrets, DNS/domain, and spend mechanism it implicates.
+- Jim's attended remediation approval requires mutable-`main` revision, digest,
+  fetched/last-verified, current versus last-known-verified/stale versus unknown,
+  and client-policy semantics plus an independently controlled A-to-B outage and
+  recovery fixture. It also keeps `x0x.sh` wholly outside Slice H implementation
+  and service testing without treating incidental DNS/HTTP state as a defect.
+- This targeted remediation may change only Proposed Plan 02-01 and this state.
 - The reopening may change only ADR-0009, ADR-0002/0003/0004/0006, Plan 01-01,
   Proposed Plan 02-01, this state, `VERIFICATION.md`, and `CHECKPOINT.md`.
 - No runtime, configuration, storage, asset, skill, test/harness, workflow,
@@ -57,25 +72,27 @@
   secret, spend, push, PR #4, merge, publish, release, or deploy action is
   authorised.
 
-## Reopened-scope Code Review — Blocked
+## Reopened-scope Code Review — Findings Addressed Pending Fresh Review
 
 - Independent code/ADR review at implementation head `a494c70` reproduced both
   governance modes, exact ten-file scope, nine Proposed statuses, eight Plan 02
   slices, link integrity, and zero mechanism changes.
-- HIGH: Slice H does not explicitly test freshness/downgrade semantics for the
-  mutable-`main` installer. It must cover upstream advancing from revision A to
-  B before GitHub becomes unavailable while retained, hash-valid revision A
-  remains, and require explicit stale/unknown/degraded handling rather than
-  silently presenting A as current.
-- MEDIUM: Slice H says C/D/F/G ordering will be approved later instead of
-  declaring required completion dependencies or a named permitted interleaving
-  checkpoint.
-- MEDIUM: Slice H requires no observable `x0x.sh` behaviour, which is stronger
-  than Jim's decision. The correct invariant is that Slice H neither adds nor
-  relies on redirect, failover, uptime, or compatibility behaviour; incidental
-  pre-existing DNS/HTTP state must not force an unapproved domain change.
-- Goal verification is blocked. No external action or later review gate is
-  authorised or current for the reopened scope.
+- HIGH addressed in the Proposed plan pending fresh review: Slice H now specifies
+  immutable mutable-`main` revision/digest and verification-time evidence,
+  explicit current versus last-known-verified/stale versus unknown semantics,
+  client acceptance/refusal policy, and an independently established A-to-B
+  outage/recovery fixture that forbids silent current/latest or downgrade claims.
+- MEDIUM addressed in the Proposed plan pending fresh review: completed and
+  verified Slices C, D, F, and G, including all their existing human and
+  mechanism approvals, are mandatory before Slice H implementation starts. No
+  unspecified interleaving remains.
+- MEDIUM addressed in the Proposed plan pending fresh review: Slice H must not
+  touch, change, test as a service, advertise, rely on, or infer redirect,
+  failover, uptime, or compatibility behaviour for `x0x.sh`; incidental current
+  DNS/HTTP state is outside scope and does not require a domain change.
+- These are documentation remediations, not a fresh review result. Code review
+  must rerun before goal verification. No external action or later runtime or
+  mechanism gate is authorised or current for the reopened scope.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -299,19 +316,10 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Attended review-failure checkpoint. If Jim approves the recommended
-documentation remediation, amend only Proposed Plan 02 Slice H and the reopened
-handoff records to:
-
-1. add mutable-`main` installer revision-rollback/freshness fixtures and explicit
-   stale/unknown/degraded semantics;
-2. declare concrete C/D/F/G completion dependencies or a named permitted
-   interleaving checkpoint; and
-3. verify that Slice H neither adds nor relies on `x0x.sh` behaviour rather than
-   requiring no incidental observable behaviour.
-
-Then rerun code review and independent goal verification before any separately
-authorised push, PR refresh, CI, adversarial, Craft, or clean-context gate.
+Rerun independent code review against the committed two-file documentation
+remediation. If that review passes, rerun independent goal verification. Do not
+push or refresh PR #4, and do not run or infer any external, runtime, operational,
+or mechanism gate without its separate explicit approval.
 
 No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
 ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H

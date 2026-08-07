@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Corrected nine-ADR/seven-slice scope passed independent code review with no findings and 10/10 goal verification. The local branch is ready for the approved existing-PR update and exact-head structural ADR CI, followed by fresh adversarial, Craft, and clean-context gates. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Corrected nine-ADR/seven-slice scope is ready for Jim's attended ADR review once the evidence-only checkpoint commit receives current-head structural ADR CI. Code review and 10/10 goal verification passed; exact reviewed-head CI is green; adversarial returned `READY-WITH-NITS`; Craft passed. Fresh clean-context is deferred because the owner-configured external panel runner boundary is inactive, so the work is not PR/merge-ready. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson approved this documentation-only scope correction and instructed the build-mode run to proceed on 2026-08-07. Updating the existing draft PR #4 branch and description is authorised only to run the remaining review gates; stop and surface any other escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -101,9 +101,23 @@
   entrypoint rationale, current canonical-GitHub proxy as conformant, accepted
   GitHub availability trade-off, non-binding future hosting consideration, and
   historical-evidence boundaries.
-- Draft PR #4 and its structural CI remain at historical remote head `52ecb10`.
-  No exact-current-head CI, adversarial, Craft, or clean-context result is yet
-  claimed for the corrected scope.
+- The branch and draft PR were updated to reviewed head `d9a340e`; exact-head
+  structural ADR Governance run `31195124339` passed. This is not general quality
+  or runtime evidence.
+- Fresh adversarial review at `d9a340e` returned `READY-WITH-NITS` with no
+  CRITICAL, HIGH or MEDIUM findings. Its LOW stale-evidence finding is reconciled
+  by this state and the new checkpoint; its inherited checkout-runtime NIT is
+  deferred to a deliberate future canonical-kit update.
+- Fresh Craft Review at `d9a340e` passed with no CONFORMANCE, SIMPLICITY or NIT
+  findings.
+- A new Claude clean-context lane was requested through panel but did not
+  dispatch because the owner configuration keeps the external runner boundary
+  fail-closed. Clean-context is honestly deferred; no substitute review or lane
+  findings are claimed. `models: none · 0s`.
+- `planning/phases/01-adr-foundation/CHECKPOINT-2026-08-07.md` records the
+  corrected current review evidence and remaining clean-context backlog. Its
+  evidence-only commit must receive current-head structural ADR CI before the
+  attended handoff.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -325,13 +339,12 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Commit this review-state reconciliation, push the corrected documentation and
-verification record to existing draft PR #4, and refresh its narrative to nine
-Proposed ADRs, seven unapproved Plan 02 slices, and the 10/10 current goal result.
-Obtain exact-current-head structural ADR Governance CI. If green, run fresh
-adversarial review, then Craft Review, then a new clean-context gate before the
-attended checkpoint. Do not infer any runtime, operational, acceptance, merge,
-deployment, or mechanism authority.
+Commit and push the current evidence-only checkpoint and state reconciliation to
+existing draft PR #4, obtain structural ADR Governance CI at that final head, and
+refresh the PR evidence section without another branch change. Then stop for
+Jim's attended ADR review. Clean-context remains deferred until the owner panel
+runner boundary is activated; do not call the work PR/merge-ready or infer any
+runtime, operational, acceptance, merge, deployment, or mechanism authority.
 
 All nine ADRs remain Proposed. Plan 02-01 and all seven slices remain unapproved.
 No runtime/configuration/storage/asset/skill/test/workflow/build/deploy/

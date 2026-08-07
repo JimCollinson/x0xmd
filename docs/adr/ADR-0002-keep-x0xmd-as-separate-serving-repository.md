@@ -35,7 +35,7 @@ x0xmd owns the edge-serving implementation and its operational surface: Worker r
 
 The production upstream `saorsa-labs/x0x` remains authoritative for the x0x product and protocol, upstream documentation, installer behaviour and bytes, and signed release artefact truth. Serving, transforming, linking to, or presenting those upstream artefacts does not transfer their authority to x0xmd.
 
-That serving responsibility may include retaining and serving verified upstream bytes during an upstream delivery outage. Independent delivery remains a serving responsibility and never transfers product, source, installer, or release authority to x0xmd.
+If a future host or delivery mechanism is separately approved, it remains part of x0xmd's serving responsibility and does not transfer product, source, installer, or release authority to x0xmd. This decision creates no current requirement to introduce such a host or mechanism.
 
 ## Consequences
 

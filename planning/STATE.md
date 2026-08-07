@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. Jim approved the documentation-only correction to the HIGH contradiction in Proposed ADR-0003/0009, and their artefact-evidence validation wording is now aligned pending fresh review. Code review and then goal verification must rerun. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. The artefact-evidence contradiction is otherwise corrected, but fresh review found one remaining HIGH wording error in Proposed ADR-0003/0009: they allow fetch time to substitute for last-verification time. Goal verification remains blocked pending Jim's approval to require actual last-verification evidence. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson approved the documentation-only reopening, targeted Plan remediation, and this ADR evidence correction on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -115,6 +115,18 @@
 - This records a documentation correction, not a fresh review result. Code
   review must rerun before goal verification. No external action or later runtime
   or mechanism gate is authorised or current for the reopened scope.
+
+## Second Fresh Code-review Rerun — Blocked
+
+- The blanket signature/manifest and stale-rejection contradiction is corrected,
+  and all earlier Plan 02 findings remain resolved.
+- HIGH: Proposed ADR-0003 and ADR-0009 currently permit “fetch or last-
+  verification time.” A fetch timestamp proves only when bytes were downloaded;
+  it does not prove when they were checked against canonical `main`.
+- The approved rule requires actual last-verification time. Fetched-at may be
+  recorded separately, but it must never substitute for verification evidence.
+- Goal verification is blocked. Correcting the two Proposed ADR lines requires
+  Jim's attended approval; no edit or external action has been inferred.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -338,9 +350,12 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Rerun fresh code/ADR review of the approved three-file documentation correction,
-then, if it passes, rerun goal verification. Do not push or refresh PR #4, and do
-not infer any external, runtime, operational, or mechanism gate.
+Attended wording correction required. If Jim approves, amend only Proposed
+ADR-0003, Proposed ADR-0009, and this handoff so last-verification time is
+mandatory; fetched-at may remain separate but cannot substitute for it. Then
+rerun code review and, only if it passes, goal verification. Do not push or
+refresh PR #4, and do not infer any external, runtime, operational, or mechanism
+gate.
 
 No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
 ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H

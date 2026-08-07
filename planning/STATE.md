@@ -2,9 +2,9 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. The artefact-evidence contradiction is otherwise corrected, but fresh review found one remaining HIGH wording error in Proposed ADR-0003/0009: they allow fetch time to substitute for last-verification time. Goal verification remains blocked pending Jim's approval to require actual last-verification evidence. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Attended documentation-only scope correction completed locally from `b55eb2b`. Proposed ADR-0009 remains, Proposed Plan 02-01 contains seven slices A-G, and the withdrawn independent-distribution design is no longer a current blocker or conformance target. Fresh independent review is required; no ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
-- **Mode:** Attended. Jim Collinson approved the documentation-only reopening, targeted Plan remediation, and this ADR evidence correction on 2026-08-07; stop and surface any escalation trigger.
+- **Mode:** Attended. Jim Collinson approved this documentation-only scope correction from `b55eb2b` on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
 
 ## Binding Stable-entrypoint Decisions — 2026-08-07
@@ -15,118 +15,79 @@
 - One origin adapts for human, CLI/agent, and machine-readable consumers.
   Proposed ADR-0004 governs representations, cache safety, and routes; Proposed
   ADR-0009 governs the stable origin.
-- Entrypoint, authority, delivery, and client selection are distinct. Canonical
-  upstream product/source/release authority remains unchanged; verified replicas,
-  mirrors, caches, retained stores, and future locations remain delivery only.
-- `x0x.md` is intended to serve independently retained verified installer and
-  artefact bytes during GitHub outages. Canonical identity, artefact-appropriate
-  evidence, and coherent sets must be preserved.
-- If the mutable-`main` installer advances from A to B before `x0x.md` can refresh
-  and GitHub then becomes unavailable, retained verified A may be offered only as
-  explicitly last-known verified/stale, with A's immutable canonical revision,
-  digest, and last-verification time. It must never be called current or latest;
-  client policy may accept or refuse it. Verification claims must match the
-  artefact's actual evidence rather than implying an installer signature.
-- Signed skills and machine-readable provenance may expose an extensible set of
-  verified delivery choices for different sandbox/security policies. Client
-  selection never grants authority, and the durable decision freezes no host
-  inventory.
-- The intended durable domain steward is the Autonomi Foundation. Current
-  registrar ownership and legal custody have not been evidenced in this work;
-  the custody/transfer gap is future operational conformance and no present
-  custody claim is made.
-- `x0x.sh` is foundation-controlled reserved strategic optionality only. Slice H
-  must not add, change, test as a service, advertise, depend on, or infer any
-  redirect, failover, uptime, or compatibility contract for it; incidental
-  current DNS or HTTP state remains outside scope.
-- Product-name authority remains upstream. `x0x.md`'s shortness, exact-text use,
-  distinctiveness in the known ecosystem, Foundation control, stability,
-  ordinarily low character/token burden, and `.md` fit outweigh its negative
-  verbal `0`/`O` and “tic-tac-toe” ambiguity. No universal uniqueness or
-  tokenizer guarantee is claimed.
+- Current behaviour is correct and sufficient: x0xmd fetches and proxies
+  `install.sh` directly from canonical `saorsa-labs/x0x` GitHub `main`.
+  Dependence on GitHub availability is an accepted trade-off, not a defect or
+  conformance gap.
+- The stable public URL preserves freedom to change hosting or backend later
+  without breaking public URLs. Canonical upstream product, source, installer,
+  product-name, and release authority remains unchanged.
+- Independent hosting or failover is future optionality only. It may be
+  reconsidered if demonstrated availability problems justify a new architectural
+  decision, bounded specification, and separately approved GSD plan. No storage,
+  retention, ingestion, attestation, freshness, outage, plural-delivery,
+  signed-skill, or client-selection machinery is currently required.
+- Skills and clients may offer their own sandbox-appropriate installation paths
+  without requiring x0xmd to discover, verify, enumerate, retain, or serve them.
+- The intended durable domain steward is the Autonomi Foundation. This work makes
+  no claim about current registrar ownership, legal custody, or completed
+  transfer, and records no current custody conformance gap.
+- `x0x.sh` remains reserved optionality with no redirect, route, failover,
+  uptime, or compatibility contract.
+- Product-name authority remains upstream. `x0x.md` is short, distinctive in the
+  known ecosystem, suitable for exact-text and agent-first use, Foundation-
+  ownable, and a natural `.md` fit. Verbal `0`/`O` and “tic-tac-toe” ambiguity is
+  a negative; pronounceability is not a benefit.
 - The canonical command is an ergonomic default, not the only compatible path;
   inspect-first and verification-first alternatives remain required because
   curl-pipe-shell carries inherent risk.
 
-## Reopened Scope and Authority
+## Current Correction Scope and Authority
 
-- Added Proposed ADR-0009 and bounded cross-links/clarifications in Proposed
-  ADR-0002, ADR-0003, ADR-0004, and ADR-0006.
-- Extended Proposed Plan 02-01 from seven to eight slices. Slice H covers
-  multi-location verified distribution and GitHub-outage resilience behind
-  accepted applicable ADRs, an approved concrete specification, completed and
-  verified Slices C/D/F/G before H implementation starts, a domain-custody audit,
-  and separate approvals for every
-  upstream, storage/cache, runtime/network/configuration/deployment, harness/CI,
-  secrets, DNS/domain, and spend mechanism it implicates.
-- Jim's attended remediation approval requires mutable-`main` revision, digest,
-  fetched/last-verified, current versus last-known-verified/stale versus unknown,
-  and client-policy semantics plus an independently controlled A-to-B outage and
-  recovery fixture. It also keeps `x0x.sh` wholly outside Slice H implementation
-  and service testing without treating incidental DNS/HTTP state as a defect.
-- Jim's approved follow-up correction may change only Proposed ADR-0003,
-  Proposed ADR-0009, and this state. It aligns verification evidence with the
-  evidence the canonical artefact actually supplies without changing authority.
-- This targeted remediation may change only Proposed Plan 02-01 and this state.
-- The reopening may change only ADR-0009, ADR-0002/0003/0004/0006, Plan 01-01,
-  Proposed Plan 02-01, this state, `VERIFICATION.md`, and `CHECKPOINT.md`.
+- Proposed ADR-0009 remains the stable-public-entrypoint decision. Proposed
+  ADR-0002, ADR-0003, and ADR-0006 now preserve only a conditional future
+  authority boundary; ADR-0004 was inspected and remains unchanged.
+- Proposed Plan 02-01 has returned to exactly seven future slices, A through G.
+  Slice H and its retention, custody, freshness, multi-location, signed-skill,
+  and client-selection machinery are withdrawn.
+- The correction is limited to ADR-0002, ADR-0003, ADR-0006, ADR-0009, Plan
+  01-01, Proposed Plan 02-01, this state, `VERIFICATION.md`, and `CHECKPOINT.md`.
+- All nine ADRs remain Proposed. Plan 02-01 and all seven slices remain
+  unapproved.
 - No runtime, configuration, storage, asset, skill, test/harness, workflow,
   governance-script, build, deployment, dependency, environment, domain, DNS,
   secret, spend, push, PR #4, merge, publish, release, or deploy action is
   authorised.
 
-## Reopened-scope Code Review — Findings Addressed Pending Fresh Review
+## Superseded Nine-ADR/Eight-slice Review History
 
-- Independent code/ADR review at implementation head `a494c70` reproduced both
-  governance modes, exact ten-file scope, nine Proposed statuses, eight Plan 02
-  slices, link integrity, and zero mechanism changes.
-- HIGH addressed in the Proposed plan pending fresh review: Slice H now specifies
-  immutable mutable-`main` revision/digest and verification-time evidence,
-  explicit current versus last-known-verified/stale versus unknown semantics,
-  client acceptance/refusal policy, and an independently established A-to-B
-  outage/recovery fixture that forbids silent current/latest or downgrade claims.
-- MEDIUM addressed in the Proposed plan pending fresh review: completed and
-  verified Slices C, D, F, and G, including all their existing human and
-  mechanism approvals, are mandatory before Slice H implementation starts. No
-  unspecified interleaving remains.
-- MEDIUM addressed in the Proposed plan pending fresh review: Slice H must not
-  touch, change, test as a service, advertise, rely on, or infer redirect,
-  failover, uptime, or compatibility behaviour for `x0x.sh`; incidental current
-  DNS/HTTP state is outside scope and does not require a domain change.
-- These are documentation remediations, not a fresh review result. Code review
-  must rerun before goal verification. No external action or later runtime or
-  mechanism gate is authorised or current for the reopened scope.
-
-## Fresh Code-review Rerun — Finding Addressed Pending Fresh Review
-
-- The three approved Plan 02 fixes passed reinspection: the A-to-B outage and
-  recovery fixture is explicit, C/D/F/G must finish before H, and Slice H neither
-  changes nor relies on `x0x.sh`.
-- Jim approved the documentation-only correction to the HIGH. Proposed ADR-0003
-  and ADR-0009 now use canonical revision, digest, provenance, verification-time,
-  and freshness evidence for mutable-`main` documentation and installer bytes;
-  signatures, manifests, and release identity remain required for signed release
-  artefacts that canonically supply them.
-- Their validation now permits an older retained installer only as explicitly
-  last-known verified/stale with its actual evidence and subject to client
-  policy. It rejects stale bytes misrepresented as current/latest and rejects
-  corrupt, partial, unverifiable, cross-source, cross-release, and identity-
-  mismatched combinations without implying an installer signature.
-- This records a documentation correction, not a fresh review result. Code
-  review must rerun before goal verification. No external action or later runtime
-  or mechanism gate is authorised or current for the reopened scope.
-
-## Second Fresh Code-review Rerun — Blocked
-
-- The blanket signature/manifest and stale-rejection contradiction is corrected,
-  and all earlier Plan 02 findings remain resolved.
-- HIGH: Proposed ADR-0003 and ADR-0009 currently permit “fetch or last-
-  verification time.” A fetch timestamp proves only when bytes were downloaded;
-  it does not prove when they were checked against canonical `main`.
-- The approved rule requires actual last-verification time. Fetched-at may be
-  recorded separately, but it must never substitute for verification evidence.
-- Goal verification is blocked. Correcting the two Proposed ADR lines requires
-  Jim's attended approval; no edit or external action has been inferred.
+- Review at `a494c70` assessed a nine-ADR/eight-slice draft that made independent
+  retained delivery a current requirement. It reproduced both governance modes,
+  exact ten-file scope, nine Proposed statuses, eight Plan 02 slices, link
+  integrity, and zero mechanism changes.
+- That review found one HIGH in Slice H's mutable-`main` identity and freshness
+  evidence, plus MEDIUM findings in C/D/F/G sequencing and `x0x.sh` boundaries.
+  The draft was revised to require revision/digest and verification-time
+  evidence, explicit freshness states and client policy, an A-to-B outage
+  fixture, completed C/D/F/G prerequisites, and no `x0x.sh` dependency or service
+  test. These were draft remediations, not readiness results.
+- A fresh rerun confirmed those three Plan 02 corrections, then found a HIGH in
+  blanket signature/manifest and stale-byte wording. Proposed ADR-0003 and
+  ADR-0009 were revised to match claims to the evidence supplied by each
+  artefact. That correction also remained pending fresh review.
+- The next rerun confirmed the earlier findings were addressed, then found the
+  last-verification issue recorded at `b55eb2b`: fetch time could not substitute
+  for verification time in the retained-installer freshness ledger. Goal
+  verification was blocked against that draft.
+- Jim withdrew the independent-distribution design rather than treating the
+  last-verification issue as a technical defect to fix. The finding remains
+  valid against the withdrawn text but is not an active blocker.
+- All review and verification of the nine-ADR/eight-slice draft is superseded
+  draft-scope evidence only. It does not prove readiness of the corrected
+  nine-ADR/seven-slice scope.
+- Fresh independent code/ADR review, goal verification, adversarial review,
+  Craft Review, and clean-context review are required before the next attended
+  readiness checkpoint. No external action or implementation gate is inferred.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -297,17 +258,15 @@ an exact-head CI run for `52ecb10` and is not current reopened-scope green.
 - Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create another PR, merge, publish, deploy, or mark an ADR Accepted. No instruction from the historical run authorises a current push or any edit or comment on PR #4.
 - Pre-existing untracked `.artifacts/` and `.claude/` are outside scope and must remain untracked and uncommitted.
 
-## Known Current Divergence
+## Known Current Divergence and Accepted Trade-offs
 
-- Current installer, documentation, signed-skill, release-manifest, verification-
-  key, agent-card, and release-index delivery depends on GitHub hosts. x0x.md does
-  not yet retain and serve a proven coherent verified set independently through a
-  GitHub outage. Proposed Slice H tracks future work after every separate
-  approval; it is not implementation authority.
-- Intended Autonomi Foundation stewardship is recorded, but current registrar
-  ownership, legal custody, and any required transfer have not been evidenced.
-  No custody or completed-transfer claim may be made until an approved audit
-  supplies evidence.
+- Current upstream delivery depends on GitHub, including the direct installer
+  proxy from canonical `saorsa-labs/x0x` `main`. This is conformant and sufficient;
+  GitHub availability dependence is an accepted trade-off, not a divergence.
+- Intended Autonomi Foundation stewardship is recorded without asserting current
+  registrar ownership, legal custody, or completed transfer. No current custody
+  conformance gap or audit requirement is created by the stable-entrypoint
+  decision.
 
 - Locally generated `/llms.txt`, route descriptions, trust/provenance prose, and
   frontend claims need a source/evidence and drift audit so product claims derive
@@ -350,15 +309,11 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Attended wording correction required. If Jim approves, amend only Proposed
-ADR-0003, Proposed ADR-0009, and this handoff so last-verification time is
-mandatory; fetched-at may remain separate but cannot substitute for it. Then
-rerun code review and, only if it passes, goal verification. Do not push or
-refresh PR #4, and do not infer any external, runtime, operational, or mechanism
-gate.
+Run fresh independent review of the corrected nine-ADR/seven-slice scope. Prior
+eight-ADR/seven-slice readiness evidence and later nine-ADR/eight-slice review
+history do not prove current readiness. Do not push or modify PR #4, and do not
+infer any external, runtime, operational, status, or mechanism gate.
 
-No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
-ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H
-is not authorised, and no runtime/configuration/storage/asset/skill/test/
-workflow/build/deploy/dependency/environment/domain/DNS/secret/spend change is
-authorised.
+All nine ADRs remain Proposed. Plan 02-01 and all seven slices remain unapproved.
+No runtime/configuration/storage/asset/skill/test/workflow/build/deploy/
+dependency/environment/domain/DNS/secret/spend change is authorised.

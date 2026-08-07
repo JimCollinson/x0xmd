@@ -1,5 +1,14 @@
 # Phase 01 ADR Foundation Verification
 
+## Owner Scope-correction Notice — 2026-08-07
+
+**All evidence below is historical.** The later nine-ADR/eight-slice reopening
+has been corrected from `b55eb2b`: Proposed ADR-0009 remains and Slice H is
+withdrawn. The last-verification finding was valid only against the withdrawn
+independent-retention text and is not a current blocker. This record provides no
+current readiness proof; the corrected nine-ADR/seven-slice scope requires fresh
+independent review.
+
 Date: 2026-08-06
 
 ## Scope-reopened Notice — 2026-08-07

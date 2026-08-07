@@ -6,7 +6,7 @@
 - **Reviewers:** Pending human review
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** [initial Worker commit](https://github.com/JimCollinson/x0xmd/commit/91c1119d873c9131ebf341d65fa6c44e0b6418f6); [PR #1](https://github.com/JimCollinson/x0xmd/pull/1); [ADR-0003](ADR-0003-use-canonical-upstream-sources-with-split-authority.md); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
+- **Related:** [initial Worker commit](https://github.com/JimCollinson/x0xmd/commit/91c1119d873c9131ebf341d65fa6c44e0b6418f6); [PR #1](https://github.com/JimCollinson/x0xmd/pull/1); [ADR-0003](ADR-0003-use-canonical-upstream-sources-with-split-authority.md); [ADR-0009](ADR-0009-establish-x0xmd-as-stable-canonical-public-entrypoint.md); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
 
 ## Context
 
@@ -21,6 +21,7 @@ Human prose and response headers expose pieces of that provenance, but they do n
 - Expose release and cache identity needed to interpret release-backed artefacts.
 - Publish only claims supported by observable serving behaviour and upstream evidence.
 - Represent unknown, partial, or degraded resolution without overstating trust or verification state.
+- Let clients choose a verified delivery compatible with their sandbox and security policy.
 
 ## Considered Options
 
@@ -33,6 +34,8 @@ Human prose and response headers expose pieces of that provenance, but they do n
 We will publish machine-readable install provenance at `/trust.json`.
 
 The contract exposes canonical entrypoints and install commands, Worker-facing artefact URLs, the raw upstream sources those URLs resolve from, and release/cache identity. It must distinguish x0xmd entrypoints from upstream sources and must publish only claims evidenced by observable serving behaviour and upstream truth. Planned, experimental, unknown, or historical policy must not be presented as active fact.
+
+The contract and signed skill provenance will expose an extensible set of verified delivery choices, identifying each choice's delivery role, canonical source or release identity, and verification relationship. A client's selection among those choices does not grant authority to the selected host or mechanism. The concrete schema, host inventory, freshness rules, and selection mechanics belong in a separately reviewed specification rather than a closed list in this decision.
 
 When release, cache, source, or artefact resolution is unavailable or incomplete, the contract must represent that state honestly as unknown or degraded. It must not infer successful verification, release identity, or source provenance that resolution did not establish.
 
@@ -65,6 +68,7 @@ Schema evolution and failure semantics are concrete public-contract work. A link
 - Validate defined failure and partial-resolution semantics for release API failure, missing release assets, fallback sources, stale cache state, and unavailable upstream sources.
 - Verify every published entrypoint, command, Worker URL, raw upstream URL, release identity, cache identity, degradation state, and policy claim against observable serving behaviour and upstream evidence.
 - Confirm consumers can distinguish x0xmd entrypoints from upstream sources and cannot mistake `/trust.json` for a signature or independent authority.
+- Confirm sandbox-policy clients can select among multiple verified delivery choices while preserving canonical identity and without treating the selected delivery location as authority.
 
 ## Notes for AI-assisted work
 

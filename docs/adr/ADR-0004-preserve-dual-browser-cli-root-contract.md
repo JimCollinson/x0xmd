@@ -6,7 +6,7 @@
 - **Reviewers:** Pending human review
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** [initial Worker commit](https://github.com/JimCollinson/x0xmd/commit/91c1119d873c9131ebf341d65fa6c44e0b6418f6); [PR #1](https://github.com/JimCollinson/x0xmd/pull/1); [PR #2](https://github.com/JimCollinson/x0xmd/pull/2); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
+- **Related:** [initial Worker commit](https://github.com/JimCollinson/x0xmd/commit/91c1119d873c9131ebf341d65fa6c44e0b6418f6); [PR #1](https://github.com/JimCollinson/x0xmd/pull/1); [PR #2](https://github.com/JimCollinson/x0xmd/pull/2); [ADR-0009](ADR-0009-establish-x0xmd-as-stable-canonical-public-entrypoint.md); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
 
 ## Context
 
@@ -31,6 +31,8 @@ A March 2026 x0x Agent Onboarding proposal later described replacing this split 
 ## Decision
 
 We will preserve the dual root contract. Browser-like navigation requests receive HTML. CLI-like root requests receive the upstream installer. `/install.sh` always provides the installer and is the deterministic explicit route for consumers that do not want request classification.
+
+The exact canonical ergonomic command is `curl -sfL https://x0x.md | sh`. ADR-0009 governs `x0x.md` as the stable public origin; this ADR governs its negotiated representations, cache safety, and root and explicit-installer route behaviour.
 
 The classification heuristic may evolve as clients change, but it must preserve these observable contracts and must be reviewed as a public API change. The stale unmerged same-HTML-for-every-client proposal is not the governing design.
 

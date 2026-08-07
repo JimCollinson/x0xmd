@@ -6,7 +6,7 @@
 - **Reviewers:** Pending human review
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** [installer source correction](https://github.com/JimCollinson/x0xmd/commit/4d47fba1121ee0094a1cfdbcea3aabcbf2cb01a1); [documentation source correction](https://github.com/JimCollinson/x0xmd/commit/72fabc0d9058bc31b5101a0a08846c5af3586fae); [PR #1](https://github.com/JimCollinson/x0xmd/pull/1); [PR #1 implementation](https://github.com/JimCollinson/x0xmd/commit/a2f310802f3c64d39709968dd9fc2908f1748aaf); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
+- **Related:** [installer source correction](https://github.com/JimCollinson/x0xmd/commit/4d47fba1121ee0094a1cfdbcea3aabcbf2cb01a1); [documentation source correction](https://github.com/JimCollinson/x0xmd/commit/72fabc0d9058bc31b5101a0a08846c5af3586fae); [PR #1](https://github.com/JimCollinson/x0xmd/pull/1); [PR #1 implementation](https://github.com/JimCollinson/x0xmd/commit/a2f310802f3c64d39709968dd9fc2908f1748aaf); [ADR-0009](ADR-0009-establish-x0xmd-as-stable-canonical-public-entrypoint.md); [contract conformance follow-up](../../planning/phases/02-contract-conformance/02-01-PLAN.md)
 
 ## Context
 
@@ -32,6 +32,8 @@ The serving layer needs fresh upstream-authored documentation and installer byte
 ## Decision
 
 We will use only `saorsa-labs/x0x` as the production upstream, with authority split by artefact role.
+
+Canonical authority does not require one network delivery location. Verified replicas, mirrors, caches, or retained stores may deliver canonical bytes while preserving their source and release identity, hashes, signatures, manifests, and provenance; no such delivery location becomes an alternate authority.
 
 Upstream-authored product documentation and installer bytes are backed by upstream `main`. Signed `SKILL.md` bytes and signature, release manifest and signature, verification key, and agent card are backed by one latest published stable release. Production must not source any of these surfaces from a fork or staging repository. Configuration hooks must not be used to change production authority without a reviewed superseding decision.
 
@@ -67,6 +69,7 @@ Release-backed trust artefacts must resolve coherently from one stable release i
 - Audit locally generated indexes, route descriptions, provenance metadata, and presentation so product claims derive from or cite canonical upstream truth and remain distinguishable from upstream-authored bytes.
 - Test incomplete releases, release changes, cache transitions, and upstream/API failures; require that responses never mix release identities or overstate established release or verification state.
 - Validate concrete fallback precedence, cross-artefact atomicity, and user-visible failure semantics against the separately reviewed public contract specification.
+- Compare canonical bytes delivered through every approved location and require byte, hash, signature, manifest, provenance, and release-identity equality for the selected source or release.
 
 ## Notes for AI-assisted work
 

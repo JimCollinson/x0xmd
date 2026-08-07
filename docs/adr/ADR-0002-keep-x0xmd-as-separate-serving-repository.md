@@ -6,7 +6,7 @@
 - **Reviewers:** Pending human review
 - **Supersedes:** none
 - **Superseded by:** none
-- **Related:** Jim Collinson's 2026-02-26 repository-separation decision; [initial Worker commit](https://github.com/JimCollinson/x0xmd/commit/91c1119d873c9131ebf341d65fa6c44e0b6418f6)
+- **Related:** Jim Collinson's 2026-02-26 repository-separation decision; [initial Worker commit](https://github.com/JimCollinson/x0xmd/commit/91c1119d873c9131ebf341d65fa6c44e0b6418f6); [ADR-0009](ADR-0009-establish-x0xmd-as-stable-canonical-public-entrypoint.md)
 
 ## Context
 
@@ -34,6 +34,8 @@ We will keep x0xmd as a separate serving repository.
 x0xmd owns the edge-serving implementation and its operational surface: Worker routing, response and cache behaviour, presentation, directly maintained frontend source and static assets, and Cloudflare deployment configuration. `src/html.js` is authoritative source maintained in this repository; it is not an externally generated artefact.
 
 The production upstream `saorsa-labs/x0x` remains authoritative for the x0x product and protocol, upstream documentation, installer behaviour and bytes, and signed release artefact truth. Serving, transforming, linking to, or presenting those upstream artefacts does not transfer their authority to x0xmd.
+
+That serving responsibility may include retaining and serving verified upstream bytes during an upstream delivery outage. Independent delivery remains a serving responsibility and never transfers product, source, installer, or release authority to x0xmd.
 
 ## Consequences
 

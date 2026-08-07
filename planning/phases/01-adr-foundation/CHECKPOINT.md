@@ -1,5 +1,16 @@
 # GSD Checkpoint — Phase 01 ADR foundation
 
+## Scope-reopened Addendum — 2026-08-07
+
+**This checkpoint applies only to pre-reopening head
+`52ecb10dca1b2478a010f641509ab90f97daf385`, eight Proposed ADRs, and seven
+Proposed Plan 02 slices.** Jim's attended documentation-only reopening adds
+Proposed ADR-0009 and an eighth unapproved slice. That reopening supersedes this
+checkpoint for current readiness: Phase 01 is open again, the new scope awaits
+fresh independent verification and review, and no old result below may be
+inferred for ADR-0009 or Slice H. The original findings are preserved unchanged
+as historical evidence.
+
 Date: 2026-08-06
 Project: x0xmd
 Slice/question: Plan 01-01 — adopt ADR governance and document intended architecture

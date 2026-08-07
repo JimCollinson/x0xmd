@@ -2,6 +2,18 @@
 
 Date: 2026-08-06
 
+## Scope-reopened Notice — 2026-08-07
+
+**This verification is historical and no longer establishes current Phase 01
+readiness.** Its pass, score, findings, and exact evidence below apply only to
+the eight-ADR/seven-slice scope at assessed target
+`bcf65eedc9b266387d228f39e3214e3cc92b23df`. Jim's attended documentation-only
+reopening adds Proposed ADR-0009 and an eighth Proposed Plan 02 slice. The new
+nine-ADR/eight-slice scope awaits fresh independent code/ADR review, goal
+verification, adversarial review, Craft Review, and clean-context review.
+ADR-0009 has not been independently verified by this record, and no result below
+may be extended to it by inference.
+
 ## Result
 
 - **Verification:** passed

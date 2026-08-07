@@ -2,12 +2,65 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Phase 01 is ready for Jim's attended review once the current checkpoint commit has a green structural ADR Governance check on draft PR #4. Code review and 8/8 foundation verification passed; fresh adversarial review returned `READY-WITH-NITS`; Craft Review passed; clean-context returned non-blocking `Concerns`. Effective runtime remains asset-first and divergent. No ADR is Accepted and no runtime implementation is approved.
+- **Status:** Phase 01 is fully reopened for Jim's approved documentation-only stable-entrypoint work. The repository now has nine Proposed ADRs and Proposed Plan 02-01 has eight unapproved future slices. All evidence and readiness conclusions at pre-reopening head `52ecb10dca1b2478a010f641509ab90f97daf385` are historical; the nine-ADR/eight-slice scope awaits fresh independent review. Effective runtime remains GitHub-dependent and asset-first. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
-- **Mode:** Attended. Jim Collinson's live instruction on 2026-08-06 set this run to `attended mode`; stop and surface any escalation trigger.
+- **Mode:** Attended. Jim Collinson approved the documentation-only reopening on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
 
-## Attended Disposition
+## Binding Stable-entrypoint Decisions — 2026-08-07
+
+- `x0x.md` is the canonical stable public origin for x0x discovery and
+  installation. The exact canonical ergonomic command is
+  `curl -sfL https://x0x.md | sh`.
+- One origin adapts for human, CLI/agent, and machine-readable consumers.
+  Proposed ADR-0004 governs representations, cache safety, and routes; Proposed
+  ADR-0009 governs the stable origin.
+- Entrypoint, authority, delivery, and client selection are distinct. Canonical
+  upstream product/source/release authority remains unchanged; verified replicas,
+  mirrors, caches, retained stores, and future locations remain delivery only.
+- `x0x.md` is intended to serve independently retained verified installer and
+  artefact bytes during GitHub outages. Canonical source/release identity,
+  hashes, signatures, manifests, provenance, and coherent sets must be preserved.
+- Signed skills and machine-readable provenance may expose an extensible set of
+  verified delivery choices for different sandbox/security policies. Client
+  selection never grants authority, and the durable decision freezes no host
+  inventory.
+- The intended durable domain steward is the Autonomi Foundation. Current
+  registrar ownership and legal custody have not been evidenced in this work;
+  the custody/transfer gap is future operational conformance and no present
+  custody claim is made.
+- `x0x.sh` is foundation-controlled reserved strategic optionality only, with no
+  redirect, route, failover, uptime, or compatibility contract.
+- Product-name authority remains upstream. `x0x.md`'s shortness, exact-text use,
+  distinctiveness in the known ecosystem, Foundation control, stability,
+  ordinarily low character/token burden, and `.md` fit outweigh its negative
+  verbal `0`/`O` and “tic-tac-toe” ambiguity. No universal uniqueness or
+  tokenizer guarantee is claimed.
+- The canonical command is an ergonomic default, not the only compatible path;
+  inspect-first and verification-first alternatives remain required because
+  curl-pipe-shell carries inherent risk.
+
+## Reopened Scope and Authority
+
+- Added Proposed ADR-0009 and bounded cross-links/clarifications in Proposed
+  ADR-0002, ADR-0003, ADR-0004, and ADR-0006.
+- Extended Proposed Plan 02-01 from seven to eight slices. Slice H covers
+  multi-location verified distribution and GitHub-outage resilience behind
+  accepted applicable ADRs, an approved concrete specification, C/D/F/G
+  coordination, a domain-custody audit, and separate approvals for every
+  upstream, storage/cache, runtime/network/configuration/deployment, harness/CI,
+  secrets, DNS/domain, and spend mechanism it implicates.
+- The reopening may change only ADR-0009, ADR-0002/0003/0004/0006, Plan 01-01,
+  Proposed Plan 02-01, this state, `VERIFICATION.md`, and `CHECKPOINT.md`.
+- No runtime, configuration, storage, asset, skill, test/harness, workflow,
+  governance-script, build, deployment, dependency, environment, domain, DNS,
+  secret, spend, push, PR #4, merge, publish, release, or deploy action is
+  authorised.
+
+## Historical Attended Disposition through `52ecb10`
+
+The following disposition predates the 2026-08-07 reopening and is retained as
+history for the eight-ADR/seven-slice scope.
 
 - On 2026-08-06 Jim approved amending ADR-0005, adding a separate static-assets
   ADR, and completing Proposed Plan 02-01 coverage for local product claims and
@@ -40,7 +93,12 @@
   and the Proposed plan sequences conformance work only after review and
   approval.
 
-## Verification and Review
+## Historical Verification and Review through `52ecb10`
+
+All results in this section are historical for the pre-reopening scope. In
+particular, structural ADR Governance run `31118541443` was exact for reviewed
+head `406a56d`; it was summarized by the later `52ecb10` checkpoint but was not
+an exact-head CI run for `52ecb10` and is not current reopened-scope green.
 
 - This is a meaningful work-unit and uses the full GSD gauntlet.
 - Review cadence is per work-unit: independent code/ADR review, goal
@@ -144,7 +202,7 @@
   reviewed head `406a56d`, the current PR head must receive its own structural
   ADR Governance pass before handoff.
 
-## Scope State
+## Historical Scope State through `52ecb10`
 
 - Installed the eight direct consumer-kit files byte-exact from the pinned source and merged its agent-guidance fragment into repository-specific `AGENTS.md`.
 - Drafted ADR-0001 through ADR-0008 as Proposed records only; none is Accepted.
@@ -165,10 +223,20 @@
   ADR-0008, Plan 01-01, Proposed Plan 02-01, `VERIFICATION.md`, and this state.
   It changes no runtime code, static assets, tests, CI, deployment, build,
   environment, copied kit bytes, agent guidance, or ADR status.
-- Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create another PR, merge, publish, deploy, or mark an ADR Accepted. Jim's live “proceed” instruction authorises updating the existing draft PR #4 branch and description for the remaining review gates; it does not authorise any other external action.
+- Do not add `.adr-kit.yaml`, alter root legal files, alter deployment/build/test mechanisms, change route or trust behaviour, create another PR, merge, publish, deploy, or mark an ADR Accepted. No instruction from the historical run authorises a current push or any edit or comment on PR #4.
 - Pre-existing untracked `.artifacts/` and `.claude/` are outside scope and must remain untracked and uncommitted.
 
 ## Known Current Divergence
+
+- Current installer, documentation, signed-skill, release-manifest, verification-
+  key, agent-card, and release-index delivery depends on GitHub hosts. x0x.md does
+  not yet retain and serve a proven coherent verified set independently through a
+  GitHub outage. Proposed Slice H tracks future work after every separate
+  approval; it is not implementation authority.
+- Intended Autonomi Foundation stewardship is recorded, but current registrar
+  ownership, legal custody, and any required transfer have not been evidenced.
+  No custody or completed-transfer claim may be made until an approved audit
+  supplies evidence.
 
 - Locally generated `/llms.txt`, route descriptions, trust/provenance prose, and
   frontend claims need a source/evidence and drift audit so product claims derive
@@ -211,11 +279,23 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Commit and push the evidence-only clean-context report, checkpoint, and current-
-state reconciliation to existing draft PR #4. Confirm the structural ADR
-Governance check is green at that final current head and refresh the PR evidence
-section without another branch change. Then stop for Jim's attended review.
+After the documentation operative returns its atomic commits and local evidence,
+run this exact fresh sequence for the nine-ADR/eight-slice scope:
 
-No later gate may be inferred from an earlier one. All ADRs remain Proposed,
-Plan 02-01 remains unapproved, and no runtime/configuration/test/deployment
-implementation is authorised.
+1. Independent code/ADR review against the Jim-approved reopening packet.
+2. Independent goal verification that evaluates ADR-0009, the four bounded ADR
+   amendments, eight-slice Plan 02-01, reopened handoff truth, exact ten-file
+   scope, and zero mechanism change.
+3. Only if separately authorised later, push and refresh PR #4's narrative, then
+   obtain structural ADR Governance CI at that exact remote head. The current
+   packet does not authorise either external action.
+4. Fresh adversarial review, then fresh Craft Review, then fresh clean-context
+   review of the complete reopened scope and exact-head evidence available at
+   that point.
+5. Reconcile a new checkpoint and return to Jim for attended review.
+
+No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
+ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H
+is not authorised, and no runtime/configuration/storage/asset/skill/test/
+workflow/build/deploy/dependency/environment/domain/DNS/secret/spend change is
+authorised.

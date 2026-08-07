@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Phase 01 is fully reopened for Jim's approved documentation-only stable-entrypoint work. The repository now has nine Proposed ADRs and Proposed Plan 02-01 has eight unapproved future slices. All evidence and readiness conclusions at pre-reopening head `52ecb10dca1b2478a010f641509ab90f97daf385` are historical; the nine-ADR/eight-slice scope awaits fresh independent review. Effective runtime remains GitHub-dependent and asset-first. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Attended code-review checkpoint for the reopened stable-entrypoint work. The nine-ADR/eight-slice documentation implementation is committed locally, but independent review found one HIGH and two MEDIUM Plan 02 Slice H gaps; goal verification is blocked pending Jim's disposition and remediation. All pre-reopening evidence remains historical. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson approved the documentation-only reopening on 2026-08-07; stop and surface any escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -56,6 +56,26 @@
   governance-script, build, deployment, dependency, environment, domain, DNS,
   secret, spend, push, PR #4, merge, publish, release, or deploy action is
   authorised.
+
+## Reopened-scope Code Review — Blocked
+
+- Independent code/ADR review at implementation head `a494c70` reproduced both
+  governance modes, exact ten-file scope, nine Proposed statuses, eight Plan 02
+  slices, link integrity, and zero mechanism changes.
+- HIGH: Slice H does not explicitly test freshness/downgrade semantics for the
+  mutable-`main` installer. It must cover upstream advancing from revision A to
+  B before GitHub becomes unavailable while retained, hash-valid revision A
+  remains, and require explicit stale/unknown/degraded handling rather than
+  silently presenting A as current.
+- MEDIUM: Slice H says C/D/F/G ordering will be approved later instead of
+  declaring required completion dependencies or a named permitted interleaving
+  checkpoint.
+- MEDIUM: Slice H requires no observable `x0x.sh` behaviour, which is stronger
+  than Jim's decision. The correct invariant is that Slice H neither adds nor
+  relies on redirect, failover, uptime, or compatibility behaviour; incidental
+  pre-existing DNS/HTTP state must not force an unapproved domain change.
+- Goal verification is blocked. No external action or later review gate is
+  authorised or current for the reopened scope.
 
 ## Historical Attended Disposition through `52ecb10`
 
@@ -279,20 +299,19 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-After the documentation operative returns its atomic commits and local evidence,
-run this exact fresh sequence for the nine-ADR/eight-slice scope:
+Attended review-failure checkpoint. If Jim approves the recommended
+documentation remediation, amend only Proposed Plan 02 Slice H and the reopened
+handoff records to:
 
-1. Independent code/ADR review against the Jim-approved reopening packet.
-2. Independent goal verification that evaluates ADR-0009, the four bounded ADR
-   amendments, eight-slice Plan 02-01, reopened handoff truth, exact ten-file
-   scope, and zero mechanism change.
-3. Only if separately authorised later, push and refresh PR #4's narrative, then
-   obtain structural ADR Governance CI at that exact remote head. The current
-   packet does not authorise either external action.
-4. Fresh adversarial review, then fresh Craft Review, then fresh clean-context
-   review of the complete reopened scope and exact-head evidence available at
-   that point.
-5. Reconcile a new checkpoint and return to Jim for attended review.
+1. add mutable-`main` installer revision-rollback/freshness fixtures and explicit
+   stale/unknown/degraded semantics;
+2. declare concrete C/D/F/G completion dependencies or a named permitted
+   interleaving checkpoint; and
+3. verify that Slice H neither adds nor relies on `x0x.sh` behaviour rather than
+   requiring no incidental observable behaviour.
+
+Then rerun code review and independent goal verification before any separately
+authorised push, PR refresh, CI, adversarial, Craft, or clean-context gate.
 
 No gate may be inferred from the historical eight-ADR/seven-slice pass. All nine
 ADRs remain Proposed, Plan 02-01 and all eight slices remain unapproved, Slice H

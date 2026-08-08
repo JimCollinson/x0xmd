@@ -2,7 +2,7 @@
 
 - **Phase:** 01-adr-foundation
 - **Plan:** 01-01 (ADR bootstrap)
-- **Status:** Corrected nine-ADR/seven-slice scope is ready for Jim's attended ADR review once the evidence-only checkpoint commit receives current-head structural ADR CI. Code review and 10/10 goal verification passed; exact reviewed-head CI is green; adversarial returned `READY-WITH-NITS`; Craft passed. Fresh clean-context is deferred because the owner-configured external panel runner boundary is inactive, so the work is not PR/merge-ready. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
+- **Status:** Corrected nine-ADR/seven-slice scope is ready for Jim's attended ADR review once the clean-context report-persistence commit receives current-head structural ADR CI. Code review and 10/10 verification passed; adversarial returned `READY-WITH-NITS`; Craft passed; fresh clean-context returned non-blocking `Concerns` with no documentation blocker. PR/merge readiness remains withheld pending Jim's concern disposition and explicit merge decision. No ADR is Accepted, Plan 02-01 is not approved, and no runtime or operational implementation is authorised.
 - **Base:** `origin/main@7de2813459cff504e176d364cf7f52cc5ab85ea4`
 - **Mode:** Attended. Jim Collinson approved this documentation-only scope correction and instructed the build-mode run to proceed on 2026-08-07. Updating the existing draft PR #4 branch and description is authorised only to run the remaining review gates; stop and surface any other escalation trigger.
 - **Source pin:** `https://github.com/WithAutonomi/adr-standard` at founding merge `0b36be07b4730c158eaed3655b551318c81352bf`
@@ -110,10 +110,18 @@
   deferred to a deliberate future canonical-kit update.
 - Fresh Craft Review at `d9a340e` passed with no CONFORMANCE, SIMPLICITY or NIT
   findings.
-- A new Claude clean-context lane was requested through panel but did not
-  dispatch because the owner configuration keeps the external runner boundary
-  fail-closed. Clean-context is honestly deferred; no substitute review or lane
-  findings are claimed. `models: none · 0s`.
+- A new Claude clean-context lane ran through panel at evidence head `146047c`
+  and returned non-blocking `Concerns` with no documentation blocker. It confirmed
+  nine substantive Proposed ADRs, seven unapproved Plan 02 slices A-G, the stable-
+  entrypoint decision, accepted GitHub dependency, withdrawn distribution
+  machinery, and no runtime scope expansion. Full report:
+  `planning/phases/01-adr-foundation/CLEAN-CONTEXT-2026-08-07.md`.
+  `models: claude-opus-4-8 · 470s`.
+- Clean-context concerns: historical `CLEAN-CONTEXT.md` lacks an inline
+  superseded banner; `VERIFICATION.md` retains old PR/CI bookkeeping; and the
+  least-privilege lane could not itself inspect live PR/CI or run shell commands.
+  The orchestrator independently confirmed draft PR #4 and exact-head structural
+  CI at `146047c`; documentation dispositions remain for Jim.
 - `planning/phases/01-adr-foundation/CHECKPOINT-2026-08-07.md` records the
   corrected current review evidence and remaining clean-context backlog. Its
   evidence-only commit must receive current-head structural ADR CI before the
@@ -339,12 +347,12 @@ The former frontend-generator queue item is resolved by removing the stale comme
 
 ## Next Step
 
-Commit and push the current evidence-only checkpoint and state reconciliation to
+Commit and push the clean-context report plus checkpoint/state reconciliation to
 existing draft PR #4, obtain structural ADR Governance CI at that final head, and
 refresh the PR evidence section without another branch change. Then stop for
-Jim's attended ADR review. Clean-context remains deferred until the owner panel
-runner boundary is activated; do not call the work PR/merge-ready or infer any
-runtime, operational, acceptance, merge, deployment, or mechanism authority.
+Jim's attended ADR review and disposition of the non-blocking clean-context
+concerns. Do not call the work PR/merge-ready or infer any runtime, operational,
+acceptance, merge, deployment, or mechanism authority.
 
 All nine ADRs remain Proposed. Plan 02-01 and all seven slices remain unapproved.
 No runtime/configuration/storage/asset/skill/test/workflow/build/deploy/

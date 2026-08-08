@@ -8,18 +8,19 @@ Agents/tools used: operative, ADR helper, code reviewer, verifier, adversarial r
 
 ## Status
 
-Ready for Jim's attended ADR review. Not ready to be called PR/merge-ready because
-the required fresh external clean-context lane is deferred by an inactive owner-
-configured runner boundary.
+Ready for Jim's attended ADR review. Fresh clean-context completed with non-
+blocking Concerns. PR/merge readiness remains withheld pending Jim's disposition
+of those documentation concerns, current-head structural CI for this evidence
+commit, and an explicit merge decision.
 
 Meaningful work-unit? Yes — repository ADR governance and nine architectural
 records, including public entrypoint, routing, authority and trust boundaries.
 
 Review cadence: per-unit code review, goal verification, structural CI,
-adversarial and Craft completed; clean-context explicitly deferred.
+adversarial, Craft and clean-context completed.
 
-Unreviewed backlog: fresh clean-context gate for the corrected nine-ADR/seven-
-slice scope.
+Unreviewed backlog: none. Non-blocking clean-context concerns remain for Jim's
+disposition.
 
 ## What happened
 
@@ -41,6 +42,8 @@ CI arbiter / green of record:
 
 - Structural ADR arbiter: `.github/workflows/adr-governance.yml` on draft PR #4.
 - Corrected reviewed head `d9a340e`: run `31195124339` passed.
+- Evidence checkpoint head `146047c`: run `31196386382` passed. The subsequent
+  report-persistence commit must also receive current-head structural CI.
 - This is structural ADR evidence only. No general code-quality CI arbiter exists;
   `.github/workflows/deploy.yml` is not validation evidence.
 - Any later evidence-only checkpoint commit requires its own successful current-
@@ -74,7 +77,8 @@ Results:
 - Independent code/ADR review passed with no findings at `801275b`.
 - Independent goal verification passed 10/10 at `801275b`; record commit
   `5f89cdf`.
-- Exact-head structural ADR CI passed at `d9a340e`.
+- Structural ADR CI passed at reviewed head `d9a340e` and evidence head
+  `146047c`.
 - No runtime, configuration, storage, asset, skill, test/harness, workflow,
   deployment, dependency, environment, domain, DNS, secret or spend change was
   introduced by the corrected reopening.
@@ -93,13 +97,17 @@ Results:
 
 Clean-context test:
 
-- Reviewer/tool: fresh Claude lane requested via panel.
-- Result: Not run — deferred; panel runner boundary inactive under owner
-  configuration.
-- Findings: no lane findings exist because no external dispatch occurred.
-- Consequence: this checkpoint may be used for Jim's attended ADR review, but the
-  work cannot be called PR/merge-ready until a fresh clean-context lane runs.
-- models: none · 0s
+- Reviewer/tool: fresh Claude lane via panel.
+- Result: Concerns, non-blocking; no documentation blocker found. Full report:
+  `planning/phases/01-adr-foundation/CLEAN-CONTEXT-2026-08-07.md`.
+- Findings: the generic historical `CLEAN-CONTEXT.md` lacks an inline superseded
+  banner; `VERIFICATION.md` preserves stale PR/CI bookkeeping; the least-
+  privilege lane could not inspect live PR/CI or run shell commands; and its
+  reviewed head preceded this report-persistence commit.
+- Disposition: the orchestrator independently confirmed PR #4 and structural CI
+  at `146047c`; the other documentation concerns await Jim's decision. No weaker
+  substitute review was used.
+- models: claude-opus-4-8 · 470s
 
 Adversarial review:
 
@@ -126,27 +134,29 @@ Craft Review:
 - Current installer availability depends on GitHub. Jim explicitly accepted that
   trade-off for the current service boundary.
 - Existing Plan 02 runtime divergences remain future, unapproved work.
-- Fresh clean-context evidence remains outstanding.
+- Fresh clean-context completed with non-blocking documentation/evidence concerns.
 
 ## Open questions / decisions for Jim
 
 - Review the nine Proposed ADRs; acceptance or rejection is human-only.
 - Decide separately whether any Proposed Plan 02 work should later be approved.
-- If PR/merge readiness is desired, activate the external panel runner boundary
-  and rerun a fresh clean-context gate first.
+- Decide whether to add an explicit superseded banner to historical
+  `CLEAN-CONTEXT.md` and annotate `VERIFICATION.md` with current PR/CI evidence.
+- Decide whether the clean-context lane's deliberate inability to inspect live
+  PR/CI is acceptable when the orchestrator separately verifies that evidence.
 
 PR / upstream action gate:
 
 - Existing draft PR #4: https://github.com/JimCollinson/x0xmd/pull/4
 - Ready for Jim's attended ADR review: Yes, subject to current-head structural CI.
-- PR/merge-ready: No — clean-context deferred and no merge approval exists.
+- PR/merge-ready: No — clean-context concerns await disposition and no merge
+  approval exists.
 
 ## Recommended next step
 
-Stop for Jim's attended ADR review. Do not accept ADRs, approve Plan 02, merge,
-publish, deploy, or implement runtime changes without the corresponding explicit
-human gate. Run a fresh clean-context lane after the owner runner boundary is
-activated and before any PR/merge-ready claim.
+Stop for Jim's attended ADR review and clean-context concern disposition. Do not
+accept ADRs, approve Plan 02, merge, publish, deploy, or implement runtime changes
+without the corresponding explicit human gate.
 
 ## Handoff note
 

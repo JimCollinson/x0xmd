@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: MIT OR Apache-2.0
+# Source: WithAutonomi/ant-node at 1e9dc01ffbd896f8c0c453808e87cfd73d688e8c,
+# via WithAutonomi/adr-workbench at 88f34671f0bd1992b086ee8216eca2787c71071a.
+# Modified only to add licensing/provenance comments. See NOTICE in this source
+# distribution; installed as docs/adr/NOTICE.
+
+name: ADR Governance
+
+on:
+  pull_request:
+    paths:
+      - 'docs/adr/**'
+      - 'scripts/adr-governance.py'
+      - '.github/workflows/adr-governance.yml'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'docs/adr/**'
+      - 'scripts/adr-governance.py'
+      - '.github/workflows/adr-governance.yml'
+
+jobs:
+  adr-governance:
+    name: Validate ADRs and immutable Accepted status
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run ADR governance checks
+        run: python3 scripts/adr-governance.py

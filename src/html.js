@@ -1,7 +1,3 @@
-// Auto-generated from proto_v0.2_template.html. Edit the prototype in the
-// x0x marketing project, not here. Fonts are served from /fonts/ via the
-// Workers Assets binding (see wrangler.toml). Re-generate with the bake script.
-
 export function buildHtmlPage(origin) {
   return `<!doctype html>
 <html lang="en">
